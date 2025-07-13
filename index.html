@@ -50,6 +50,13 @@
             <div class="control-group">
                 <button id="calculate-btn">排盘 (使用当前时间)</button>
                 <button id="auto-update-btn">自动更新</button>
+                            <button onclick="window.calculator && calculator.verifyTianjiangArrangement()">验证天将排布规则</button>
+            <button onclick="window.calculator && calculator.testSanchuanTianjiangFix()">测试三传天将修复</button>
+            <button onclick="window.calculator && calculator.debugTianjiangMapping()">调试天将分布</button>
+            <button onclick="window.calculator && calculator.testTianjiangDistribution()">测试天将分布</button>
+            <button onclick="window.calculator && calculator.setCurrentDateTime()">设置当前时间</button>
+            <button onclick="window.calculator && calculator.toggleAutoUpdate()">切换自动更新</button>
+            <button onclick="window.calculator && calculator.openQianfaModal()">显示钤法</button>
             </div>
         </div>
         
@@ -184,25 +191,41 @@
                         <td class="branch-cell" data-branch="巳">
                             <div class="top-left tianjiang"></div>
                             <div class="center heaven-branch">巳</div>
-                            <div class="bottom-left xungan"></div>
+                            <div class="bottom-left dun-info">
+                                <div class="tiandun"></div>
+                                <div class="rendun"></div>
+                                <div class="xungan"></div>
+                            </div>
                             <div class="bottom-right ground-branch">巳</div>
                         </td>
                         <td class="branch-cell" data-branch="午">
                             <div class="top-left tianjiang"></div>
                             <div class="center heaven-branch">午</div>
-                            <div class="bottom-left xungan"></div>
+                            <div class="bottom-left dun-info">
+                                <div class="tiandun"></div>
+                                <div class="rendun"></div>
+                                <div class="xungan"></div>
+                            </div>
                             <div class="bottom-right ground-branch">午</div>
                         </td>
                         <td class="branch-cell" data-branch="未">
                             <div class="top-left tianjiang"></div>
                             <div class="center heaven-branch">未</div>
-                            <div class="bottom-left xungan"></div>
+                            <div class="bottom-left dun-info">
+                                <div class="tiandun"></div>
+                                <div class="rendun"></div>
+                                <div class="xungan"></div>
+                            </div>
                             <div class="bottom-right ground-branch">未</div>
                         </td>
                         <td class="branch-cell" data-branch="申">
                             <div class="top-left tianjiang"></div>
                             <div class="center heaven-branch">申</div>
-                            <div class="bottom-left xungan"></div>
+                            <div class="bottom-left dun-info">
+                                <div class="tiandun"></div>
+                                <div class="rendun"></div>
+                                <div class="xungan"></div>
+                            </div>
                             <div class="bottom-right ground-branch">申</div>
                         </td>
                     </tr>
@@ -210,7 +233,11 @@
                         <td class="branch-cell" data-branch="辰">
                             <div class="top-left tianjiang"></div>
                             <div class="center heaven-branch">辰</div>
-                            <div class="bottom-left xungan"></div>
+                            <div class="bottom-left dun-info">
+                                <div class="tiandun"></div>
+                                <div class="rendun"></div>
+                                <div class="xungan"></div>
+                            </div>
                             <div class="bottom-right ground-branch">辰</div>
                         </td>
                         <td class="empty-cell"></td>
@@ -218,7 +245,11 @@
                         <td class="branch-cell" data-branch="酉">
                             <div class="top-left tianjiang"></div>
                             <div class="center heaven-branch">酉</div>
-                            <div class="bottom-left xungan"></div>
+                            <div class="bottom-left dun-info">
+                                <div class="tiandun"></div>
+                                <div class="rendun"></div>
+                                <div class="xungan"></div>
+                            </div>
                             <div class="bottom-right ground-branch">酉</div>
                         </td>
                     </tr>
@@ -226,7 +257,11 @@
                         <td class="branch-cell" data-branch="卯">
                             <div class="top-left tianjiang"></div>
                             <div class="center heaven-branch">卯</div>
-                            <div class="bottom-left xungan"></div>
+                            <div class="bottom-left dun-info">
+                                <div class="tiandun"></div>
+                                <div class="rendun"></div>
+                                <div class="xungan"></div>
+                            </div>
                             <div class="bottom-right ground-branch">卯</div>
                         </td>
                         <td class="empty-cell"></td>
@@ -234,7 +269,11 @@
                         <td class="branch-cell" data-branch="戌">
                             <div class="top-left tianjiang"></div>
                             <div class="center heaven-branch">戌</div>
-                            <div class="bottom-left xungan"></div>
+                            <div class="bottom-left dun-info">
+                                <div class="tiandun"></div>
+                                <div class="rendun"></div>
+                                <div class="xungan"></div>
+                            </div>
                             <div class="bottom-right ground-branch">戌</div>
                         </td>
                     </tr>
@@ -242,25 +281,41 @@
                         <td class="branch-cell" data-branch="寅">
                             <div class="top-left tianjiang">太常</div>
                             <div class="center heaven-branch">寅</div>
-                            <div class="bottom-left xungan">壬</div>
+                            <div class="bottom-left dun-info">
+                                <div class="tiandun"></div>
+                                <div class="rendun"></div>
+                                <div class="xungan">壬</div>
+                            </div>
                             <div class="bottom-right ground-branch">寅</div>
                         </td>
                         <td class="branch-cell" data-branch="丑">
                             <div class="top-left tianjiang">玄武</div>
                             <div class="center heaven-branch">丑</div>
-                            <div class="bottom-left xungan">癸</div>
+                            <div class="bottom-left dun-info">
+                                <div class="tiandun"></div>
+                                <div class="rendun"></div>
+                                <div class="xungan">癸</div>
+                            </div>
                             <div class="bottom-right ground-branch">丑</div>
                         </td>
                         <td class="branch-cell" data-branch="子">
                             <div class="top-left tianjiang">太阴</div>
                             <div class="center heaven-branch">子</div>
-                            <div class="bottom-left xungan">甲</div>
+                            <div class="bottom-left dun-info">
+                                <div class="tiandun"></div>
+                                <div class="rendun"></div>
+                                <div class="xungan">甲</div>
+                            </div>
                             <div class="bottom-right ground-branch">子</div>
                         </td>
                         <td class="branch-cell" data-branch="亥">
                             <div class="top-left tianjiang">天后</div>
                             <div class="center heaven-branch">亥</div>
-                            <div class="bottom-left xungan">乙</div>
+                            <div class="bottom-left dun-info">
+                                <div class="tiandun"></div>
+                                <div class="rendun"></div>
+                                <div class="xungan">乙</div>
+                            </div>
                             <div class="bottom-right ground-branch">亥</div>
                         </td>
                     </tr>

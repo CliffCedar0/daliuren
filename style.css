@@ -462,9 +462,41 @@ button:hover {
     font-size: 1.4em;
 }
 
-/* 旬干样式 */
-.xungan {
+/* 遁信息容器样式 */
+.dun-info {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    align-items: center;
+}
+
+/* 三遁样式 */
+.tiandun, .rendun, .xungan {
+    padding: 1px 3px;
+    border-radius: 3px;
+    min-width: 16px;
+    text-align: center;
+    font-size: 0.65em;
+    font-weight: bold;
+    line-height: 1;
+}
+
+.tiandun {
     color: #e74c3c;
+    background: rgba(231, 76, 60, 0.1);
+    border: 1px solid #e74c3c;
+}
+
+.rendun {
+    color: #3498db;
+    background: rgba(52, 152, 219, 0.1);
+    border: 1px solid #3498db;
+}
+
+.xungan {
+    color: #f39c12;
+    background: rgba(243, 156, 18, 0.1);
+    border: 1px solid #f39c12;
 }
 
 /* 地盘样式 */
@@ -739,10 +771,16 @@ button:hover {
         font-size: 1em;
     }
     
-    .tianjiang, .xungan, .ground-branch {
+    .tianjiang, .ground-branch {
         font-size: 0.6em;
         padding: 1px 3px;
         min-width: 16px;
+    }
+    
+    .tiandun, .rendun, .xungan {
+        font-size: 0.55em;
+        padding: 1px 2px;
+        min-width: 14px;
     }
     
     .heaven-branch {
@@ -835,10 +873,16 @@ button:hover {
         font-size: 0.9em;
     }
     
-    .tianjiang, .xungan, .ground-branch {
+    .tianjiang, .ground-branch {
         font-size: 0.5em;
         padding: 1px 2px;
-        min-width: 14px;
+        min-width: 12px;
+    }
+    
+    .tiandun, .rendun, .xungan {
+        font-size: 0.45em;
+        padding: 1px 2px;
+        min-width: 12px;
     }
     
     .heaven-branch {

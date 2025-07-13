@@ -231,7 +231,7 @@ const NOBLE_PERSON_MAP = {
 
 // 十二天将
 const TWELVE_TIANJIANGS = [
-    '贵人', '腾蛇', '朱雀', '六合', '勾陈', '青龙', 
+    '贵人', '螣蛇', '朱雀', '六合', '勾陈', '青龙', 
     '天空', '白虎', '太常', '玄武', '太阴', '天后'
 ];
 
@@ -270,9 +270,10 @@ const WUXING_COLORS = {
 
 // 天将五行颜色映射表
 const TIANJIANG_COLORS = {
-    '腾蛇': '#ce2d20', '朱雀': '#ce2d20',  // 火
+    '螣蛇': '#ce2d20', '朱雀': '#ce2d20',  // 火
     '勾陈': '#98511e', '太常': '#98511e', '天空': '#98511e', '贵人': '#98511e',  // 土
-    '天后': '#0803a8', '玄武': '#0803a8', '青龙': '#0803a8', '六合': '#0803a8',  // 水
+    '六合': '#317023', '青龙': '#317023',  // 木
+    '天后': '#0803a8', '玄武': '#0803a8',  // 水
     '白虎': '#e08433', '太阴': '#e08433'   // 金
 };
 
@@ -1153,6 +1154,112 @@ class DaLiuRenCalculator {
             
             console.log('\n=== 颜色测试完成 ===');
         };
+
+        // 测试三传天干和天将的修复
+        window.testSanchuanFix = () => {
+            console.log('=== 测试三传天干和天将修复 ===');
+            
+            try {
+                // 获取当前日干支
+                const now = new Date();
+                const solar = Solar.fromDate(now);
+                const lunar = solar.getLunar();
+                const dayGZ = lunar.getDayInGanZhi();
+                const dayStem = dayGZ.charAt(0);
+                const dayBranch = dayGZ.charAt(1);
+                const timeBranch = this.getCurrentTimeBranch();
+                const monthGeneral = this.getCurrentMonthGeneral();
+                
+                console.log(`当前日干支: ${dayGZ}, 时支: ${timeBranch}, 月将: ${monthGeneral}`);
+                
+                // 计算天盘
+                const heavenPlate = this.calculateHeavenPlate(monthGeneral, timeBranch);
+                console.log('天盘:', heavenPlate);
+                
+                // 计算天将
+                const nobleGroundPosition = this.calculateNoblePerson(dayStem, timeBranch);
+                const tianjiangMap = this.arrangeTwelveTianjiangs(nobleGroundPosition);
+                console.log('天将排布:', tianjiangMap);
+                
+                // 计算四课
+                const sike = this.calculateSike(dayStem, dayBranch, heavenPlate, tianjiangMap);
+                console.log('四课:', sike);
+                
+                // 计算三传
+                const sanchuan = this.calculateSanchuan(dayStem, dayBranch, sike, heavenPlate, tianjiangMap);
+                console.log('三传结果:', sanchuan);
+                
+                // 测试三传天干和天将的正确性
+                console.log('\n=== 验证三传天干和天将 ===');
+                
+                // 初传
+                const chuchuanZhi = sanchuan.chuchuan.zhi;
+                console.log(`初传地支: ${chuchuanZhi}`);
+                
+                // 查找初传地支在天盘中的位置
+                let chuchuanPosition = null;
+                for (let groundPos in heavenPlate) {
+                    if (heavenPlate[groundPos] === chuchuanZhi) {
+                        chuchuanPosition = groundPos;
+                        break;
+                    }
+                }
+                console.log(`初传地支 ${chuchuanZhi} 在天盘中的位置: ${chuchuanPosition}`);
+                
+                // 验证天将
+                const expectedTianjiang = tianjiangMap[chuchuanPosition];
+                const actualTianjiang = sanchuan.chuchuan.tianjiang;
+                console.log(`初传天将 - 期望: ${expectedTianjiang}, 实际: ${actualTianjiang}, 正确: ${expectedTianjiang === actualTianjiang}`);
+                
+                // 验证天干（旬遁）
+                const expectedGan = this.calculateXunganForPosition(chuchuanPosition, dayStem, dayBranch);
+                const actualGan = sanchuan.chuchuan.gan;
+                console.log(`初传天干 - 期望: ${expectedGan}, 实际: ${actualGan}, 正确: ${expectedGan === actualGan}`);
+                
+                // 同样验证中传和末传
+                const zhongchuanZhi = sanchuan.zhongchuan.zhi;
+                let zhongchuanPosition = null;
+                for (let groundPos in heavenPlate) {
+                    if (heavenPlate[groundPos] === zhongchuanZhi) {
+                        zhongchuanPosition = groundPos;
+                        break;
+                    }
+                }
+                console.log(`中传地支 ${zhongchuanZhi} 在天盘中的位置: ${zhongchuanPosition}`);
+                
+                const expectedZhongchuanTianjiang = tianjiangMap[zhongchuanPosition];
+                const actualZhongchuanTianjiang = sanchuan.zhongchuan.tianjiang;
+                console.log(`中传天将 - 期望: ${expectedZhongchuanTianjiang}, 实际: ${actualZhongchuanTianjiang}, 正确: ${expectedZhongchuanTianjiang === actualZhongchuanTianjiang}`);
+                
+                const expectedZhongchuanGan = this.calculateXunganForPosition(zhongchuanPosition, dayStem, dayBranch);
+                const actualZhongchuanGan = sanchuan.zhongchuan.gan;
+                console.log(`中传天干 - 期望: ${expectedZhongchuanGan}, 实际: ${actualZhongchuanGan}, 正确: ${expectedZhongchuanGan === actualZhongchuanGan}`);
+                
+                // 验证末传
+                const mochuanZhi = sanchuan.mochuan.zhi;
+                let mochuanPosition = null;
+                for (let groundPos in heavenPlate) {
+                    if (heavenPlate[groundPos] === mochuanZhi) {
+                        mochuanPosition = groundPos;
+                        break;
+                    }
+                }
+                console.log(`末传地支 ${mochuanZhi} 在天盘中的位置: ${mochuanPosition}`);
+                
+                const expectedMochuanTianjiang = tianjiangMap[mochuanPosition];
+                const actualMochuanTianjiang = sanchuan.mochuan.tianjiang;
+                console.log(`末传天将 - 期望: ${expectedMochuanTianjiang}, 实际: ${actualMochuanTianjiang}, 正确: ${expectedMochuanTianjiang === actualMochuanTianjiang}`);
+                
+                const expectedMochuanGan = this.calculateXunganForPosition(mochuanPosition, dayStem, dayBranch);
+                const actualMochuanGan = sanchuan.mochuan.gan;
+                console.log(`末传天干 - 期望: ${expectedMochuanGan}, 实际: ${actualMochuanGan}, 正确: ${expectedMochuanGan === actualMochuanGan}`);
+                
+                console.log('\n=== 修复验证完成 ===');
+                
+            } catch (error) {
+                console.error('测试三传修复时出错:', error);
+            }
+        };
     }
 
     startTimeUpdate() {
@@ -1291,7 +1398,7 @@ class DaLiuRenCalculator {
         return isDayTime ? nobles[0] : nobles[1];
     }
     
-    // 计算每个地盘位置的旬干
+    // 计算每个地盘位置的旬干（地遁）
     calculateXunganForPosition(groundBranch, dayStem, dayBranch) {
         // 首先确定旬首
         const xunshou = this.calculateXunshou(dayStem, dayBranch);
@@ -1319,6 +1426,122 @@ class DaLiuRenCalculator {
         // 返回地盘地支对应的天干，如果没有对应关系（空亡），返回空字符串
         return xunMapping[groundBranch] || '';
     }
+
+    // 计算天遁（时旬遁干）
+    calculateTianDun(groundBranch, timeBranch) {
+        // 计算时干
+        const timeGZ = this.getTimeGanZhi(timeBranch);
+        const timeStem = timeGZ.charAt(0);
+        
+        // 计算时旬的旬首
+        const timeXunshou = this.calculateXunshou(timeStem, timeBranch);
+        const xunshouStem = timeXunshou.charAt(0);
+        const xunshouBranch = timeXunshou.charAt(1);
+        
+        // 获取旬首的天干和地支索引
+        const xunshouStemIndex = STEM_INDEX[xunshouStem];
+        const xunshouBranchIndex = BRANCH_INDEX[xunshouBranch];
+        
+        // 构建时旬的地支到天干的映射
+        const xunMapping = {};
+        for (let i = 0; i < 10; i++) {
+            const stemIndex = (xunshouStemIndex + i) % 10;
+            const branchIndex = (xunshouBranchIndex + i) % 12;
+            const stem = HEAVENLY_STEMS[stemIndex];
+            const branch = BRANCHES[branchIndex];
+            xunMapping[branch] = stem;
+        }
+        
+        return xunMapping[groundBranch] || '';
+    }
+
+    // 计算人遁
+    calculateRendun(groundBranch, nobleGroundPosition) {
+        if (!nobleGroundPosition) return '';
+        
+        // 从子时开始计算遁干
+        const ziTimeGZ = this.getTimeGanZhi('子');
+        const ziTimeStem = ziTimeGZ.charAt(0);
+        
+        // 计算子时旬的旬首
+        const ziXunshou = this.calculateXunshou(ziTimeStem, '子');
+        const xunshouStem = ziXunshou.charAt(0);
+        const xunshouBranch = ziXunshou.charAt(1);
+        
+        // 获取旬首和贵人位置的索引
+        const xunshouStemIndex = STEM_INDEX[xunshouStem];
+        const xunshouBranchIndex = BRANCH_INDEX[xunshouBranch];
+        const nobleGroundIndex = BRANCH_INDEX[nobleGroundPosition];
+        
+        // 计算从子时到贵人位置的距离
+        let stepsToNoble = (nobleGroundIndex - 0 + 12) % 12; // 从子(0)到贵人位置
+        
+        // 五子元遁：从子时开始，天干按五子元遁的顺序
+        // 甲己日：甲子、乙丑、丙寅、丁卯、戊辰、己巳、庚午、辛未、壬申、癸酉
+        // 乙庚日：丙子、丁丑、戊寅、己卯、庚辰、辛巳、壬午、癸未、甲申、乙酉
+        // 丙辛日：戊子、己丑、庚寅、辛卯、壬辰、癸巳、甲午、乙未、丙申、丁酉
+        // 丁壬日：庚子、辛丑、壬寅、癸卯、甲辰、乙巳、丙午、丁未、戊申、己酉
+        // 戊癸日：壬子、癸丑、甲寅、乙卯、丙辰、丁巳、戊午、己未、庚申、辛酉
+        
+        // 根据日干确定子时的起始天干
+        const now = new Date();
+        const solar = Solar.fromDate(now);
+        const lunar = solar.getLunar();
+        const dayGZ = lunar.getDayInGanZhi();
+        const dayStem = dayGZ.charAt(0);
+        
+        let ziStemIndex;
+        switch (dayStem) {
+            case '甲': case '己': ziStemIndex = 0; break; // 甲
+            case '乙': case '庚': ziStemIndex = 2; break; // 丙
+            case '丙': case '辛': ziStemIndex = 4; break; // 戊
+            case '丁': case '壬': ziStemIndex = 6; break; // 庚
+            case '戊': case '癸': ziStemIndex = 8; break; // 壬
+            default: ziStemIndex = 0;
+        }
+        
+        // 计算到贵人位置的遁干
+        const targetStemIndex = (ziStemIndex + stepsToNoble) % 10;
+        const targetStem = HEAVENLY_STEMS[targetStemIndex];
+        
+        // 现在从贵人位置开始，按五子元遁计算该位置的遁干
+        const nobleSteps = (BRANCH_INDEX[groundBranch] - nobleGroundIndex + 12) % 12;
+        const finalStemIndex = (targetStemIndex + nobleSteps) % 10;
+        
+        return HEAVENLY_STEMS[finalStemIndex];
+    }
+
+    // 根据时支获取时干支
+    getTimeGanZhi(timeBranch) {
+        const now = new Date();
+        const solar = Solar.fromDate(now);
+        const lunar = solar.getLunar();
+        const dayGZ = lunar.getDayInGanZhi();
+        const dayStem = dayGZ.charAt(0);
+        
+        // 根据日干和时支计算时干
+        let timeStemIndex;
+        const timeBranchIndex = BRANCH_INDEX[timeBranch];
+        const dayStemIndex = STEM_INDEX[dayStem];
+        
+        // 子时的时干根据日干计算
+        // 甲己日子时起甲子，乙庚日子时起丙子，丙辛日子时起戊子，丁壬日子时起庚子，戊癸日子时起壬子
+        let ziStemIndex;
+        switch (dayStem) {
+            case '甲': case '己': ziStemIndex = 0; break; // 甲
+            case '乙': case '庚': ziStemIndex = 2; break; // 丙
+            case '丙': case '辛': ziStemIndex = 4; break; // 戊
+            case '丁': case '壬': ziStemIndex = 6; break; // 庚
+            case '戊': case '癸': ziStemIndex = 8; break; // 壬
+            default: ziStemIndex = 0;
+        }
+        
+        // 计算时干
+        timeStemIndex = (ziStemIndex + timeBranchIndex) % 10;
+        const timeStem = HEAVENLY_STEMS[timeStemIndex];
+        
+        return timeStem + timeBranch;
+    }
     
     // 排布十二天将
     arrangeTwelveTianjiangs(nobleGroundPosition) {
@@ -1329,11 +1552,24 @@ class DaLiuRenCalculator {
             return tianjiangMap;
         }
         
-        const noblePosIndex = BRANCH_POSITIONS.indexOf(nobleGroundPosition);
+        // 使用标准地支顺序进行天将排布
+        const noblePosIndex = STANDARD_BRANCH_ORDER.indexOf(nobleGroundPosition);
         
-        // 判断贵人位置决定排布方向
-        // 传统规则：贵人在亥子丑寅卯辰时顺时针，在巳午未申酉戌时逆时针
-        const clockwise = ['亥', '子', '丑', '寅', '卯', '辰'].includes(nobleGroundPosition);
+        // 判断贵人在地盘位置决定排布方向
+        // 传统规则：贵人在地盘的亥子丑寅卯辰时逆时针，在地盘的巳午未申酉戌时顺时针
+        const counterclockwiseGroup = ['亥', '子', '丑', '寅', '卯', '辰'];
+        const clockwiseGroup = ['巳', '午', '未', '申', '酉', '戌'];
+        
+        const clockwise = clockwiseGroup.includes(nobleGroundPosition);
+        
+        console.log(`天将排布（地盘位置判断）：`);
+        console.log(`  贵人在地盘位置：${nobleGroundPosition}`);
+        console.log(`  标准索引：${noblePosIndex}`);
+        console.log(`  逆时针组（亥子丑寅卯辰）：${counterclockwiseGroup.join(' ')}`);
+        console.log(`  顺时针组（巳午未申酉戌）：${clockwiseGroup.join(' ')}`);
+        console.log(`  贵人在逆时针组？${counterclockwiseGroup.includes(nobleGroundPosition)}`);
+        console.log(`  贵人在顺时针组？${clockwiseGroup.includes(nobleGroundPosition)}`);
+        console.log(`  使用方向：${clockwise ? '顺时针' : '逆时针'}`);
         
         for (let i = 0; i < 12; i++) {
             let posIndex;
@@ -1345,9 +1581,16 @@ class DaLiuRenCalculator {
                 posIndex = (noblePosIndex - i + 12) % 12;
             }
             
-            const branch = BRANCH_POSITIONS[posIndex];
+            const branch = STANDARD_BRANCH_ORDER[posIndex];
             tianjiangMap[branch] = TWELVE_TIANJIANGS[i];
         }
+        
+        // 显示完整的天将排布结果
+        console.log(`天将排布结果：`);
+        STANDARD_BRANCH_ORDER.forEach(branch => {
+            const marker = branch === nobleGroundPosition ? ' ← 贵人' : '';
+            console.log(`  ${branch} -> ${tianjiangMap[branch]}${marker}`);
+        });
         
         return tianjiangMap;
     }
@@ -1698,19 +1941,19 @@ class DaLiuRenCalculator {
         // 1. 优先选择下贼上（始入课）
         if (analysis.xiazei.length === 1) {
             const xiazei = analysis.xiazei[0];
-            return this.createSanchuan(xiazei.tianpan, heavenPlate, tianjiangMap, '始入课');
+            return this.createSanchuan(xiazei.tianpan, heavenPlate, tianjiangMap, '始入课', dayStem, dayBranch);
         }
         
         // 2. 无下贼上，选择上克下（元首课）
         if (analysis.xiazei.length === 0 && analysis.shangke.length === 1) {
             const shangke = analysis.shangke[0];
-            return this.createSanchuan(shangke.tianpan, heavenPlate, tianjiangMap, '元首课');
+            return this.createSanchuan(shangke.tianpan, heavenPlate, tianjiangMap, '元首课', dayStem, dayBranch);
         }
         
         // 3. 有下贼上又有上克下（重审课）
         if (analysis.xiazei.length === 1 && analysis.shangke.length > 0) {
             const xiazei = analysis.xiazei[0];
-            return this.createSanchuan(xiazei.tianpan, heavenPlate, tianjiangMap, '重审课');
+            return this.createSanchuan(xiazei.tianpan, heavenPlate, tianjiangMap, '重审课', dayStem, dayBranch);
         }
         
         return null;
@@ -1720,11 +1963,11 @@ class DaLiuRenCalculator {
     tryBiyongFayong(dayStem, dayBranch, analysis, heavenPlate, tianjiangMap) {
         // 多个下贼上或多个上克下时，按阴阳相比选择
         if (analysis.xiazei.length >= 2) {
-            return this.selectByYinYang(dayStem, analysis.xiazei, heavenPlate, tianjiangMap, '比用课');
+            return this.selectByYinYang(dayStem, analysis.xiazei, heavenPlate, tianjiangMap, '比用课', dayBranch);
         }
         
         if (analysis.shangke.length >= 2) {
-            return this.selectByYinYang(dayStem, analysis.shangke, heavenPlate, tianjiangMap, '知一课');
+            return this.selectByYinYang(dayStem, analysis.shangke, heavenPlate, tianjiangMap, '知一课', dayBranch);
         }
         
         return null;
@@ -1739,10 +1982,10 @@ class DaLiuRenCalculator {
             const keRigan = this.checkKeRigan(dayStem, sike);
             if (keRigan.length > 0) {
                 if (keRigan.length === 1) {
-                    return this.createSanchuan(keRigan[0].tianpan, heavenPlate, tianjiangMap, '蒿矢');
+                    return this.createSanchuan(keRigan[0].tianpan, heavenPlate, tianjiangMap, '蒿矢', dayStem, dayBranch);
                 } else {
                     // 多个克日干时，按阴阳相比
-                    return this.selectByYinYang(dayStem, keRigan, heavenPlate, tianjiangMap, '蒿矢');
+                    return this.selectByYinYang(dayStem, keRigan, heavenPlate, tianjiangMap, '蒿矢', dayBranch);
                 }
             }
             
@@ -1750,10 +1993,10 @@ class DaLiuRenCalculator {
             const riganKe = this.checkRiganKe(dayStem, sike);
             if (riganKe.length > 0) {
                 if (riganKe.length === 1) {
-                    return this.createSanchuan(riganKe[0].tianpan, heavenPlate, tianjiangMap, '弹射');
+                    return this.createSanchuan(riganKe[0].tianpan, heavenPlate, tianjiangMap, '弹射', dayStem, dayBranch);
                 } else {
                     // 多个被日干克时，按阴阳相比
-                    return this.selectByYinYang(dayStem, riganKe, heavenPlate, tianjiangMap, '弹射');
+                    return this.selectByYinYang(dayStem, riganKe, heavenPlate, tianjiangMap, '弹射', dayBranch);
                 }
             }
             
@@ -1792,19 +2035,19 @@ class DaLiuRenCalculator {
                                 const mochuan = sike.ke1.top;    // 干上神
                                 return {
                                     chuchuan: { 
-                                        gan: this.getTianpanGan(youShangShen), 
+                                        gan: this.getSanchuanGan(youShangShen, heavenPlate, dayStem, dayBranch), 
                                         zhi: youShangShen, 
-                                        tianjiang: tianjiangMap[youShangShen] || '' 
+                                        tianjiang: this.getSanchuanTianjiang(youShangShen, heavenPlate, tianjiangMap)
                                     },
                                     zhongchuan: { 
-                                        gan: this.getTianpanGan(zhongchuan), 
+                                        gan: this.getSanchuanGan(zhongchuan, heavenPlate, dayStem, dayBranch), 
                                         zhi: zhongchuan, 
-                                        tianjiang: tianjiangMap[zhongchuan] || '' 
+                                        tianjiang: this.getSanchuanTianjiang(zhongchuan, heavenPlate, tianjiangMap)
                                     },
                                     mochuan: { 
-                                        gan: this.getTianpanGan(mochuan), 
+                                        gan: this.getSanchuanGan(mochuan, heavenPlate, dayStem, dayBranch), 
                                         zhi: mochuan, 
-                                        tianjiang: tianjiangMap[mochuan] || '' 
+                                        tianjiang: this.getSanchuanTianjiang(mochuan, heavenPlate, tianjiangMap)
                                     },
                                     kege: '虎视'
                                 };
@@ -1817,19 +2060,19 @@ class DaLiuRenCalculator {
                                 const mochuan = sike.ke3.top;    // 支上神
                                 return {
                                     chuchuan: { 
-                                        gan: this.getTianpanGan(maoShangShen), 
+                                        gan: this.getSanchuanGan(maoShangShen, heavenPlate, dayStem, dayBranch), 
                                         zhi: maoShangShen, 
-                                        tianjiang: tianjiangMap[maoShangShen] || '' 
+                                        tianjiang: this.getSanchuanTianjiang(maoShangShen, heavenPlate, tianjiangMap)
                                     },
                                     zhongchuan: { 
-                                        gan: this.getTianpanGan(zhongchuan), 
+                                        gan: this.getSanchuanGan(zhongchuan, heavenPlate, dayStem, dayBranch), 
                                         zhi: zhongchuan, 
-                                        tianjiang: tianjiangMap[zhongchuan] || '' 
+                                        tianjiang: this.getSanchuanTianjiang(zhongchuan, heavenPlate, tianjiangMap)
                                     },
                                     mochuan: { 
-                                        gan: this.getTianpanGan(mochuan), 
+                                        gan: this.getSanchuanGan(mochuan, heavenPlate, dayStem, dayBranch), 
                                         zhi: mochuan, 
-                                        tianjiang: tianjiangMap[mochuan] || '' 
+                                        tianjiang: this.getSanchuanTianjiang(mochuan, heavenPlate, tianjiangMap)
                                     },
                                     kege: '冬蛇掩目'
                                 };
@@ -1880,33 +2123,54 @@ class DaLiuRenCalculator {
     }
 
     // 创建三传结构
-    createSanchuan(chuchuan, heavenPlate, tianjiangMap, kege) {
+    createSanchuan(chuchuan, heavenPlate, tianjiangMap, kege, dayStem, dayBranch) {
         const zhongchuan = heavenPlate[chuchuan] || '';
         const mochuan = heavenPlate[zhongchuan] || '';
         
-        // 计算天盘对应的天干
-        const chuchuanGan = this.getTianpanGan(chuchuan);
-        const zhongchuanGan = this.getTianpanGan(zhongchuan);
-        const mochuanGan = this.getTianpanGan(mochuan);
+        // 计算三传天干：三传的地支在天盘上对应格子的旬遁
+        const chuchuanGan = this.getSanchuanGan(chuchuan, heavenPlate, dayStem, dayBranch);
+        const zhongchuanGan = this.getSanchuanGan(zhongchuan, heavenPlate, dayStem, dayBranch);
+        const mochuanGan = this.getSanchuanGan(mochuan, heavenPlate, dayStem, dayBranch);
+        
+        // 计算三传天将：三传的地支在天盘上对应格子的天将
+        const chuchuanTianjiang = this.getSanchuanTianjiang(chuchuan, heavenPlate, tianjiangMap);
+        const zhongchuanTianjiang = this.getSanchuanTianjiang(zhongchuan, heavenPlate, tianjiangMap);
+        const mochuanTianjiang = this.getSanchuanTianjiang(mochuan, heavenPlate, tianjiangMap);
         
         return {
             chuchuan: { 
                 gan: chuchuanGan, 
                 zhi: chuchuan, 
-                tianjiang: tianjiangMap[chuchuan] || '' 
+                tianjiang: chuchuanTianjiang
             },
             zhongchuan: { 
                 gan: zhongchuanGan, 
                 zhi: zhongchuan, 
-                tianjiang: tianjiangMap[zhongchuan] || '' 
+                tianjiang: zhongchuanTianjiang
             },
             mochuan: { 
                 gan: mochuanGan, 
                 zhi: mochuan, 
-                tianjiang: tianjiangMap[mochuan] || '' 
+                tianjiang: mochuanTianjiang
             },
             kege: kege
         };
+    }
+
+    // 根据天盘位置获取天将
+    getTianjiangByHeavenPlatePosition(targetBranch, heavenPlate, tianjiangMap) {
+        if (!targetBranch) return '';
+        
+        // 找到目标地支在天盘中所在的宫位
+        for (let groundPosition in heavenPlate) {
+            if (heavenPlate[groundPosition] === targetBranch) {
+                // 找到了目标地支在天盘中的位置，返回该位置的天将
+                return tianjiangMap[groundPosition] || '';
+            }
+        }
+        
+        // 如果在天盘中没找到，可能是地盘本位，直接返回该位置的天将
+        return tianjiangMap[targetBranch] || '';
     }
 
     // 创建空的三传
@@ -1940,19 +2204,19 @@ class DaLiuRenCalculator {
                 
                 return {
                     chuchuan: { 
-                        gan: this.getTianpanGan(chuchuan), 
+                        gan: this.getSanchuanGan(chuchuan, heavenPlate, dayStem, dayBranch), 
                         zhi: chuchuan, 
-                        tianjiang: tianjiangMap[chuchuan] || '' 
+                        tianjiang: this.getSanchuanTianjiang(chuchuan, heavenPlate, tianjiangMap)
                     },
                     zhongchuan: { 
-                        gan: this.getTianpanGan(zhongchuan), 
+                        gan: this.getSanchuanGan(zhongchuan, heavenPlate, dayStem, dayBranch), 
                         zhi: zhongchuan, 
-                        tianjiang: tianjiangMap[zhongchuan] || '' 
+                        tianjiang: this.getSanchuanTianjiang(zhongchuan, heavenPlate, tianjiangMap)
                     },
                     mochuan: { 
-                        gan: this.getTianpanGan(mochuan), 
+                        gan: this.getSanchuanGan(mochuan, heavenPlate, dayStem, dayBranch), 
                         zhi: mochuan, 
-                        tianjiang: tianjiangMap[mochuan] || '' 
+                        tianjiang: this.getSanchuanTianjiang(mochuan, heavenPlate, tianjiangMap)
                     },
                     kege: '阳日八专'
                 };
@@ -1966,19 +2230,19 @@ class DaLiuRenCalculator {
                 
                 return {
                     chuchuan: { 
-                        gan: this.getTianpanGan(chuchuan), 
+                        gan: this.getSanchuanGan(chuchuan, heavenPlate, dayStem, dayBranch), 
                         zhi: chuchuan, 
-                        tianjiang: tianjiangMap[chuchuan] || '' 
+                        tianjiang: this.getSanchuanTianjiang(chuchuan, heavenPlate, tianjiangMap)
                     },
                     zhongchuan: { 
-                        gan: this.getTianpanGan(zhongchuan), 
+                        gan: this.getSanchuanGan(zhongchuan, heavenPlate, dayStem, dayBranch), 
                         zhi: zhongchuan, 
-                        tianjiang: tianjiangMap[zhongchuan] || '' 
+                        tianjiang: this.getSanchuanTianjiang(zhongchuan, heavenPlate, tianjiangMap)
                     },
                     mochuan: { 
-                        gan: this.getTianpanGan(mochuan), 
+                        gan: this.getSanchuanGan(mochuan, heavenPlate, dayStem, dayBranch), 
                         zhi: mochuan, 
-                        tianjiang: tianjiangMap[mochuan] || '' 
+                        tianjiang: this.getSanchuanTianjiang(mochuan, heavenPlate, tianjiangMap)
                     },
                     kege: '阴日八专'
                 };
@@ -2017,19 +2281,19 @@ class DaLiuRenCalculator {
                 
                 return {
                     chuchuan: { 
-                        gan: this.getTianpanGan(chuchuan), 
+                        gan: this.getSanchuanGan(chuchuan, heavenPlate, dayStem, dayBranch), 
                         zhi: chuchuan, 
-                        tianjiang: tianjiangMap[chuchuan] || '' 
+                        tianjiang: this.getSanchuanTianjiang(chuchuan, heavenPlate, tianjiangMap)
                     },
                     zhongchuan: { 
-                        gan: this.getTianpanGan(zhongchuan), 
+                        gan: this.getSanchuanGan(zhongchuan, heavenPlate, dayStem, dayBranch), 
                         zhi: zhongchuan, 
-                        tianjiang: tianjiangMap[zhongchuan] || '' 
+                        tianjiang: this.getSanchuanTianjiang(zhongchuan, heavenPlate, tianjiangMap)
                     },
                     mochuan: { 
-                        gan: this.getTianpanGan(mochuan), 
+                        gan: this.getSanchuanGan(mochuan, heavenPlate, dayStem, dayBranch), 
                         zhi: mochuan, 
-                        tianjiang: tianjiangMap[mochuan] || '' 
+                        tianjiang: this.getSanchuanTianjiang(mochuan, heavenPlate, tianjiangMap)
                     },
                     kege: '阳日伏吟'
                 };
@@ -2040,19 +2304,19 @@ class DaLiuRenCalculator {
                 
                 return {
                     chuchuan: { 
-                        gan: this.getTianpanGan(chuchuan), 
+                        gan: this.getSanchuanGan(chuchuan, heavenPlate, dayStem, dayBranch), 
                         zhi: chuchuan, 
-                        tianjiang: tianjiangMap[chuchuan] || '' 
+                        tianjiang: this.getSanchuanTianjiang(chuchuan, heavenPlate, tianjiangMap)
                     },
                     zhongchuan: { 
-                        gan: this.getTianpanGan(zhongchuan), 
+                        gan: this.getSanchuanGan(zhongchuan, heavenPlate, dayStem, dayBranch), 
                         zhi: zhongchuan, 
-                        tianjiang: tianjiangMap[zhongchuan] || '' 
+                        tianjiang: this.getSanchuanTianjiang(zhongchuan, heavenPlate, tianjiangMap)
                     },
                     mochuan: { 
-                        gan: this.getTianpanGan(mochuan), 
+                        gan: this.getSanchuanGan(mochuan, heavenPlate, dayStem, dayBranch), 
                         zhi: mochuan, 
-                        tianjiang: tianjiangMap[mochuan] || '' 
+                        tianjiang: this.getSanchuanTianjiang(mochuan, heavenPlate, tianjiangMap)
                     },
                     kege: '阴日伏吟'
                 };
@@ -2092,19 +2356,19 @@ class DaLiuRenCalculator {
                 
                 return {
                     chuchuan: { 
-                        gan: this.getTianpanGan(chuchuan), 
+                        gan: this.getSanchuanGan(chuchuan, heavenPlate, dayStem, dayBranch), 
                         zhi: chuchuan, 
-                        tianjiang: tianjiangMap[chuchuan] || '' 
+                        tianjiang: this.getSanchuanTianjiang(chuchuan, heavenPlate, tianjiangMap)
                     },
                     zhongchuan: { 
-                        gan: this.getTianpanGan(zhongchuan), 
+                        gan: this.getSanchuanGan(zhongchuan, heavenPlate, dayStem, dayBranch), 
                         zhi: zhongchuan, 
-                        tianjiang: tianjiangMap[zhongchuan] || '' 
+                        tianjiang: this.getSanchuanTianjiang(zhongchuan, heavenPlate, tianjiangMap)
                     },
                     mochuan: { 
-                        gan: this.getTianpanGan(mochuan), 
+                        gan: this.getSanchuanGan(mochuan, heavenPlate, dayStem, dayBranch), 
                         zhi: mochuan, 
-                        tianjiang: tianjiangMap[mochuan] || '' 
+                        tianjiang: this.getSanchuanTianjiang(mochuan, heavenPlate, tianjiangMap)
                     },
                     kege: '阳日反吟'
                 };
@@ -2115,19 +2379,19 @@ class DaLiuRenCalculator {
                 
                 return {
                     chuchuan: { 
-                        gan: this.getTianpanGan(chuchuan), 
+                        gan: this.getSanchuanGan(chuchuan, heavenPlate, dayStem, dayBranch), 
                         zhi: chuchuan, 
-                        tianjiang: tianjiangMap[chuchuan] || '' 
+                        tianjiang: this.getSanchuanTianjiang(chuchuan, heavenPlate, tianjiangMap)
                     },
                     zhongchuan: { 
-                        gan: this.getTianpanGan(zhongchuan), 
+                        gan: this.getSanchuanGan(zhongchuan, heavenPlate, dayStem, dayBranch), 
                         zhi: zhongchuan, 
-                        tianjiang: tianjiangMap[zhongchuan] || '' 
+                        tianjiang: this.getSanchuanTianjiang(zhongchuan, heavenPlate, tianjiangMap)
                     },
                     mochuan: { 
-                        gan: this.getTianpanGan(mochuan), 
+                        gan: this.getSanchuanGan(mochuan, heavenPlate, dayStem, dayBranch), 
                         zhi: mochuan, 
-                        tianjiang: tianjiangMap[mochuan] || '' 
+                        tianjiang: this.getSanchuanTianjiang(mochuan, heavenPlate, tianjiangMap)
                     },
                     kege: '阴日反吟'
                 };
@@ -2155,19 +2419,19 @@ class DaLiuRenCalculator {
                 
                 return {
                     chuchuan: { 
-                        gan: this.getTianpanGan(selectedCase.chuchuan), 
+                        gan: this.getSanchuanGan(selectedCase.chuchuan, heavenPlate, dayStem, dayBranch), 
                         zhi: selectedCase.chuchuan, 
-                        tianjiang: tianjiangMap[selectedCase.chuchuan] || '' 
+                        tianjiang: this.getSanchuanTianjiang(selectedCase.chuchuan, heavenPlate, tianjiangMap)
                     },
                     zhongchuan: { 
-                        gan: this.getTianpanGan(selectedCase.zhongchuan), 
+                        gan: this.getSanchuanGan(selectedCase.zhongchuan, heavenPlate, dayStem, dayBranch), 
                         zhi: selectedCase.zhongchuan, 
-                        tianjiang: tianjiangMap[selectedCase.zhongchuan] || '' 
+                        tianjiang: this.getSanchuanTianjiang(selectedCase.zhongchuan, heavenPlate, tianjiangMap)
                     },
                     mochuan: { 
-                        gan: this.getTianpanGan(selectedCase.mochuan), 
+                        gan: this.getSanchuanGan(selectedCase.mochuan, heavenPlate, dayStem, dayBranch), 
                         zhi: selectedCase.mochuan, 
-                        tianjiang: tianjiangMap[selectedCase.mochuan] || '' 
+                        tianjiang: this.getSanchuanTianjiang(selectedCase.mochuan, heavenPlate, tianjiangMap)
                     },
                     kege: '别责课'
                 };
@@ -2195,19 +2459,19 @@ class DaLiuRenCalculator {
                 
                 return {
                     chuchuan: { 
-                        gan: this.getTianpanGan(chuchuan), 
+                        gan: this.getSanchuanGan(chuchuan, heavenPlate, dayStem, dayBranch), 
                         zhi: chuchuan, 
-                        tianjiang: tianjiangMap[chuchuan] || '' 
+                        tianjiang: this.getSanchuanTianjiang(chuchuan, heavenPlate, tianjiangMap)
                     },
                     zhongchuan: { 
-                        gan: this.getTianpanGan(zhongchuan), 
+                        gan: this.getSanchuanGan(zhongchuan, heavenPlate, dayStem, dayBranch), 
                         zhi: zhongchuan, 
-                        tianjiang: tianjiangMap[zhongchuan] || '' 
+                        tianjiang: this.getSanchuanTianjiang(zhongchuan, heavenPlate, tianjiangMap)
                     },
                     mochuan: { 
-                        gan: this.getTianpanGan(mochuan), 
+                        gan: this.getSanchuanGan(mochuan, heavenPlate, dayStem, dayBranch), 
                         zhi: mochuan, 
-                        tianjiang: tianjiangMap[mochuan] || '' 
+                        tianjiang: this.getSanchuanTianjiang(mochuan, heavenPlate, tianjiangMap)
                     },
                     kege: '九丑课'
                 };
@@ -2286,19 +2550,19 @@ class DaLiuRenCalculator {
             
             return {
                 chuchuan: { 
-                    gan: this.getTianpanGan(chuchuan), 
+                    gan: this.getSanchuanGan(chuchuan, heavenPlate, dayStem, dayBranch), 
                     zhi: chuchuan, 
-                    tianjiang: tianjiangMap[chuchuan] || '' 
+                    tianjiang: this.getSanchuanTianjiang(chuchuan, heavenPlate, tianjiangMap)
                 },
                 zhongchuan: { 
-                    gan: this.getTianpanGan(zhongchuan), 
+                    gan: this.getSanchuanGan(zhongchuan, heavenPlate, dayStem, dayBranch), 
                     zhi: zhongchuan, 
-                    tianjiang: tianjiangMap[zhongchuan] || '' 
+                    tianjiang: this.getSanchuanTianjiang(zhongchuan, heavenPlate, tianjiangMap)
                 },
                 mochuan: { 
-                    gan: this.getTianpanGan(mochuan), 
+                    gan: this.getSanchuanGan(mochuan, heavenPlate, dayStem, dayBranch), 
                     zhi: mochuan, 
-                    tianjiang: tianjiangMap[mochuan] || '' 
+                    tianjiang: this.getSanchuanTianjiang(mochuan, heavenPlate, tianjiangMap)
                 },
                 kege: `日支${selectedRelation.relation}`
             };
@@ -2308,26 +2572,26 @@ class DaLiuRenCalculator {
     }
 
     // 完善按阴阳相比的选择逻辑
-    selectByYinYang(dayStem, candidates, heavenPlate, tianjiangMap, kege) {
+    selectByYinYang(dayStem, candidates, heavenPlate, tianjiangMap, kege, dayBranch) {
         const isYangRi = this.isYang(dayStem);
         
         // 先按阴阳相比过滤
         const matched = candidates.filter(c => this.isYang(c.tianpan) === isYangRi);
         
         if (matched.length === 1) {
-            return this.createSanchuan(matched[0].tianpan, heavenPlate, tianjiangMap, kege);
+            return this.createSanchuan(matched[0].tianpan, heavenPlate, tianjiangMap, kege, dayStem, dayBranch);
         } else if (matched.length > 1) {
             // 多个匹配时，按孟仲季选择
             const mengzhongjiPriority = this.selectByMengZhongJi(matched, dayStem);
             if (mengzhongjiPriority) {
-                return this.createSanchuan(mengzhongjiPriority.tianpan, heavenPlate, tianjiangMap, kege);
+                return this.createSanchuan(mengzhongjiPriority.tianpan, heavenPlate, tianjiangMap, kege, dayStem, dayBranch);
             }
             
             // 如果孟仲季也相同，取第一个
-            return this.createSanchuan(matched[0].tianpan, heavenPlate, tianjiangMap, kege);
+            return this.createSanchuan(matched[0].tianpan, heavenPlate, tianjiangMap, kege, dayStem, dayBranch);
         } else {
             // 没有阴阳相比的，取第一个
-            return this.createSanchuan(candidates[0].tianpan, heavenPlate, tianjiangMap, kege);
+            return this.createSanchuan(candidates[0].tianpan, heavenPlate, tianjiangMap, kege, dayStem, dayBranch);
         }
     }
 
@@ -2401,12 +2665,56 @@ class DaLiuRenCalculator {
         }
     }
 
-    // 计算六亲关系
+    // 计算六亲关系（基于天干）
     calculateLiuqin(targetGan, dayStem) {
         if (!targetGan || !dayStem) return '';
         
         const dayWuxing = this.getWuxing(dayStem);
         const targetWuxing = this.getWuxing(targetGan);
+        
+        if (dayWuxing === targetWuxing) {
+            return '兄弟';  // 同我者兄弟
+        } else if (this.wuxingSheng(targetWuxing, dayWuxing)) {
+            return '父母';  // 生我者父母
+        } else if (this.wuxingSheng(dayWuxing, targetWuxing)) {
+            return '子孙';  // 我生者子孙
+        } else if (this.wuxingKe(targetWuxing, dayWuxing)) {
+            return '官鬼';  // 克我者官鬼
+        } else if (this.wuxingKe(dayWuxing, targetWuxing)) {
+            return '妻财';  // 我克者妻财
+        }
+        
+        return '';
+    }
+
+    // 计算六亲关系（基于地支）
+    calculateLiuqinByZhi(targetZhi, dayBranch) {
+        if (!targetZhi || !dayBranch) return '';
+        
+        const dayWuxing = this.getWuxing(dayBranch);
+        const targetWuxing = this.getWuxing(targetZhi);
+        
+        if (dayWuxing === targetWuxing) {
+            return '兄弟';  // 同我者兄弟
+        } else if (this.wuxingSheng(targetWuxing, dayWuxing)) {
+            return '父母';  // 生我者父母
+        } else if (this.wuxingSheng(dayWuxing, targetWuxing)) {
+            return '子孙';  // 我生者子孙
+        } else if (this.wuxingKe(targetWuxing, dayWuxing)) {
+            return '官鬼';  // 克我者官鬼
+        } else if (this.wuxingKe(dayWuxing, targetWuxing)) {
+            return '妻财';  // 我克者妻财
+        }
+        
+        return '';
+    }
+
+    // 计算六亲关系（日干与地支对比）
+    calculateLiuqinGanZhi(dayStem, targetZhi) {
+        if (!dayStem || !targetZhi) return '';
+        
+        const dayWuxing = this.getWuxing(dayStem);
+        const targetWuxing = this.getWuxing(targetZhi);
         
         if (dayWuxing === targetWuxing) {
             return '兄弟';  // 同我者兄弟
@@ -2470,21 +2778,22 @@ class DaLiuRenCalculator {
         if (!this.sanchuanElements) return;
         
         try {
-            // 获取当前日干用于计算六亲和十神
+            // 获取当前日干支用于计算六亲和十神
             const now = new Date();
             const solar = Solar.fromDate(now);
             const lunar = solar.getLunar();
             const dayGZ = lunar.getDayInGanZhi();
             const dayStem = dayGZ.charAt(0);
+            const dayBranch = dayGZ.charAt(1);
             
             // 更新初传
-            this.updateSanchuanItem(this.sanchuanElements.chuchuan, sanchuan.chuchuan, dayStem);
+            this.updateSanchuanItem(this.sanchuanElements.chuchuan, sanchuan.chuchuan, dayStem, dayBranch);
             
             // 更新中传
-            this.updateSanchuanItem(this.sanchuanElements.zhongchuan, sanchuan.zhongchuan, dayStem);
+            this.updateSanchuanItem(this.sanchuanElements.zhongchuan, sanchuan.zhongchuan, dayStem, dayBranch);
             
             // 更新末传
-            this.updateSanchuanItem(this.sanchuanElements.mochuan, sanchuan.mochuan, dayStem);
+            this.updateSanchuanItem(this.sanchuanElements.mochuan, sanchuan.mochuan, dayStem, dayBranch);
             
             console.log('三传更新完成:', sanchuan);
         } catch (error) {
@@ -2493,9 +2802,11 @@ class DaLiuRenCalculator {
     }
 
     // 更新单个三传项目
-    updateSanchuanItem(elements, sanchuanData, dayStem) {
+    updateSanchuanItem(elements, sanchuanData, dayStem, dayBranch) {
         // 计算六亲和十神
-        const liuqin = this.calculateLiuqin(sanchuanData.gan, dayStem);
+        // 六亲基于日干与三传的支来比较
+        const liuqin = this.calculateLiuqinGanZhi(dayStem, sanchuanData.zhi);
+        // 十神仍然基于天干计算
         const shishen = this.calculateShishen(sanchuanData.gan, dayStem);
         
         // 更新六亲
@@ -2876,7 +3187,7 @@ class DaLiuRenCalculator {
             const monthGeneral = this.monthGeneralSelect.value;
             const heavenPlate = this.calculateHeavenPlate(monthGeneral, timeBranch);
             
-            // 找到天盘上贵人位置对应的地盘位置
+            // 找到天盘上贵人位置对应的地盘位置（仅用于调试）
             let nobleGroundPosition = null;
             for (let groundBranch in heavenPlate) {
                 if (heavenPlate[groundBranch] === nobleBranch) {
@@ -2887,8 +3198,8 @@ class DaLiuRenCalculator {
             
             console.log('贵人在地盘的位置:', nobleGroundPosition);
             
-            // 排布十二天将（从地盘的贵人位置开始）
-            const tianjiangMap = this.arrangeTwelveTianjiangs(nobleGroundPosition);
+            // 排布十二天将（从天盘的贵人位置开始）
+            const tianjiangMap = this.arrangeTwelveTianjiangs(nobleBranch);
             console.log('天将排布:', tianjiangMap);
             
             // 计算旬空
@@ -2904,16 +3215,21 @@ class DaLiuRenCalculator {
                 if (groundBranch) {
                     const isXunkong = xunkongBranches.includes(groundBranch);
                     
+                    // 获取天盘上在该地盘位置的地支
+                    const heavenBranch = heavenPlate[groundBranch];
+                    // 天将跟随天盘：天盘上的地支对应的天将显示在当前地盘位置
+                    const tianjiang = tianjiangMap[heavenBranch] || '';
+                    
                     console.log(`处理地支 ${groundBranch}:`, {
                         isXunkong,
-                        tianjiang: tianjiangMap[groundBranch]
+                        heavenBranch,
+                        tianjiang
                     });
                     
                     // 更新天将（天将在所有位置都显示，不受旬空影响）
                     const tianjiangElement = cell.querySelector('.tianjiang');
                     if (tianjiangElement) {
                         const oldContent = tianjiangElement.textContent;
-                        const tianjiang = tianjiangMap[groundBranch] || '';
                         tianjiangElement.textContent = tianjiang;
                         tianjiangElement.style.visibility = 'visible';
                         // 移除天将的默认样式，只保留文字
@@ -2924,24 +3240,51 @@ class DaLiuRenCalculator {
                         if (tianjiang && TIANJIANG_COLORS[tianjiang]) {
                             tianjiangElement.style.color = TIANJIANG_COLORS[tianjiang];
                         }
-                        console.log(`${groundBranch} 设置天将: ${tianjiang} (原内容: ${oldContent} -> 新内容: ${tianjiangElement.textContent})`);
+                        console.log(`${groundBranch} 设置天将: ${tianjiang} (天盘${heavenBranch}的天将，原内容: ${oldContent} -> 新内容: ${tianjiangElement.textContent})`);
                     } else {
                         console.log(`${groundBranch} 找不到天将元素`);
                     }
                     
-                    // 更新旬干
-                    const xunganElement = cell.querySelector('.xungan');
-                    if (xunganElement) {
+                    // 更新三遁：天遁、人遁、旬遁
+                    const dunInfoElement = cell.querySelector('.dun-info');
+                    if (dunInfoElement) {
+                        const tiandunElement = dunInfoElement.querySelector('.tiandun');
+                        const rendunElement = dunInfoElement.querySelector('.rendun');
+                        const xunganElement = dunInfoElement.querySelector('.xungan');
+                        
                         if (isXunkong) {
-                            xunganElement.textContent = ''; // 旬空位置空着
-                            xunganElement.style.visibility = 'hidden';
+                            // 旬空位置：天遁和人遁显示，旬遁空着
+                            if (tiandunElement) {
+                                const tiandun = this.calculateTianDun(groundBranch, timeBranch);
+                                tiandunElement.textContent = tiandun;
+                                tiandunElement.style.visibility = tiandun ? 'visible' : 'hidden';
+                            }
+                            if (rendunElement) {
+                                const rendun = this.calculateRendun(groundBranch, nobleGroundPosition);
+                                rendunElement.textContent = rendun;
+                                rendunElement.style.visibility = rendun ? 'visible' : 'hidden';
+                            }
+                            if (xunganElement) {
+                                xunganElement.textContent = '';
+                                xunganElement.style.visibility = 'hidden';
+                            }
                         } else {
-                            const xungan = this.calculateXunganForPosition(groundBranch, dayStem, dayBranch);
-                            xunganElement.textContent = xungan;
-                            xunganElement.style.visibility = 'visible';
-                            this.applyWuxingColor(xunganElement, xungan);
-                            // 移除默认样式
-                            xunganElement.style.border = 'none';
+                            // 非旬空位置：显示所有三遁
+                            if (tiandunElement) {
+                                const tiandun = this.calculateTianDun(groundBranch, timeBranch);
+                                tiandunElement.textContent = tiandun;
+                                tiandunElement.style.visibility = tiandun ? 'visible' : 'hidden';
+                            }
+                            if (rendunElement) {
+                                const rendun = this.calculateRendun(groundBranch, nobleGroundPosition);
+                                rendunElement.textContent = rendun;
+                                rendunElement.style.visibility = rendun ? 'visible' : 'hidden';
+                            }
+                            if (xunganElement) {
+                                const xungan = this.calculateXunganForPosition(groundBranch, dayStem, dayBranch);
+                                xunganElement.textContent = xungan;
+                                xunganElement.style.visibility = xungan ? 'visible' : 'hidden';
+                            }
                         }
                     }
                 }
@@ -3089,6 +3432,309 @@ class DaLiuRenCalculator {
             clearInterval(this.sizhuUpdateTimer);
         }
     }
+
+    // 新增：获取三传地支在天盘上对应格子的天将
+    getSanchuanTianjiang(sanchuanZhi, heavenPlate, tianjiangMap) {
+        if (!sanchuanZhi) return '';
+        
+        // 现在天将跟随天盘移动，三传天将应该是三传地支本身对应的天将
+        const tianjiang = tianjiangMap[sanchuanZhi] || '';
+        console.log(`${sanchuanZhi} 的天将: ${tianjiang}`);
+        return tianjiang;
+    }
+
+    // 新增：获取三传地支在天盘上对应格子的旬遁
+    getSanchuanGan(sanchuanZhi, heavenPlate, dayStem, dayBranch) {
+        if (!sanchuanZhi) return '';
+        
+        // 三传的地支作为天盘地支，找到天盘上对应的格子
+        // 查找哪个地盘位置的天盘地支等于三传地支
+        for (let groundPosition in heavenPlate) {
+            if (heavenPlate[groundPosition] === sanchuanZhi) {
+                // 找到了天盘上三传地支所在的格子，返回该格子的旬遁
+                return this.calculateXunganForPosition(groundPosition, dayStem, dayBranch);
+            }
+        }
+        
+        // 如果没找到，返回空
+        return '';
+    }
+
+    // 添加调试函数
+    debugTianjiangMapping() {
+        console.log('=== 调试天将分布 ===');
+        console.log('TWELVE_TIANJIANGS:', TWELVE_TIANJIANGS);
+        console.log('BRANCH_POSITIONS:', BRANCH_POSITIONS);
+        
+        // 获取当前时间
+        const now = new Date();
+        const timeBranch = this.getCurrentTimeBranch();
+        const monthGeneral = this.getCurrentMonthGeneral();
+        
+        console.log('当前时支:', timeBranch);
+        console.log('当前月将:', monthGeneral);
+        
+        // 计算贵人位置
+        const dayStem = this.getCurrentDayStem();
+        const noblePerson = this.calculateNoblePerson(dayStem, timeBranch);
+        
+        console.log('日干:', dayStem);
+        console.log('贵人位置:', noblePerson);
+        
+        // 计算天将分布
+        const tianjiangMap = this.arrangeTwelveTianjiangs(noblePerson);
+        
+        console.log('天将分布 (tianjiangMap):');
+        BRANCH_POSITIONS.forEach((branch, index) => {
+            console.log(`${branch} -> ${tianjiangMap[branch]}`);
+        });
+        
+        // 比较实际显示的天将
+        console.log('\n=== 对比实际显示 ===');
+        const cells = document.querySelectorAll('.cell');
+        cells.forEach(cell => {
+            const branch = cell.getAttribute('data-branch');
+            const tianjiang = cell.querySelector('.tianjiang').textContent;
+            const expectedTianjiang = tianjiangMap[branch];
+            
+            if (tianjiang !== expectedTianjiang) {
+                console.log(`❌ ${branch}: 显示=${tianjiang}, 预期=${expectedTianjiang}`);
+            } else {
+                console.log(`✅ ${branch}: ${tianjiang}`);
+            }
+        });
+        
+        return tianjiangMap;
+    }
+
+    // 获取当前日干
+    getCurrentDayStem() {
+        const now = new Date();
+        const lunarDate = Lunar.fromDate(now);
+        const dayGanZhi = lunarDate.getDayInGanZhi();
+        return dayGanZhi.charAt(0); // 返回天干
+    }
+
+    // 测试天将分布
+    testTianjiangDistribution() {
+        console.log('=== 测试天将分布 ===');
+        
+        // 检查当前实际的天将映射
+        const dayStem = this.getCurrentDayStem();
+        const timeBranch = this.getCurrentTimeBranch();
+        const noblePerson = this.calculateNoblePerson(dayStem, timeBranch);
+        
+        console.log('当前日干:', dayStem);
+        console.log('当前时支:', timeBranch);
+        console.log('贵人位置:', noblePerson);
+        
+        const tianjiangMap = this.arrangeTwelveTianjiangs(noblePerson);
+        
+        console.log('实际天将分布:');
+        ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'].forEach(branch => {
+            console.log(`${branch} -> ${tianjiangMap[branch]}`);
+        });
+        
+        // 对比页面显示的天将
+        console.log('\n=== 对比页面显示的天将 ===');
+        const cells = document.querySelectorAll('.cell');
+        cells.forEach(cell => {
+            const branch = cell.getAttribute('data-branch');
+            const displayedTianjiang = cell.querySelector('.tianjiang').textContent;
+            const calculatedTianjiang = tianjiangMap[branch];
+            
+            if (displayedTianjiang !== calculatedTianjiang) {
+                console.log(`❌ ${branch}: 显示=${displayedTianjiang}, 计算=${calculatedTianjiang}`);
+            } else {
+                console.log(`✅ ${branch}: ${displayedTianjiang}`);
+            }
+        });
+        
+        // 测试三传天将计算
+        const monthGeneral = this.getCurrentMonthGeneral();
+        const heavenPlate = this.calculateHeavenPlate(monthGeneral, timeBranch);
+        
+        console.log('\n=== 测试三传天将（使用实际天盘）===');
+        const testBranches = ['戌', '未', '辰'];
+        testBranches.forEach(branch => {
+            const tianjiang = this.getSanchuanTianjiang(branch, heavenPlate, tianjiangMap);
+            console.log(`${branch} -> ${tianjiang}`);
+        });
+        
+        return tianjiangMap;
+    }
+    
+    // 验证天将排布规则
+    verifyTianjiangArrangement() {
+        console.log('=== 验证天将排布规则 ===');
+        
+        // 测试当前实际时间的情况
+        const currentTimeBranch = this.getCurrentTimeBranch();
+        const currentDayStem = this.getCurrentDayStem();
+        
+        console.log(`当前时间：${currentDayStem}日${currentTimeBranch}时`);
+        
+        // 计算贵人位置
+        const noblePerson = this.calculateNoblePerson(currentDayStem, currentTimeBranch);
+        console.log(`贵人位置: ${noblePerson}`);
+        
+        // 判断应该用什么方向排布
+        const counterclockwiseGroup = ['亥', '子', '丑', '寅', '卯', '辰'];
+        const clockwiseGroup = ['巳', '午', '未', '申', '酉', '戌'];
+        const isClockwise = clockwiseGroup.includes(noblePerson);
+        console.log(`${noblePerson}位贵人应该用${isClockwise ? '顺时针' : '逆时针'}排布`);
+        
+        // 排布天将
+        const tianjiangMap = this.arrangeTwelveTianjiangs(noblePerson);
+        
+        console.log('\n当前时间的天将排布：');
+        STANDARD_BRANCH_ORDER.forEach(branch => {
+            const marker = branch === noblePerson ? ' ← 贵人' : '';
+            console.log(`${branch}: ${tianjiangMap[branch]}${marker}`);
+        });
+        
+        // 同时测试一个午位贵人的例子（顺时针）
+        console.log('\n=== 测试午位贵人（顺时针）===');
+        const wuTianjiangMap = this.arrangeTwelveTianjiangs('午');
+        console.log('午位贵人，顺时针排布：');
+        STANDARD_BRANCH_ORDER.forEach(branch => {
+            const marker = branch === '午' ? ' ← 贵人' : '';
+            console.log(`${branch}: ${wuTianjiangMap[branch]}${marker}`);
+        });
+        
+        return tianjiangMap;
+    }
+
+    // 测试三传天将修复
+    testSanchuanTianjiangFix() {
+        console.log('=== 测试三传天将修复 ===');
+        
+        // 强制重新计算排盘
+        this.calculatePlates();
+        
+        // 等待一下让更新完成
+        setTimeout(() => {
+            console.log('\n=== 检查修复后的结果 ===');
+            
+            // 获取三传显示的天将
+            const chuchuanTianjiang = document.getElementById('chuchuan-tianjiang').textContent;
+            const zhongchuanTianjiang = document.getElementById('zhongchuan-tianjiang').textContent; 
+            const mochuanTianjiang = document.getElementById('mochuan-tianjiang').textContent;
+            
+            console.log('三传显示的天将:');
+            console.log(`初传: ${chuchuanTianjiang}`);
+            console.log(`中传: ${zhongchuanTianjiang}`);
+            console.log(`末传: ${mochuanTianjiang}`);
+            
+            // 获取对应地支在页面上显示的天将
+            const chuchuanZhi = document.getElementById('chuchuan-zhi').textContent;
+            const zhongchuanZhi = document.getElementById('zhongchuan-zhi').textContent;
+            const mochuanZhi = document.getElementById('mochuan-zhi').textContent;
+            
+            console.log('\n三传地支在页面上显示的天将:');
+            const getDisplayedTianjiang = (branch) => {
+                const cell = document.querySelector(`.cell[data-branch="${branch}"]`);
+                return cell ? cell.querySelector('.tianjiang').textContent : '未找到';
+            };
+            
+            console.log(`${chuchuanZhi}: ${getDisplayedTianjiang(chuchuanZhi)}`);
+            console.log(`${zhongchuanZhi}: ${getDisplayedTianjiang(zhongchuanZhi)}`);
+            console.log(`${mochuanZhi}: ${getDisplayedTianjiang(mochuanZhi)}`);
+            
+            // 检查是否匹配
+            console.log('\n=== 检查是否匹配 ===');
+            const matches = [
+                chuchuanTianjiang === getDisplayedTianjiang(chuchuanZhi),
+                zhongchuanTianjiang === getDisplayedTianjiang(zhongchuanZhi),
+                mochuanTianjiang === getDisplayedTianjiang(mochuanZhi)
+            ];
+            
+            console.log(`初传匹配: ${matches[0] ? '✅' : '❌'} (${chuchuanTianjiang} vs ${getDisplayedTianjiang(chuchuanZhi)})`);
+            console.log(`中传匹配: ${matches[1] ? '✅' : '❌'} (${zhongchuanTianjiang} vs ${getDisplayedTianjiang(zhongchuanZhi)})`);
+            console.log(`末传匹配: ${matches[2] ? '✅' : '❌'} (${mochuanTianjiang} vs ${getDisplayedTianjiang(mochuanZhi)})`);
+            
+            if (matches.every(m => m)) {
+                console.log('🎉 修复成功！三传天将现在正确显示了！');
+            } else {
+                console.log('❌ 还有问题需要进一步调试');
+                
+                // 额外的调试信息
+                console.log('\n=== 额外调试信息 ===');
+                const dayStem = this.getCurrentDayStem();
+                const timeBranch = this.getCurrentTimeBranch();
+                const noblePerson = this.calculateNoblePerson(dayStem, timeBranch);
+                const tianjiangMap = this.arrangeTwelveTianjiangs(noblePerson);
+                
+                console.log('天将映射:', tianjiangMap);
+                console.log('三传地支本身的天将:');
+                console.log(`${chuchuanZhi} -> ${tianjiangMap[chuchuanZhi]}`);
+                console.log(`${zhongchuanZhi} -> ${tianjiangMap[zhongchuanZhi]}`);
+                console.log(`${mochuanZhi} -> ${tianjiangMap[mochuanZhi]}`);
+            }
+        }, 100);
+    }
+
+    // 测试当前时间的天将排布
+    testCurrentTianjiangArrangement() {
+        console.log('========= 测试当前时间的天将排布 =========');
+        
+        // 获取当前时间信息
+        const currentTime = new Date();
+        const currentTimeBranch = this.getCurrentTimeBranch();
+        const currentDayStem = this.getCurrentDayStem();
+        const monthGeneral = this.getCurrentMonthGeneral();
+        const nobleGroundPosition = this.calculateNoblePerson(currentDayStem, currentTimeBranch);
+        
+        console.log(`当前时间：${currentTime.toLocaleString()}`);
+        console.log(`当前小时：${currentTime.getHours()}`);
+        console.log(`时支：${currentTimeBranch}`);
+        console.log(`日干：${currentDayStem}`);
+        console.log(`月将：${monthGeneral}`);
+        console.log(`贵人位置：${nobleGroundPosition}`);
+        
+        // 检查昼夜时间
+        const isDayTime = DAY_BRANCHES.includes(currentTimeBranch);
+        console.log(`当前是${isDayTime ? '昼' : '夜'}时`);
+        
+        // 检查贵人在地盘位置决定排布方向
+        const counterclockwiseGroup = ['亥', '子', '丑', '寅', '卯', '辰'];
+        const clockwiseGroup = ['巳', '午', '未', '申', '酉', '戌'];
+        
+        const isInClockwiseGroup = clockwiseGroup.includes(nobleGroundPosition);
+        const isInCounterclockwiseGroup = counterclockwiseGroup.includes(nobleGroundPosition);
+        
+        console.log(`贵人在地盘${isInCounterclockwiseGroup ? '逆时针' : '顺时针'}组 (${isInCounterclockwiseGroup ? '亥子丑寅卯辰' : '巳午未申酉戌'})`);
+        console.log(`应该使用${isInCounterclockwiseGroup ? '逆时针' : '顺时针'}排布`);
+        
+        // 验证贵人计算是否正确
+        const nobleOptions = NOBLE_PERSON_MAP[currentDayStem];
+        console.log(`日干${currentDayStem}的贵人选项：${nobleOptions}`);
+        console.log(`${isDayTime ? '昼' : '夜'}时取${isDayTime ? '第一个' : '第二个'}：${nobleGroundPosition}`);
+        
+        // 生成天将排布
+        const tianjiangMap = this.arrangeTwelveTianjiangs(nobleGroundPosition);
+        
+        // 验证是否符合传统规则
+        console.log('\n验证传统规则：');
+        const expectedClockwise = clockwiseGroup.includes(nobleGroundPosition);
+        const actualClockwise = ['巳', '午', '未', '申', '酉', '戌'].includes(nobleGroundPosition);
+        
+        console.log(`规则判断：${expectedClockwise === actualClockwise ? '✓' : '✗'}`);
+        
+        // 特别检查当前时间的逻辑
+        console.log('\n当前时间逻辑检查：');
+        console.log(`当前时间：${currentTime.getHours()}时`);
+        console.log(`时支：${currentTimeBranch}`);
+        console.log(`是否在昼时组(卯辰巳午未申)：${DAY_BRANCHES.includes(currentTimeBranch)}`);
+        console.log(`是否在夜时组(酉戌亥子丑寅)：${NIGHT_BRANCHES.includes(currentTimeBranch)}`);
+        
+        // 检查实际界面显示的天将是否正确
+        console.log('\n实际界面天将检查：');
+        console.log(`如果贵人在${nobleGroundPosition}，应该${isInCounterclockwiseGroup ? '逆时针' : '顺时针'}排布`);
+        console.log(`现在逻辑已修正：卯位贵人应该逆时针排布`);
+        
+        return tianjiangMap;
+    }
 }
 
 // 页面加载完成后初始化
@@ -3105,7 +3751,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (typeof Solar !== 'undefined') {
             console.log('lunar-javascript库已加载，开始初始化');
             try {
-                const calculator = new DaLiuRenCalculator();
+                window.calculator = new DaLiuRenCalculator();
                 console.log('大六壬计算器初始化成功');
             } catch (error) {
                 console.error('大六壬计算器初始化失败:', error);
@@ -3119,7 +3765,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.error('lunar-javascript库加载失败，已达到最大重试次数');
                 // 即使库加载失败，也要初始化基本功能
                 try {
-                    const calculator = new DaLiuRenCalculator();
+                    window.calculator = new DaLiuRenCalculator();
                     console.log('使用基本功能初始化');
                 } catch (error) {
                     console.error('基本功能初始化也失败:', error);
@@ -3133,13 +3779,23 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // 额外的安全措施：5秒后强制初始化
     setTimeout(() => {
-        if (typeof window.daLiuRenCalculator === 'undefined') {
+        if (typeof window.calculator === 'undefined') {
             console.log('强制初始化...');
             try {
-                window.daLiuRenCalculator = new DaLiuRenCalculator();
+                window.calculator = new DaLiuRenCalculator();
             } catch (error) {
                 console.error('强制初始化失败:', error);
             }
         }
     }, 5000);
+}); 
+
+// 页面加载完成后初始化
+window.addEventListener('DOMContentLoaded', () => {
+    if (typeof calculator === 'undefined') {
+        window.calculator = new DaLiuRenCalculator();
+    }
+    
+    // 测试当前时间的天将排布
+    window.calculator.testCurrentTianjiangArrangement();
 }); 
