@@ -55,28 +55,36 @@
         
         <!-- 四柱显示 -->
         <div class="sizhu-panel">
-            <div class="sizhu-grid">
-                <div class="sizhu-column">
-                    <div class="column-title">年柱</div>
-                    <div class="gan" id="year-gan">甲</div>
-                    <div class="zhi" id="year-zhi">子</div>
-                </div>
-                <div class="sizhu-column">
-                    <div class="column-title">月柱</div>
-                    <div class="gan" id="month-gan">乙</div>
-                    <div class="zhi" id="month-zhi">丑</div>
-                </div>
-                <div class="sizhu-column">
-                    <div class="column-title">日柱</div>
-                    <div class="gan" id="day-gan">丙</div>
-                    <div class="zhi" id="day-zhi">寅</div>
-                </div>
-                <div class="sizhu-column">
-                    <div class="column-title">时柱</div>
-                    <div class="gan" id="hour-gan">丁</div>
-                    <div class="zhi" id="hour-zhi">卯</div>
-                </div>
-            </div>
+            <table class="sizhu-table">
+                <thead>
+                    <tr>
+                        <th>年柱</th>
+                        <th>月柱</th>
+                        <th>日柱</th>
+                        <th>时柱</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <span class="gan" id="year-gan">甲</span>
+                            <span class="zhi" id="year-zhi">子</span>
+                        </td>
+                        <td>
+                            <span class="gan" id="month-gan">乙</span>
+                            <span class="zhi" id="month-zhi">丑</span>
+                        </td>
+                        <td>
+                            <span class="gan" id="day-gan">丙</span>
+                            <span class="zhi" id="day-zhi">寅</span>
+                        </td>
+                        <td>
+                            <span class="gan" id="hour-gan">丁</span>
+                            <span class="zhi" id="hour-zhi">卯</span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
             
             <!-- 旬干显示 -->
             <!-- <div class="xungan-info">
@@ -262,6 +270,21 @@
         
         <div class="result-info">
             <p id="calculation-info">请计算天地盘</p>
+        </div>
+        
+        <!-- 钤法弹出框 -->
+        <div id="qianfa-modal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>钤法</h2>
+                    <span class="close">&times;</span>
+                </div>
+                <div class="modal-body">
+                    <div class="qianfa-content" id="qianfa-content">
+                        <!-- 钤法内容将在这里显示 -->
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 

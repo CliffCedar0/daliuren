@@ -10,6 +10,178 @@ const STEM_INDEX = {
     '庚': 6, '辛': 7, '壬': 8, '癸': 9
 };
 
+// 钤法数据 - 天将加地支的含义
+const QIANFA_DATA = {
+    '贵人': {
+        '子': { name: '贵人加子曰解纷', desc: '找贵人帮忙解决麻烦，多见于司法诉讼或托人办事' },
+        '丑': { name: '贵人居丑曰升堂', desc: '告状、对峙、打官司' },
+        '寅': { name: '贵人居寅曰凭几', desc: '贵人坐书案前，对应文职、老师等行业' },
+        '卯': { name: '贵人居卯曰登车', desc: '出行、大客户上门、豪车' },
+        '辰': { name: '贵人居辰曰天牢', desc: '贵人自身难保，无法发挥作用' },
+        '巳': { name: '贵人居巳曰受贡', desc: '求人办事、送礼、尊敬有加' },
+        '午': { name: '贵人居午曰受贡', desc: '求人办事、送礼、尊敬有加' },
+        '未': { name: '贵人居未曰列席', desc: '请贵人吃饭，含入座、录取等意' },
+        '申': { name: '贵人居申曰移角', desc: '在路上，动中吉' },
+        '酉': { name: '贵人居酉入私门', desc: '走后门、包养、受贿等' },
+        '戌': { name: '贵人居戌曰地狱', desc: '贵人自身难保，不能发挥作用' },
+        '亥': { name: '贵人加亥登天门', desc: '指政府公务人员或关系强大的达官贵人' }
+    },
+    '螣蛇': {
+        '子': { name: '螣蛇加子曰掩目', desc: '遗漏、疏忽、逃避、头疼' },
+        '丑': { name: '螣蛇居丑曰蟠龟', desc: '转危为安，宜静不宜动' },
+        '寅': { name: '螣蛇居寅曰生角', desc: '事情耗时久、钻牛角尖' },
+        '卯': { name: '螣蛇居卯曰当门', desc: '家里有糟心事、事到临头' },
+        '辰': { name: '螣蛇居辰曰象龙', desc: '自信心爆棚、狂妄、虚假广告等' },
+        '巳': { name: '螣蛇居巳曰乘雾', desc: '烟雾弹、假话、虚实难辨' },
+        '午': { name: '螣蛇居午曰飞空', desc: '想法不切实际' },
+        '未': { name: '螣蛇居未曰入林', desc: '心思深、隐藏' },
+        '申': { name: '螣蛇居申曰衔剑', desc: '隐患大、精神紧张' },
+        '酉': { name: '螣蛇居酉曰露齿', desc: '有毒、想害人、骂人难听等' },
+        '戌': { name: '螣蛇居戌曰入冢', desc: '多余担心、自闭症' },
+        '亥': { name: '螣蛇加亥曰坠水', desc: '测走失大凶，担心、后怕' }
+    },
+    '朱雀': {
+        '子': { name: '朱雀加子曰损羽', desc: '考试成绩差、收不到信息文书' },
+        '丑': { name: '朱雀居丑曰掩目', desc: '争论休止、文书信息不来等' },
+        '寅': { name: '朱雀居寅曰安巢', desc: '真消息、文书状态好、分数高' },
+        '卯': { name: '朱雀居卯曰安巢', desc: '真消息、文书状态好、分数高' },
+        '辰': { name: '朱雀居辰曰投网', desc: '投标、上传、信息录入、没消息' },
+        '巳': { name: '朱雀居巳曰昼翔', desc: '信息即将到来' },
+        '午': { name: '朱雀居午曰衔符', desc: '真消息、文书状态好、分数高、白热化' },
+        '未': { name: '朱雀居未曰临坟', desc: '没消息、不联系、逃避' },
+        '申': { name: '朱雀居申曰厉嘴', desc: '口才好、争论强胜' },
+        '酉': { name: '朱雀居酉曰夜噪', desc: '吵架、辩论、官非' },
+        '戌': { name: '朱雀居戌曰投网', desc: '投标、上传、信息录入、没消息' },
+        '亥': { name: '朱雀加亥曰入水', desc: '文书信息因问题不来、停滞' }
+    },
+    '六合': {
+        '子': { name: '六合加子曰反目', desc: '翻脸、关系恶化，测感情不佳' },
+        '丑': { name: '六合居丑曰妆严', desc: '谄媚、有心机、谨慎' },
+        '寅': { name: '六合居寅曰乘轩', desc: '相亲介绍、测感情吉' },
+        '卯': { name: '六合居卯曰入室', desc: '上门、同居、室内会谈' },
+        '辰': { name: '六合居辰曰违理', desc: '违背常规，合作走后门、感情关系非正常' },
+        '巳': { name: '六合居巳曰不谐', desc: '感情不合、三观不合' },
+        '午': { name: '六合居午曰升堂', desc: '对峙、走法律途径，问感情见父母' },
+        '未': { name: '六合居未曰纳采', desc: '结婚、宴请吃饭' },
+        '申': { name: '六合居申曰结发', desc: '感情稳定、相濡以沫' },
+        '酉': { name: '六合居酉曰私窜', desc: '托关系走后门、男女关系混乱' },
+        '戌': { name: '六合居戌曰亡羞', desc: '恼羞成怒、后悔' },
+        '亥': { name: '六合加亥曰待命', desc: '等待指示、录取' }
+    },
+    '勾陈': {
+        '子': { name: '勾陈加子曰投机', desc: '侥幸、坏心思、想坑人' },
+        '丑': { name: '勾陈居丑曰受越', desc: '利益纷争、不顾劝阻强行而为' },
+        '寅': { name: '勾陈居寅曰遭囚', desc: '被官方制止' },
+        '卯': { name: '勾陈居卯曰临门', desc: '家庭不和、家暴、警察上门' },
+        '辰': { name: '勾陈居辰曰升堂', desc: '上法庭、向领导坦白' },
+        '巳': { name: '勾陈居巳曰铸印', desc: '测文书吉，合同录取等事成' },
+        '午': { name: '勾陈居午曰反目', desc: '翻脸、关系恶化，多遭公检法严查' },
+        '未': { name: '勾陈居未曰入驿', desc: '出门、出差、在路上' },
+        '申': { name: '勾陈居申曰趋户', desc: '上门、约好去某地' },
+        '酉': { name: '勾陈居酉曰披刃', desc: '手术、刀伤、打架、情绪暴戾' },
+        '戌': { name: '勾陈居戌曰下狱', desc: '坐牢、被孤立、无晋升希望' },
+        '亥': { name: '勾陈加亥曰寨裳', desc: '心惊肉跳、失眠多梦' }
+    },
+    '青龙': {
+        '子': { name: '青龙加子曰入海', desc: '青龙状态好，有钱、大钱' },
+        '丑': { name: '青龙居丑曰蟠泥', desc: '状态不好，财务问题、被拖欠' },
+        '寅': { name: '青龙居寅曰乘云', desc: '状态好，利经商' },
+        '卯': { name: '青龙居卯曰驱雷', desc: '状态好，有钱' },
+        '辰': { name: '青龙居辰曰飞天', desc: '状态好，有钱、大钱，适合大生意合作' },
+        '巳': { name: '青龙居巳曰掩目', desc: '损财、财物失窃' },
+        '午': { name: '青龙居午曰烧身', desc: '损财、经济压力大' },
+        '未': { name: '青龙居未曰在陆', desc: '财务有问题但有转机' },
+        '申': { name: '青龙居申曰临鳞', desc: '损财、破财较大' },
+        '酉': { name: '青龙居酉曰摧角', desc: '损财、破财更大' },
+        '戌': { name: '青龙居戌曰登魁', desc: '考试学业吉，中标、拔得头筹' },
+        '亥': { name: '青龙加亥曰游江', desc: '青龙状态好，有钱、大钱但不如"入海"' }
+    },
+    '天空': {
+        '子': { name: '天空加子曰伏室', desc: '宅家不出、多因女人起祸' },
+        '丑': { name: '天空居丑曰侍侧', desc: '身边有小人、背后举报等' },
+        '寅': { name: '天空居寅曰乘侮', desc: '上当受骗、见小人' },
+        '卯': { name: '天空居卯曰乘侮', desc: '上当受骗、见小人' },
+        '辰': { name: '天空居辰曰凶恶', desc: '报官无用、狼狈为奸' },
+        '巳': { name: '天空居巳曰受辱', desc: '被辱骂欺凌' },
+        '午': { name: '天空居午曰识字', desc: '暴露、测文书利' },
+        '未': { name: '天空居未曰趋进', desc: '图财、贪财' },
+        '申': { name: '天空居申曰鼓舌', desc: '说话多、哄骗、费口舌' },
+        '酉': { name: '天空居酉曰巧说', desc: '花言巧语、哄骗、销售' },
+        '戌': { name: '天空居戌曰居家', desc: '宅家不出、小人得志' },
+        '亥': { name: '天空加亥曰诬词', desc: '诽谤、有心机' }
+    },
+    '白虎': {
+        '子': { name: '白虎加子曰溺水', desc: '绝望、道路受阻，寻人忌得' },
+        '丑': { name: '白虎居丑曰在野', desc: '出行在外' },
+        '寅': { name: '白虎居寅曰登山', desc: '气势强、来势汹汹' },
+        '卯': { name: '白虎居卯曰临门', desc: '祸乱临头' },
+        '辰': { name: '白虎居辰曰咥人', desc: '气愤、大怒' },
+        '巳': { name: '白虎居巳曰焚身', desc: '焦急' },
+        '午': { name: '白虎居午曰焚身', desc: '焦急' },
+        '未': { name: '白虎居未曰在野', desc: '出行在外' },
+        '申': { name: '白虎居申曰衔牒', desc: '信息传送' },
+        '酉': { name: '白虎居酉曰临门', desc: '祸乱临头' },
+        '戌': { name: '白虎居戌曰落井', desc: '绝望、掉坑' },
+        '亥': { name: '白虎加亥曰溺水', desc: '绝望、道路受阻，寻人忌得' }
+    },
+    '太常': {
+        '子': { name: '太常加子曰遭枷', desc: '受制、背债务、受罚，问官司忌得' },
+        '丑': { name: '太常居丑曰受爵', desc: '升官晋爵、利升迁比赛卦' },
+        '寅': { name: '太常居寅曰侧目', desc: '敢怒不敢言、受关注' },
+        '卯': { name: '太常居卯曰掩冠', desc: '意外之财、财物有失、奸情' },
+        '辰': { name: '太常居辰曰佩印', desc: '获证书、新官上任，利升迁考试等' },
+        '巳': { name: '太常居巳曰铸印', desc: '喜事、测文书吉，合同录取事成' },
+        '午': { name: '太常居午曰乘轩', desc: '测官运吉，升职加薪' },
+        '未': { name: '太常居未曰捧觞', desc: '喝酒、喜庆、谈生意' },
+        '申': { name: '太常居申曰衔杯', desc: '喝酒、谈生意' },
+        '酉': { name: '太常居酉曰券书', desc: '文书合同、学习，刚愎自用' },
+        '戌': { name: '太常居戌曰逆命', desc: '反悔、跑路、不服气' },
+        '亥': { name: '太常加亥曰征召', desc: '找人、叫人、通知' }
+    },
+    '玄武': {
+        '子': { name: '玄武加子曰散发', desc: '失眠、惊惶、担惊受怕' },
+        '丑': { name: '玄武居丑曰升堂', desc: '报警、对簿公堂、以权谋私' },
+        '寅': { name: '玄武居寅曰入林', desc: '无影无踪' },
+        '卯': { name: '玄武居卯曰窥户', desc: '家中失窃、暗昧之事' },
+        '辰': { name: '玄武居辰曰失路', desc: '失踪、迷路' },
+        '巳': { name: '玄武居巳曰反顾', desc: '惶恐、虚惊' },
+        '午': { name: '玄武居午曰截路', desc: '道路不通、测病凶' },
+        '未': { name: '玄武居未曰不成', desc: '失物不失、诸事难成' },
+        '申': { name: '玄武居申曰折足', desc: '半途而废、腿脚不便' },
+        '酉': { name: '玄武居酉曰拔剑', desc: '剑拔弩张、形势严峻' },
+        '戌': { name: '玄武居戌曰遭囚', desc: '身处困境、利捕盗' },
+        '亥': { name: '玄武加亥曰伏藏', desc: '躲起来、逃避' }
+    },
+    '太阴': {
+        '子': { name: '太阴加子曰垂帘', desc: '背后交易、睡觉' },
+        '丑': { name: '太阴居丑曰入内', desc: '钱财入账' },
+        '寅': { name: '太阴居寅曰踯躅', desc: '文书财物动作、男女共寝' },
+        '卯': { name: '太阴居卯曰微行', desc: '谨慎行事、怕被抓把柄' },
+        '辰': { name: '太阴居辰曰造庭', desc: '谄媚、游龙戏凤' },
+        '巳': { name: '太阴居巳曰伏枕', desc: '精神不济、卧病在床' },
+        '午': { name: '太阴居午曰脱巾', desc: '文书财物动作、脱衣服遗失' },
+        '未': { name: '太阴居未曰观书', desc: '文书相关、看书' },
+        '申': { name: '太阴居申曰执政', desc: '执行计划、女人管事' },
+        '酉': { name: '太阴居酉曰闭户', desc: '闭门不出' },
+        '戌': { name: '太阴居戌曰被察', desc: '被发现、露端倪' },
+        '亥': { name: '太阴加亥曰裸形', desc: '情色暧昧、卧床、惊疑' }
+    },
+    '天后': {
+        '子': { name: '天后加子曰守闺', desc: '居家不出' },
+        '丑': { name: '天后居丑曰偷窥', desc: '惊恐、打探消息' },
+        '寅': { name: '天后居寅曰理发', desc: '悠游闲暇' },
+        '卯': { name: '天后居卯曰临门', desc: '女人上门、走后门' },
+        '辰': { name: '天后居辰曰毁妆', desc: '羞愤、悔恨，测寻人凶' },
+        '巳': { name: '天后居巳曰裸体', desc: '坦诚、测寻人凶' },
+        '午': { name: '天后居午曰伏枕', desc: '卧床不起、事情难遂' },
+        '未': { name: '天后居未曰沐浴', desc: '惊惶，课内见青龙有男女情色象，寻人在水里' },
+        '申': { name: '天后居申曰整容', desc: '穿衣打扮、医美、悠闲' },
+        '酉': { name: '天后居酉曰倚户', desc: '家中有女人、涉色情美容业' },
+        '戌': { name: '天后居戌曰褰帷', desc: '卧病、事情受阻' },
+        '亥': { name: '天后加亥曰治事', desc: '持家管理有方、采取行动' }
+    }
+};
+
 // 地支对应的索引
 const BRANCH_INDEX = {
     '子': 0, '丑': 1, '寅': 2, '卯': 3, '辰': 4, '巳': 5,
@@ -345,6 +517,9 @@ class DaLiuRenCalculator {
         // 实时计算
         this.monthGeneralSelect.addEventListener('change', () => this.calculatePlates());
         this.timeBranchSelect.addEventListener('change', () => this.calculatePlates());
+        
+        // 钤法弹出框事件
+        this.initQianfaModal();
         
         // 添加一个全局更新函数，方便调试
         window.forceUpdateSizhu = () => {
@@ -2808,6 +2983,98 @@ class DaLiuRenCalculator {
             <strong>天盘已按"月将加时"逻辑生成</strong><br>
             ${monthGeneral}加在${timeBranch}位置上
         `;
+    }
+
+    // 钤法弹出框相关方法
+    initQianfaModal() {
+        this.qianfaModal = document.getElementById('qianfa-modal');
+        this.qianfaContent = document.getElementById('qianfa-content');
+        this.closeBtn = this.qianfaModal.querySelector('.close');
+        
+        // 为每个天地盘位置添加点击事件
+        this.plateTable.addEventListener('click', (e) => {
+            const branchCell = e.target.closest('.branch-cell');
+            if (branchCell) {
+                const branch = branchCell.getAttribute('data-branch');
+                const tianjiang = branchCell.querySelector('.tianjiang').textContent;
+                const heavenBranch = branchCell.querySelector('.heaven-branch').textContent;
+                
+                if (tianjiang) {
+                    this.showQianfaModal(tianjiang, branch, heavenBranch);
+                }
+            }
+        });
+        
+        // 关闭按钮事件
+        this.closeBtn.addEventListener('click', () => {
+            this.hideQianfaModal();
+        });
+        
+        // 点击弹出框外部关闭
+        this.qianfaModal.addEventListener('click', (e) => {
+            if (e.target === this.qianfaModal) {
+                this.hideQianfaModal();
+            }
+        });
+        
+        // ESC键关闭弹出框
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && this.qianfaModal.style.display === 'block') {
+                this.hideQianfaModal();
+            }
+        });
+    }
+    
+    showQianfaModal(tianjiang, groundBranch, heavenBranch) {
+        this.currentTianjiang = tianjiang;
+        this.currentGroundBranch = groundBranch;
+        this.currentHeavenBranch = heavenBranch;
+        
+        // 显示弹出框
+        this.qianfaModal.style.display = 'block';
+        
+        // 显示钤法内容
+        this.updateQianfaContent();
+    }
+    
+    hideQianfaModal() {
+        this.qianfaModal.style.display = 'none';
+    }
+    
+    updateQianfaContent() {
+        if (!this.currentTianjiang || !this.currentGroundBranch || !this.currentHeavenBranch) return;
+        
+        let content = '';
+        
+        // 天将加天盘
+        content += `<div class="qianfa-section">
+            <h3>天将加天盘 - ${this.currentTianjiang}加${this.currentHeavenBranch}</h3>
+            ${this.generateQianfaItem(this.currentTianjiang, this.currentHeavenBranch)}
+        </div>`;
+        
+        // 天将加地盘
+        content += `<div class="qianfa-section">
+            <h3>天将加地盘 - ${this.currentTianjiang}加${this.currentGroundBranch}</h3>
+            ${this.generateQianfaItem(this.currentTianjiang, this.currentGroundBranch)}
+        </div>`;
+        
+        this.qianfaContent.innerHTML = content;
+    }
+    
+    generateQianfaItem(tianjiang, branch) {
+        let html = '';
+        
+        if (QIANFA_DATA[tianjiang] && QIANFA_DATA[tianjiang][branch]) {
+            const qianfa = QIANFA_DATA[tianjiang][branch];
+            html = `<div class="qianfa-item">
+                <div class="qianfa-name">${qianfa.name}</div>
+                <div class="qianfa-desc">${qianfa.desc}</div>
+            </div>`;
+        } else {
+            html = '<p style="text-align: center; color: #666; margin: 20px 0;">暂无钤法数据</p>';
+        }
+        
+        return html;
     }
 
     // 销毁计时器
