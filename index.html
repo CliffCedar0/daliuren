@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>卿式大六壬</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>卿式大六壬</h1>
+        
+        <!-- 四柱显示 -->
+        <div class="sizhu-panel">
+            <div class="sizhu-grid">
+                <div class="sizhu-column">
+                    <div class="column-title">年柱</div>
+                    <div class="gan" id="year-gan">甲</div>
+                    <div class="zhi" id="year-zhi">子</div>
+                </div>
+                <div class="sizhu-column">
+                    <div class="column-title">月柱</div>
+                    <div class="gan" id="month-gan">乙</div>
+                    <div class="zhi" id="month-zhi">丑</div>
+                </div>
+                <div class="sizhu-column">
+                    <div class="column-title">日柱</div>
+                    <div class="gan" id="day-gan">丙</div>
+                    <div class="zhi" id="day-zhi">寅</div>
+                </div>
+                <div class="sizhu-column">
+                    <div class="column-title">时柱</div>
+                    <div class="gan" id="hour-gan">丁</div>
+                    <div class="zhi" id="hour-zhi">卯</div>
+                </div>
+            </div>
+            
+            <!-- 旬干显示 -->
+            <!-- <div class="xungan-info">
+                <span class="xungan-label">旬首：</span>
+                <span class="xungan-value" id="xungan-value">甲子</span>
+            </div> -->
+            
+            <!-- 当前时间显示 -->
+            <!-- <div class="time-info">
+                <span class="time-label">当前时间：</span>
+                <span class="time-value" id="current-time">--:--:--</span>
+            </div> -->
+        </div>
+        
+        <div class="control-panel">
+            <div class="control-group">
+                <label for="month-general">月将 (自动):</label>
+                <select id="month-general">
+                    <option value="亥">正月雨水后 - 亥(登明)</option>
+                    <option value="戌">二月春分后 - 戌(河魁)</option>
+                    <option value="酉">三月谷雨后 - 酉(从魁)</option>
+                    <option value="申">四月小满后 - 申(传送)</option>
+                    <option value="未">五月夏至后 - 未(小吉)</option>
+                    <option value="午">六月大暑后 - 午(胜光)</option>
+                    <option value="巳">七月处暑后 - 巳(太乙)</option>
+                    <option value="辰">八月白露后 - 辰(天罡)</option>
+                    <option value="卯">九月寒露后 - 卯(太冲)</option>
+                    <option value="寅">十月立冬后 - 寅(功曹)</option>
+                    <option value="丑">十一月大雪后 - 丑(大吉)</option>
+                    <option value="子">十二月小寒后 - 子(神后)</option>
+                </select>
+            </div>
+            
+            <div class="control-group">
+                <label for="time-branch">占时 (自动):</label>
+                <select id="time-branch">
+                    <option value="子">子时 (23:00-1:00)</option>
+                    <option value="丑">丑时 (1:00-3:00)</option>
+                    <option value="寅">寅时 (3:00-5:00)</option>
+                    <option value="卯">卯时 (5:00-7:00)</option>
+                    <option value="辰">辰时 (7:00-9:00)</option>
+                    <option value="巳">巳时 (9:00-11:00)</option>
+                    <option value="午">午时 (11:00-13:00)</option>
+                    <option value="未">未时 (13:00-15:00)</option>
+                    <option value="申">申时 (15:00-17:00)</option>
+                    <option value="酉">酉时 (17:00-19:00)</option>
+                    <option value="戌">戌时 (19:00-21:00)</option>
+                    <option value="亥">亥时 (21:00-23:00)</option>
+                </select>
+            </div>
+            
+            <div class="control-group">
+                <button id="calculate-btn">排盘 (使用当前时间)</button>
+                <button id="auto-update-btn">自动更新</button>
+            </div>
+        </div>
+        
+        <!-- 四课表格 -->
+        <div class="sike-container">
+            <h3>四课</h3>
+            <table class="sike-table">
+                <thead>
+                    <tr>
+                        <th>四</th>
+                        <th>三</th>
+                        <th>二</th>
+                        <th>一</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="sike-tianjiang">
+                        <td class="sike-cell" id="sike-4-tianjiang">支阴天将</td>
+                        <td class="sike-cell" id="sike-3-tianjiang">支上天将</td>
+                        <td class="sike-cell" id="sike-2-tianjiang">干阴天将</td>
+                        <td class="sike-cell" id="sike-1-tianjiang">干上天将</td>
+                    </tr>
+                    <tr class="sike-top">
+                        <td class="sike-cell" id="sike-4-top">支阴</td>
+                        <td class="sike-cell" id="sike-3-top">支上</td>
+                        <td class="sike-cell" id="sike-2-top">干阴</td>
+                        <td class="sike-cell" id="sike-1-top">干上</td>
+                    </tr>
+                    
+                    <tr class="sike-bottom">
+                        <td class="sike-cell" id="sike-4-bottom">支上</td>
+                        <td class="sike-cell" id="sike-3-bottom">日支</td>
+                        <td class="sike-cell" id="sike-2-bottom">干上</td>
+                        <td class="sike-cell" id="sike-1-bottom">日干</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="plate-container">
+            <div class="plate-wrapper">
+                <table class="plate-table">
+                    <tr>
+                        <td class="branch-cell" data-branch="巳">
+                            <div class="top-left tianjiang"></div>
+                            <div class="center heaven-branch">巳</div>
+                            <div class="bottom-left xungan"></div>
+                            <div class="bottom-right ground-branch">巳</div>
+                        </td>
+                        <td class="branch-cell" data-branch="午">
+                            <div class="top-left tianjiang"></div>
+                            <div class="center heaven-branch">午</div>
+                            <div class="bottom-left xungan"></div>
+                            <div class="bottom-right ground-branch">午</div>
+                        </td>
+                        <td class="branch-cell" data-branch="未">
+                            <div class="top-left tianjiang"></div>
+                            <div class="center heaven-branch">未</div>
+                            <div class="bottom-left xungan"></div>
+                            <div class="bottom-right ground-branch">未</div>
+                        </td>
+                        <td class="branch-cell" data-branch="申">
+                            <div class="top-left tianjiang"></div>
+                            <div class="center heaven-branch">申</div>
+                            <div class="bottom-left xungan"></div>
+                            <div class="bottom-right ground-branch">申</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="branch-cell" data-branch="辰">
+                            <div class="top-left tianjiang"></div>
+                            <div class="center heaven-branch">辰</div>
+                            <div class="bottom-left xungan"></div>
+                            <div class="bottom-right ground-branch">辰</div>
+                        </td>
+                        <td class="empty-cell"></td>
+                        <td class="empty-cell"></td>
+                        <td class="branch-cell" data-branch="酉">
+                            <div class="top-left tianjiang"></div>
+                            <div class="center heaven-branch">酉</div>
+                            <div class="bottom-left xungan"></div>
+                            <div class="bottom-right ground-branch">酉</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="branch-cell" data-branch="卯">
+                            <div class="top-left tianjiang"></div>
+                            <div class="center heaven-branch">卯</div>
+                            <div class="bottom-left xungan"></div>
+                            <div class="bottom-right ground-branch">卯</div>
+                        </td>
+                        <td class="empty-cell"></td>
+                        <td class="empty-cell"></td>
+                        <td class="branch-cell" data-branch="戌">
+                            <div class="top-left tianjiang"></div>
+                            <div class="center heaven-branch">戌</div>
+                            <div class="bottom-left xungan"></div>
+                            <div class="bottom-right ground-branch">戌</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="branch-cell" data-branch="寅">
+                            <div class="top-left tianjiang">太常</div>
+                            <div class="center heaven-branch">寅</div>
+                            <div class="bottom-left xungan">壬</div>
+                            <div class="bottom-right ground-branch">寅</div>
+                        </td>
+                        <td class="branch-cell" data-branch="丑">
+                            <div class="top-left tianjiang">玄武</div>
+                            <div class="center heaven-branch">丑</div>
+                            <div class="bottom-left xungan">癸</div>
+                            <div class="bottom-right ground-branch">丑</div>
+                        </td>
+                        <td class="branch-cell" data-branch="子">
+                            <div class="top-left tianjiang">太阴</div>
+                            <div class="center heaven-branch">子</div>
+                            <div class="bottom-left xungan">甲</div>
+                            <div class="bottom-right ground-branch">子</div>
+                        </td>
+                        <td class="branch-cell" data-branch="亥">
+                            <div class="top-left tianjiang">天后</div>
+                            <div class="center heaven-branch">亥</div>
+                            <div class="bottom-left xungan">乙</div>
+                            <div class="bottom-right ground-branch">亥</div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        
+        <div class="result-info">
+            <p id="calculation-info">请计算天地盘</p>
+        </div>
+    </div>
+
+    <!-- 尝试多个CDN源，确保库能够加载 -->
+    <script src="https://cdn.jsdelivr.net/npm/lunar-javascript@1.6.12/lunar.min.js" onerror="this.onerror=null;this.src='https://unpkg.com/lunar-javascript@1.6.12/lunar.min.js'"></script>
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,672 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Microsoft YaHei', '宋体', serif;
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.container {
+    max-width: 900px;
+    margin: 0 auto;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    padding: 30px;
+    backdrop-filter: blur(10px);
+}
+
+h1 {
+    text-align: center;
+    color: #2c3e50;
+    font-size: 2.8em;
+    margin-bottom: 30px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: bold;
+}
+
+/* 四柱八字面板样式 */
+.sizhu-panel {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    border-radius: 15px;
+    padding: 25px;
+    margin-bottom: 30px;
+    box-shadow: 0 10px 20px rgba(240, 147, 251, 0.3);
+    text-align: center;
+}
+
+.sizhu-panel h3 {
+    color: white;
+    font-size: 1.5em;
+    font-weight: bold;
+    margin-bottom: 20px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.sizhu-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.sizhu-column {
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 12px;
+    padding: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.sizhu-column:hover {
+    transform: translateY(-3px);
+}
+
+.column-title {
+    font-size: 0.9em;
+    color: #666;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+.gan, .zhi {
+    font-size: 1.8em;
+    font-weight: bold;
+    padding: 8px;
+    border-radius: 8px;
+    margin: 5px 0;
+    text-align: center;
+}
+
+.gan {
+    background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
+    color: #e17055;
+    border: 2px solid #e17055;
+}
+
+.zhi {
+    background: linear-gradient(135deg, #a8e6cf 0%, #7fcdcd 100%);
+    color: #00b894;
+    border: 2px solid #00b894;
+}
+
+/* 旬干显示样式 */
+.xungan-info {
+    margin-top: 20px;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 10px;
+    text-align: center;
+    border: 2px solid #ddd;
+}
+
+.xungan-label {
+    font-size: 1.1em;
+    font-weight: bold;
+    color: #555;
+    margin-right: 10px;
+}
+
+.xungan-value {
+    font-size: 1.4em;
+    font-weight: bold;
+    color: #8e44ad;
+    background: linear-gradient(135deg, #e8daef 0%, #d7bde2 100%);
+    padding: 8px 16px;
+    border-radius: 8px;
+    border: 2px solid #8e44ad;
+    display: inline-block;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+    min-width: 60px;
+    text-align: center;
+}
+
+/* 当前时间显示样式 */
+.time-info {
+    margin-top: 20px;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 10px;
+    text-align: center;
+    border: 2px solid #ddd;
+}
+
+.time-label {
+    font-size: 1.1em;
+    font-weight: bold;
+    color: #555;
+    margin-right: 10px;
+}
+
+.time-value {
+    font-size: 1.4em;
+    font-weight: bold;
+    color: #e74c3c;
+    background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
+    padding: 8px 16px;
+    border-radius: 8px;
+    border: 2px solid #e74c3c;
+    display: inline-block;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+    min-width: 100px;
+    text-align: center;
+}
+
+/* 四课表格样式 */
+.sike-container {
+    margin-bottom: 20px;
+}
+
+.sike-container h3 {
+    text-align: center;
+    margin-bottom: 10px;
+    color: #2c3e50;
+    font-size: 1.2em;
+}
+
+.sike-table {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    border-collapse: collapse;
+    background: white;
+    border: 2px solid #34495e;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.sike-table th {
+    background: #34495e;
+    color: white;
+    padding: 12px;
+    text-align: center;
+    font-weight: bold;
+    border: 1px solid #2c3e50;
+}
+
+.sike-cell {
+    padding: 12px;
+    text-align: center;
+    border: 1px solid #34495e;
+    font-size: 1.1em;
+    font-weight: 500;
+    min-width: 80px;
+    height: 50px;
+    vertical-align: middle;
+}
+
+.sike-top .sike-cell {
+    color: #2c3e50;
+}
+
+.sike-bottom .sike-cell {
+    color: #2c3e50;
+}
+
+.sike-cell:hover {
+    cursor: default;
+}
+
+.control-panel {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 30px;
+    margin-bottom: 40px;
+    padding: 25px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 15px;
+    flex-wrap: wrap;
+    box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+}
+
+.control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.control-group label {
+    font-weight: bold;
+    color: white;
+    font-size: 1.1em;
+    text-align: center;
+}
+
+.control-group select {
+    padding: 12px 16px;
+    border: none;
+    border-radius: 10px;
+    font-size: 1em;
+    background: rgba(255, 255, 255, 0.95);
+    transition: all 0.3s ease;
+    min-width: 220px;
+    color: #2c3e50;
+    font-weight: 500;
+}
+
+.control-group select:focus {
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+}
+
+button {
+    padding: 14px 28px;
+    font-size: 1.1em;
+    font-weight: bold;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: white;
+    background: linear-gradient(135deg, #ff6b6b 0%, #feca57 100%);
+    box-shadow: 0 6px 12px rgba(255, 107, 107, 0.3);
+}
+
+button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(255, 107, 107, 0.4);
+}
+
+.plate-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 40px;
+}
+
+.plate-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 800px;
+}
+
+/* 表格布局样式 */
+.plate-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 8px;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    border: 4px solid #667eea;
+}
+
+.empty-cell {
+    background: transparent;
+    border: none;
+    width: 120px;
+    height: 120px;
+}
+
+.branch-cell {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    border: 3px solid #e9ecef;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.branch-cell:hover {
+    transform: scale(1.05);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+    border-color: #667eea;
+}
+
+.center-cell {
+    background: radial-gradient(circle, #667eea 0%, #764ba2 100%);
+    border-radius: 12px;
+    box-shadow: 0 8px 16px rgba(102, 126, 234, 0.3);
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    width: 120px;
+    height: 120px;
+    position: relative;
+}
+
+/* 四角定位样式 */
+.top-left {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    font-size: 0.8em;
+    font-weight: bold;
+    padding: 2px 4px;
+    border-radius: 4px;
+    line-height: 1;
+    min-width: 20px;
+    text-align: center;
+}
+
+.center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 1.2em;
+    font-weight: bold;
+    padding: 4px 8px;
+    border-radius: 6px;
+    line-height: 1;
+    min-width: 24px;
+    text-align: center;
+}
+
+.bottom-left {
+    position: absolute;
+    bottom: 3px;
+    left: 3px;
+    font-size: 0.8em;
+    font-weight: bold;
+    padding: 2px 4px;
+    border-radius: 4px;
+    line-height: 1;
+    min-width: 20px;
+    text-align: center;
+}
+
+.bottom-right {
+    position: absolute;
+    bottom: 3px;
+    right: 3px;
+    font-size: 0.8em;
+    font-weight: bold;
+    padding: 2px 4px;
+    border-radius: 4px;
+    line-height: 1;
+    min-width: 20px;
+    text-align: center;
+}
+
+/* 天将样式 */
+.tianjiang {
+    color: #8e44ad;
+}
+
+/* 天盘样式 */
+.heaven-branch {
+    color: #00b894;
+    font-size: 1.4em;
+}
+
+/* 旬干样式 */
+.xungan {
+    color: #e74c3c;
+}
+
+/* 地盘样式 */
+.ground-branch {
+    color: #e67e22;
+}
+
+/* 中心信息样式 */
+.center-info {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    color: white;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+}
+
+.center-sizhu {
+    margin-bottom: 6px;
+}
+
+.sizhu-row {
+    display: flex;
+    justify-content: center;
+    gap: 4px;
+    margin-bottom: 2px;
+}
+
+.sizhu-row span {
+    font-size: 0.7em;
+    font-weight: bold;
+    padding: 1px 2px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 3px;
+    min-width: 12px;
+    text-align: center;
+    line-height: 1.1;
+}
+
+.center-info-text {
+    margin-bottom: 4px;
+}
+
+.center-subtitle {
+    font-size: 0.7em;
+    opacity: 0.9;
+    margin-bottom: 2px;
+}
+
+.center-time {
+    font-size: 0.6em;
+    opacity: 0.8;
+    font-weight: normal;
+}
+
+.result-info {
+    text-align: center;
+    padding: 25px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 15px;
+    margin-top: 20px;
+    box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+}
+
+.result-info p {
+    font-size: 1.1em;
+    color: white;
+    line-height: 1.8;
+    margin: 0;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .container {
+        padding: 20px;
+    }
+    
+    .sizhu-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+    }
+    
+    .sizhu-column {
+        padding: 12px;
+    }
+    
+    .gan, .zhi {
+        font-size: 1.5em;
+        padding: 6px;
+    }
+    
+    .xungan-info, .time-info {
+        margin-top: 15px;
+        padding: 12px;
+    }
+    
+    .xungan-label, .time-label {
+        font-size: 1em;
+    }
+    
+    .xungan-value, .time-value {
+        font-size: 1.3em;
+        padding: 6px 12px;
+        min-width: 55px;
+    }
+    
+    .sike-table {
+        max-width: 100%;
+        font-size: 0.9em;
+    }
+    
+    .sike-cell {
+        padding: 8px;
+        min-width: 60px;
+        height: 40px;
+        font-size: 0.9em;
+    }
+
+    .control-panel {
+        flex-direction: column;
+        gap: 20px;
+    }
+    
+    .control-group select {
+        min-width: 280px;
+    }
+    
+    .plate-table {
+        padding: 15px;
+        border-spacing: 6px;
+    }
+    
+    .branch-cell, .center-cell, .empty-cell {
+        width: 90px;
+        height: 90px;
+    }
+    
+    .center {
+        font-size: 1em;
+    }
+    
+    .tianjiang, .xungan, .ground-branch {
+        font-size: 0.6em;
+        padding: 1px 3px;
+        min-width: 16px;
+    }
+    
+    .heaven-branch {
+        font-size: 1.1em;
+    }
+    
+    .sizhu-row span {
+        font-size: 0.6em;
+        min-width: 10px;
+        padding: 1px;
+    }
+    
+    .center-subtitle {
+        font-size: 0.6em;
+    }
+    
+    .center-time {
+        font-size: 0.5em;
+    }
+    
+    h1 {
+        font-size: 2.2em;
+    }
+}
+
+@media (max-width: 480px) {
+    .sizhu-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+    
+    .gan, .zhi {
+        font-size: 1.3em;
+        padding: 5px;
+    }
+    
+    .xungan-info, .time-info {
+        margin-top: 10px;
+        padding: 10px;
+    }
+    
+    .xungan-label, .time-label {
+        font-size: 0.9em;
+    }
+    
+    .xungan-value, .time-value {
+        font-size: 1.2em;
+        padding: 5px 10px;
+        min-width: 50px;
+    }
+    
+    .sike-table {
+        font-size: 0.8em;
+    }
+    
+    .sike-cell {
+        padding: 6px;
+        min-width: 50px;
+        height: 35px;
+        font-size: 0.8em;
+    }
+
+    .plate-table {
+        padding: 10px;
+        border-spacing: 4px;
+    }
+    
+    .branch-cell, .center-cell, .empty-cell {
+        width: 70px;
+        height: 70px;
+    }
+    
+    .center {
+        font-size: 0.9em;
+    }
+    
+    .tianjiang, .xungan, .ground-branch {
+        font-size: 0.5em;
+        padding: 1px 2px;
+        min-width: 14px;
+    }
+    
+    .heaven-branch {
+        font-size: 1em;
+    }
+    
+    .sizhu-row span {
+        font-size: 0.5em;
+        min-width: 8px;
+        padding: 1px;
+    }
+    
+    .center-subtitle {
+        font-size: 0.5em;
+    }
+    
+    .center-time {
+        font-size: 0.4em;
+    }
+    
+    .control-group select {
+        min-width: 240px;
+        font-size: 0.9em;
+    }
+    
+    button {
+        font-size: 1em;
+        padding: 12px 24px;
+    }
+} 
