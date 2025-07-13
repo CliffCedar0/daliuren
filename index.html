@@ -9,45 +9,7 @@
 <body>
     <div class="container">
         <h1>卿式大六壬</h1>
-        
-        <!-- 四柱显示 -->
-        <div class="sizhu-panel">
-            <div class="sizhu-grid">
-                <div class="sizhu-column">
-                    <div class="column-title">年柱</div>
-                    <div class="gan" id="year-gan">甲</div>
-                    <div class="zhi" id="year-zhi">子</div>
-                </div>
-                <div class="sizhu-column">
-                    <div class="column-title">月柱</div>
-                    <div class="gan" id="month-gan">乙</div>
-                    <div class="zhi" id="month-zhi">丑</div>
-                </div>
-                <div class="sizhu-column">
-                    <div class="column-title">日柱</div>
-                    <div class="gan" id="day-gan">丙</div>
-                    <div class="zhi" id="day-zhi">寅</div>
-                </div>
-                <div class="sizhu-column">
-                    <div class="column-title">时柱</div>
-                    <div class="gan" id="hour-gan">丁</div>
-                    <div class="zhi" id="hour-zhi">卯</div>
-                </div>
-            </div>
-            
-            <!-- 旬干显示 -->
-            <!-- <div class="xungan-info">
-                <span class="xungan-label">旬首：</span>
-                <span class="xungan-value" id="xungan-value">甲子</span>
-            </div> -->
-            
-            <!-- 当前时间显示 -->
-            <!-- <div class="time-info">
-                <span class="time-label">当前时间：</span>
-                <span class="time-value" id="current-time">--:--:--</span>
-            </div> -->
-        </div>
-        
+                
         <div class="control-panel">
             <div class="control-group">
                 <label for="month-general">月将 (自动):</label>
@@ -91,17 +53,97 @@
             </div>
         </div>
         
+        <!-- 四柱显示 -->
+        <div class="sizhu-panel">
+            <div class="sizhu-grid">
+                <div class="sizhu-column">
+                    <div class="column-title">年柱</div>
+                    <div class="gan" id="year-gan">甲</div>
+                    <div class="zhi" id="year-zhi">子</div>
+                </div>
+                <div class="sizhu-column">
+                    <div class="column-title">月柱</div>
+                    <div class="gan" id="month-gan">乙</div>
+                    <div class="zhi" id="month-zhi">丑</div>
+                </div>
+                <div class="sizhu-column">
+                    <div class="column-title">日柱</div>
+                    <div class="gan" id="day-gan">丙</div>
+                    <div class="zhi" id="day-zhi">寅</div>
+                </div>
+                <div class="sizhu-column">
+                    <div class="column-title">时柱</div>
+                    <div class="gan" id="hour-gan">丁</div>
+                    <div class="zhi" id="hour-zhi">卯</div>
+                </div>
+            </div>
+            
+            <!-- 旬干显示 -->
+            <!-- <div class="xungan-info">
+                <span class="xungan-label">旬首：</span>
+                <span class="xungan-value" id="xungan-value">甲子</span>
+            </div> -->
+            
+            <!-- 当前时间显示 -->
+            <!-- <div class="time-info">
+                <span class="time-label">当前时间：</span>
+                <span class="time-value" id="current-time">--:--:--</span>
+            </div> -->
+        </div>
+
+        
+        <!-- 三传表格 -->
+        <div class="sanchuan-container">
+            <table class="sanchuan-table">
+                <!-- <thead>
+                    <tr>
+                        <th>传</th>
+                        <th>六亲</th>
+                        <th>十神</th>
+                        <th>天干</th>
+                        <th>地支</th>
+                        <th>天将</th>
+                    </tr>
+                </thead> -->
+                <tbody>
+                    <tr>
+                        <td class="chuan-name">初传</td>
+                        <td class="sanchuan-cell" id="chuchuan-liuqin">初传六亲</td>
+                        <td class="sanchuan-cell" id="chuchuan-shishen">初传十神</td>
+                        <td class="sanchuan-cell" id="chuchuan-gan">初传天干</td>
+                        <td class="sanchuan-cell" id="chuchuan-zhi">初传地支</td>
+                        <td class="sanchuan-cell" id="chuchuan-tianjiang">初传天将</td>
+                    </tr>
+                    <tr>
+                        <td class="chuan-name">中传</td>
+                        <td class="sanchuan-cell" id="zhongchuan-liuqin">中传六亲</td>
+                        <td class="sanchuan-cell" id="zhongchuan-shishen">中传十神</td>
+                        <td class="sanchuan-cell" id="zhongchuan-gan">中传天干</td>
+                        <td class="sanchuan-cell" id="zhongchuan-zhi">中传地支</td>
+                        <td class="sanchuan-cell" id="zhongchuan-tianjiang">中传天将</td>
+                    </tr>
+                    <tr>
+                        <td class="chuan-name">末传</td>
+                        <td class="sanchuan-cell" id="mochuan-liuqin">末传六亲</td>
+                        <td class="sanchuan-cell" id="mochuan-shishen">末传十神</td>
+                        <td class="sanchuan-cell" id="mochuan-gan">末传天干</td>
+                        <td class="sanchuan-cell" id="mochuan-zhi">末传地支</td>
+                        <td class="sanchuan-cell" id="mochuan-tianjiang">末传天将</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
         <!-- 四课表格 -->
         <div class="sike-container">
-            <h3>四课</h3>
             <table class="sike-table">
                 <thead>
-                    <tr>
+                    <!-- <tr>
                         <th>四</th>
                         <th>三</th>
                         <th>二</th>
                         <th>一</th>
-                    </tr>
+                    </tr> -->
                 </thead>
                 <tbody>
                     <tr class="sike-tianjiang">

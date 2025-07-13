@@ -104,6 +104,83 @@ const TIANJIANG_COLORS = {
     '白虎': '#e08433', '太阴': '#e08433'   // 金
 };
 
+// 天干合化表
+const TIANGAN_HE = {
+    '甲': '己', '己': '甲',
+    '乙': '庚', '庚': '乙',
+    '丙': '辛', '辛': '丙',
+    '丁': '壬', '壬': '丁',
+    '戊': '癸', '癸': '戊'
+};
+
+// 地支刑冲表
+const DIZHI_XING = {
+    '子': '卯', '卯': '子',
+    '丑': '戌', '戌': '未', '未': '丑',
+    '寅': '巳', '巳': '申', '申': '寅',
+    '辰': '辰', '午': '午', '酉': '酉', '亥': '亥'  // 自刑
+};
+
+const DIZHI_CHONG = {
+    '子': '午', '午': '子',
+    '丑': '未', '未': '丑',
+    '寅': '申', '申': '寅',
+    '卯': '酉', '酉': '卯',
+    '辰': '戌', '戌': '辰',
+    '巳': '亥', '亥': '巳'
+};
+
+// 地支三合表
+const DIZHI_SANHE = {
+    '申': ['子', '辰'], '子': ['申', '辰'], '辰': ['申', '子'],
+    '亥': ['卯', '未'], '卯': ['亥', '未'], '未': ['亥', '卯'],
+    '寅': ['午', '戌'], '午': ['寅', '戌'], '戌': ['寅', '午'],
+    '巳': ['酉', '丑'], '酉': ['巳', '丑'], '丑': ['巳', '酉']
+};
+
+// 驿马表
+const YIMA = {
+    '申': '寅', '子': '寅', '辰': '寅',
+    '寅': '申', '午': '申', '戌': '申',
+    '巳': '亥', '酉': '亥', '丑': '亥',
+    '亥': '巳', '卯': '巳', '未': '巳'
+};
+
+// 孟仲季分类
+const MENGZHONGJI = {
+    '孟': ['寅', '申', '巳', '亥'],
+    '仲': ['子', '午', '卯', '酉'],
+    '季': ['辰', '戌', '丑', '未']
+};
+
+// 五行相克表
+const WUXING_KE = {
+    '甲': '土', '乙': '土',  // 木克土
+    '丙': '金', '丁': '金',  // 火克金
+    '戊': '水', '己': '水',  // 土克水
+    '庚': '木', '辛': '木',  // 金克木
+    '壬': '火', '癸': '火',  // 水克火
+    '寅': '土', '卯': '土',  // 木克土
+    '巳': '金', '午': '金',  // 火克金
+    '辰': '水', '戌': '水', '丑': '水', '未': '水',  // 土克水
+    '申': '木', '酉': '木',  // 金克木
+    '亥': '火', '子': '火'   // 水克火
+};
+
+// 五行被克表
+const WUXING_BEI_KE = {
+    '甲': '金', '乙': '金',  // 木被金克
+    '丙': '水', '丁': '水',  // 火被水克
+    '戊': '木', '己': '木',  // 土被木克
+    '庚': '火', '辛': '火',  // 金被火克
+    '壬': '土', '癸': '土',  // 水被土克
+    '寅': '金', '卯': '金',  // 木被金克
+    '巳': '水', '午': '水',  // 火被水克
+    '辰': '木', '戌': '木', '丑': '木', '未': '木',  // 土被木克
+    '申': '火', '酉': '火',  // 金被火克
+    '亥': '土', '子': '土'   // 水被土克
+};
+
 class DaLiuRenCalculator {
     constructor() {
         this.autoUpdateTimer = null;
@@ -225,6 +302,31 @@ class DaLiuRenCalculator {
                 top: document.getElementById('sike-4-top'),
                 tianjiang: document.getElementById('sike-4-tianjiang'),
                 bottom: document.getElementById('sike-4-bottom')
+            }
+        };
+
+        // 三传元素
+        this.sanchuanElements = {
+            chuchuan: {
+                liuqin: document.getElementById('chuchuan-liuqin'),
+                shishen: document.getElementById('chuchuan-shishen'),
+                gan: document.getElementById('chuchuan-gan'),
+                zhi: document.getElementById('chuchuan-zhi'),
+                tianjiang: document.getElementById('chuchuan-tianjiang')
+            },
+            zhongchuan: {
+                liuqin: document.getElementById('zhongchuan-liuqin'),
+                shishen: document.getElementById('zhongchuan-shishen'),
+                gan: document.getElementById('zhongchuan-gan'),
+                zhi: document.getElementById('zhongchuan-zhi'),
+                tianjiang: document.getElementById('zhongchuan-tianjiang')
+            },
+            mochuan: {
+                liuqin: document.getElementById('mochuan-liuqin'),
+                shishen: document.getElementById('mochuan-shishen'),
+                gan: document.getElementById('mochuan-gan'),
+                zhi: document.getElementById('mochuan-zhi'),
+                tianjiang: document.getElementById('mochuan-tianjiang')
             }
         };
     }
@@ -510,6 +612,371 @@ class DaLiuRenCalculator {
             });
             
             console.log('=== 测试完成 ===');
+        };
+
+        window.testSanchuan = () => {
+            console.log('=== 测试三传计算 ===');
+            
+            // 获取当前时间和干支
+            const now = new Date();
+            const solar = Solar.fromDate(now);
+            const lunar = solar.getLunar();
+            const dayGZ = lunar.getDayInGanZhi();
+            const dayStem = dayGZ.charAt(0);
+            const dayBranch = dayGZ.charAt(1);
+            const timeBranch = this.getCurrentTimeBranch();
+            
+            console.log(`当前时间: ${dayStem}${dayBranch}日 ${timeBranch}时`);
+            
+            // 计算天盘和天将
+            const monthGeneral = this.getCurrentMonthGeneral();
+            const heavenPlate = this.calculateHeavenPlate(monthGeneral, timeBranch);
+            const nobleGroundPosition = this.calculateNoblePerson(dayStem, timeBranch);
+            const tianjiangMap = this.arrangeTwelveTianjiangs(nobleGroundPosition);
+            
+            // 计算四课
+            const sike = this.calculateSike(dayStem, dayBranch, heavenPlate, tianjiangMap);
+            console.log('四课:', sike);
+            
+            // 分析四课
+            const analysis = this.analyzeSikeKe(sike);
+            console.log('四课分析:', analysis);
+            
+            // 计算三传
+            const sanchuan = this.calculateSanchuan(dayStem, dayBranch, sike, heavenPlate, tianjiangMap);
+            console.log('三传结果:', sanchuan);
+            
+            // 检查三传元素显示
+            const sanchuanElements = [
+                { id: 'chuchuan-zhi', name: '初传地支' },
+                { id: 'chuchuan-tianjiang', name: '初传天将' },
+                { id: 'zhongchuan-zhi', name: '中传地支' },
+                { id: 'zhongchuan-tianjiang', name: '中传天将' },
+                { id: 'mochuan-zhi', name: '末传地支' },
+                { id: 'mochuan-tianjiang', name: '末传天将' }
+            ];
+            
+            sanchuanElements.forEach(test => {
+                const element = document.getElementById(test.id);
+                if (element) {
+                    console.log(`${test.name}: "${element.textContent}"`);
+                } else {
+                    console.error(`找不到元素: ${test.id}`);
+                }
+            });
+            
+            console.log('=== 测试完成 ===');
+        };
+
+        // 测试九宗门的完整实现
+        window.testJiuzongmen = () => {
+            console.log('=== 测试九宗门完整实现 ===');
+            
+            // 测试用例集合
+            const testCases = [
+                { 
+                    name: '八专法测试', 
+                    dayStem: '甲', 
+                    dayBranch: '甲',
+                    description: '日干日支相同的情况'
+                },
+                { 
+                    name: '普通贼克法测试', 
+                    dayStem: '癸', 
+                    dayBranch: '酉',
+                    description: '当前时间的正常情况'
+                },
+                { 
+                    name: '伏吟法测试', 
+                    dayStem: '壬', 
+                    dayBranch: '子',
+                    description: '可能出现伏吟的情况'
+                },
+                { 
+                    name: '反吟法测试', 
+                    dayStem: '庚', 
+                    dayBranch: '午',
+                    description: '可能出现反吟的情况'
+                }
+            ];
+            
+            testCases.forEach(testCase => {
+                console.log(`\n--- ${testCase.name} ---`);
+                console.log(`描述: ${testCase.description}`);
+                console.log(`日干支: ${testCase.dayStem}${testCase.dayBranch}`);
+                
+                try {
+                    const timeBranch = this.getCurrentTimeBranch();
+                    const monthGeneral = this.getCurrentMonthGeneral();
+                    const heavenPlate = this.calculateHeavenPlate(monthGeneral, timeBranch);
+                    const nobleGroundPosition = this.calculateNoblePerson(testCase.dayStem, timeBranch);
+                    const tianjiangMap = this.arrangeTwelveTianjiangs(nobleGroundPosition);
+                    const sike = this.calculateSike(testCase.dayStem, testCase.dayBranch, heavenPlate, tianjiangMap);
+                    
+                    // 测试各个门课
+                    const methods = [
+                        { name: '八专法', method: this.tryBazhuanFayong },
+                        { name: '伏吟法', method: this.tryFuyinFayong },
+                        { name: '反吟法', method: this.tryFanyinFayong },
+                        { name: '贼克法', method: this.tryZeikeFayong },
+                        { name: '比用法', method: this.tryBiyongFayong },
+                        { name: '遥克法', method: this.tryYaokeFayong },
+                        { name: '别责法', method: this.tryBiezeFayong },
+                        { name: '昴星法', method: this.tryMaoxingFayong },
+                        { name: '九丑法', method: this.tryJiuchouFayong }
+                    ];
+                    
+                    let appliedMethod = null;
+                    
+                    for (let methodInfo of methods) {
+                        let result = null;
+                        
+                        if (methodInfo.name === '贼克法' || methodInfo.name === '比用法') {
+                            const analysis = this.analyzeSikeKe(sike);
+                            result = methodInfo.method.call(this, testCase.dayStem, testCase.dayBranch, analysis, heavenPlate, tianjiangMap);
+                        } else {
+                            result = methodInfo.method.call(this, testCase.dayStem, testCase.dayBranch, sike, heavenPlate, tianjiangMap);
+                        }
+                        
+                        if (result) {
+                            appliedMethod = methodInfo.name;
+                            console.log(`应用方法: ${methodInfo.name}`);
+                            console.log(`课格: ${result.kege}`);
+                            console.log(`三传: ${result.chuchuan.zhi} -> ${result.zhongchuan.zhi} -> ${result.mochuan.zhi}`);
+                            break;
+                        }
+                    }
+                    
+                    if (!appliedMethod) {
+                        console.log('未找到适用的门课方法');
+                    }
+                    
+                } catch (error) {
+                    console.error(`测试 ${testCase.name} 时出错:`, error);
+                }
+            });
+            
+            console.log('\n=== 九宗门测试完成 ===');
+        };
+
+        // 测试所有门课的详细逻辑
+        window.testAllMethods = () => {
+            console.log('=== 测试所有门课方法 ===');
+            
+            const dayStem = '癸';
+            const dayBranch = '酉';
+            const timeBranch = this.getCurrentTimeBranch();
+            const monthGeneral = this.getCurrentMonthGeneral();
+            const heavenPlate = this.calculateHeavenPlate(monthGeneral, timeBranch);
+            const nobleGroundPosition = this.calculateNoblePerson(dayStem, timeBranch);
+            const tianjiangMap = this.arrangeTwelveTianjiangs(nobleGroundPosition);
+            const sike = this.calculateSike(dayStem, dayBranch, heavenPlate, tianjiangMap);
+            const analysis = this.analyzeSikeKe(sike);
+            
+            console.log('基础数据:');
+            console.log('- 日干支:', dayStem + dayBranch);
+            console.log('- 时支:', timeBranch);
+            console.log('- 月将:', monthGeneral);
+            console.log('- 四课:', sike);
+            console.log('- 四课分析:', analysis);
+            
+            // 测试每个方法
+            const methods = [
+                { 
+                    name: '八专法', 
+                    test: () => this.tryBazhuanFayong(dayStem, dayBranch, sike, heavenPlate, tianjiangMap),
+                    condition: '日干日支相同'
+                },
+                { 
+                    name: '伏吟法', 
+                    test: () => this.tryFuyinFayong(dayStem, dayBranch, sike, heavenPlate, tianjiangMap),
+                    condition: '天盘与地盘相同的位置>=6'
+                },
+                { 
+                    name: '反吟法', 
+                    test: () => this.tryFanyinFayong(dayStem, dayBranch, sike, heavenPlate, tianjiangMap),
+                    condition: '天盘与地盘相冲的位置>=6'
+                },
+                { 
+                    name: '贼克法', 
+                    test: () => this.tryZeikeFayong(dayStem, dayBranch, analysis, heavenPlate, tianjiangMap),
+                    condition: '有上克下或下贼上'
+                },
+                { 
+                    name: '比用法', 
+                    test: () => this.tryBiyongFayong(dayStem, dayBranch, analysis, heavenPlate, tianjiangMap),
+                    condition: '多个上克下或下贼上'
+                },
+                { 
+                    name: '遥克法', 
+                    test: () => this.tryYaokeFayong(dayStem, dayBranch, sike, heavenPlate, tianjiangMap),
+                    condition: '无上下贼克但有遥克'
+                },
+                { 
+                    name: '别责法', 
+                    test: () => this.tryBiezeFayong(dayStem, dayBranch, sike, heavenPlate, tianjiangMap),
+                    condition: '特殊的刑冲关系'
+                },
+                { 
+                    name: '昴星法', 
+                    test: () => this.tryMaoxingFayong(dayStem, dayBranch, sike, heavenPlate, tianjiangMap),
+                    condition: '四课俱全且无贼克无遥克'
+                },
+                { 
+                    name: '九丑法', 
+                    test: () => this.tryJiuchouFayong(dayStem, dayBranch, sike, heavenPlate, tianjiangMap),
+                    condition: '所有其他方法都不适用'
+                }
+            ];
+            
+            methods.forEach(method => {
+                console.log(`\n--- ${method.name} ---`);
+                console.log(`适用条件: ${method.condition}`);
+                
+                try {
+                    const result = method.test();
+                    if (result) {
+                        console.log(`✓ 方法适用`);
+                        console.log(`  课格: ${result.kege}`);
+                        console.log(`  三传: ${result.chuchuan.zhi} -> ${result.zhongchuan.zhi} -> ${result.mochuan.zhi}`);
+                    } else {
+                        console.log(`✗ 方法不适用`);
+                    }
+                } catch (error) {
+                    console.error(`✗ 方法执行出错:`, error);
+                }
+            });
+            
+            console.log('\n=== 所有方法测试完成 ===');
+        };
+
+        // 测试天干计算
+        window.testTianganCalculation = () => {
+            console.log('=== 测试天干计算 ===');
+            
+            try {
+                // 获取当前日干支
+                const now = new Date();
+                const solar = Solar.fromDate(now);
+                const lunar = solar.getLunar();
+                const dayGZ = lunar.getDayInGanZhi();
+                const dayStem = dayGZ.charAt(0);
+                const dayBranch = dayGZ.charAt(1);
+                
+                console.log(`当前日干支: ${dayGZ}`);
+                
+                // 计算旬首
+                const xunshou = this.calculateXunshou(dayStem, dayBranch);
+                console.log(`旬首: ${xunshou}`);
+                
+                // 测试每个地支的天干计算
+                console.log('\n各地支对应的天干:');
+                BRANCHES.forEach(branch => {
+                    const gan = this.getTianpanGan(branch);
+                    const ganzhi = gan ? gan + branch : branch + '(空亡)';
+                    console.log(`${branch} -> ${ganzhi}`);
+                });
+                
+                // 测试当前三传的天干
+                console.log('\n当前三传天干测试:');
+                const timeBranch = this.getCurrentTimeBranch();
+                const monthGeneral = this.getCurrentMonthGeneral();
+                const heavenPlate = this.calculateHeavenPlate(monthGeneral, timeBranch);
+                const nobleGroundPosition = this.calculateNoblePerson(dayStem, timeBranch);
+                const tianjiangMap = this.arrangeTwelveTianjiangs(nobleGroundPosition);
+                const sike = this.calculateSike(dayStem, dayBranch, heavenPlate, tianjiangMap);
+                const sanchuan = this.calculateSanchuan(dayStem, dayBranch, sike, heavenPlate, tianjiangMap);
+                
+                console.log('三传结果:');
+                console.log(`初传: ${sanchuan.chuchuan.gan}${sanchuan.chuchuan.zhi}`);
+                console.log(`中传: ${sanchuan.zhongchuan.gan}${sanchuan.zhongchuan.zhi}`);
+                console.log(`末传: ${sanchuan.mochuan.gan}${sanchuan.mochuan.zhi}`);
+                console.log(`课格: ${sanchuan.kege}`);
+                
+            } catch (error) {
+                console.error('测试天干计算时出错:', error);
+            }
+            
+            console.log('\n=== 天干计算测试完成 ===');
+        };
+
+        // 测试六亲和十神计算
+        window.testLiuqinShishen = () => {
+            console.log('=== 测试六亲和十神计算 ===');
+            
+            try {
+                // 获取当前日干
+                const now = new Date();
+                const solar = Solar.fromDate(now);
+                const lunar = solar.getLunar();
+                const dayGZ = lunar.getDayInGanZhi();
+                const dayStem = dayGZ.charAt(0);
+                
+                console.log(`当前日干: ${dayStem}`);
+                console.log(`日干五行: ${this.getWuxing(dayStem)}`);
+                console.log(`日干阴阳: ${this.isYang(dayStem) ? '阳' : '阴'}`);
+                
+                // 测试所有天干的六亲和十神关系
+                console.log('\n各天干与日干的六亲和十神关系:');
+                HEAVENLY_STEMS.forEach(gan => {
+                    const liuqin = this.calculateLiuqin(gan, dayStem);
+                    const shishen = this.calculateShishen(gan, dayStem);
+                    const wuxing = this.getWuxing(gan);
+                    const yinyang = this.isYang(gan) ? '阳' : '阴';
+                    
+                    console.log(`${gan}(${wuxing}${yinyang}) -> 六亲: ${liuqin}, 十神: ${shishen}`);
+                });
+                
+                // 测试当前三传的六亲和十神
+                console.log('\n当前三传六亲十神测试:');
+                const timeBranch = this.getCurrentTimeBranch();
+                const monthGeneral = this.getCurrentMonthGeneral();
+                const heavenPlate = this.calculateHeavenPlate(monthGeneral, timeBranch);
+                const dayBranch = dayGZ.charAt(1);
+                const nobleGroundPosition = this.calculateNoblePerson(dayStem, timeBranch);
+                const tianjiangMap = this.arrangeTwelveTianjiangs(nobleGroundPosition);
+                const sike = this.calculateSike(dayStem, dayBranch, heavenPlate, tianjiangMap);
+                const sanchuan = this.calculateSanchuan(dayStem, dayBranch, sike, heavenPlate, tianjiangMap);
+                
+                const chuanNames = ['初传', '中传', '末传'];
+                const chuanData = [sanchuan.chuchuan, sanchuan.zhongchuan, sanchuan.mochuan];
+                
+                chuanData.forEach((chuan, index) => {
+                    if (chuan.gan) {
+                        const liuqin = this.calculateLiuqin(chuan.gan, dayStem);
+                        const shishen = this.calculateShishen(chuan.gan, dayStem);
+                        console.log(`${chuanNames[index]}: ${chuan.gan}${chuan.zhi} - 六亲: ${liuqin}, 十神: ${shishen}`);
+                    }
+                });
+                
+                console.log(`课格: ${sanchuan.kege}`);
+                
+            } catch (error) {
+                console.error('测试六亲十神时出错:', error);
+            }
+            
+            console.log('\n=== 六亲十神测试完成 ===');
+        };
+
+        // 测试六亲十神颜色
+        window.testLiuqinShishenColors = () => {
+            console.log('=== 测试六亲十神颜色 ===');
+            
+            // 测试六亲颜色
+            console.log('六亲颜色:');
+            ['父母', '兄弟', '子孙', '妻财', '官鬼'].forEach(liuqin => {
+                const color = this.getLiuqinColor(liuqin);
+                console.log(`${liuqin}: ${color}`);
+            });
+            
+            // 测试十神颜色
+            console.log('\n十神颜色:');
+            ['比肩', '劫财', '正印', '偏印', '食神', '伤官', '正财', '偏财', '正官', '七杀'].forEach(shishen => {
+                const color = this.getShishenColor(shishen);
+                console.log(`${shishen}: ${color}`);
+            });
+            
+            console.log('\n=== 颜色测试完成 ===');
         };
     }
 
@@ -890,6 +1357,1037 @@ class DaLiuRenCalculator {
         }
     }
 
+    // 判断是否为阳干支
+    isYang(ganzhi) {
+        const yangChars = ['甲', '丙', '戊', '庚', '壬', '子', '寅', '辰', '午', '申', '戌'];
+        return yangChars.includes(ganzhi);
+    }
+
+    // 判断天盘是否克地盘
+    isShangKe(tianpan, dipan) {
+        const tianpanWuxing = this.getWuxing(tianpan);
+        const dipanWuxing = this.getWuxing(dipan);
+        return this.wuxingKe(tianpanWuxing, dipanWuxing);
+    }
+
+    // 判断地盘是否克天盘
+    isXiaZei(tianpan, dipan) {
+        const tianpanWuxing = this.getWuxing(tianpan);
+        const dipanWuxing = this.getWuxing(dipan);
+        return this.wuxingKe(dipanWuxing, tianpanWuxing);
+    }
+
+    // 判断五行相克
+    wuxingKe(keZhe, beiKeZhe) {
+        const keRelation = {
+            '木': '土',
+            '火': '金',
+            '土': '水',
+            '金': '木',
+            '水': '火'
+        };
+        return keRelation[keZhe] === beiKeZhe;
+    }
+
+    // 获取五行属性
+    getWuxing(ganzhi) {
+        if (['甲', '乙', '寅', '卯'].includes(ganzhi)) return '木';
+        if (['丙', '丁', '巳', '午'].includes(ganzhi)) return '火';
+        if (['戊', '己', '辰', '戌', '丑', '未'].includes(ganzhi)) return '土';
+        if (['庚', '辛', '申', '酉'].includes(ganzhi)) return '金';
+        if (['壬', '癸', '亥', '子'].includes(ganzhi)) return '水';
+        return '';
+    }
+
+    // 获取孟仲季类型
+    getMengZhongJi(zhi) {
+        if (MENGZHONGJI['孟'].includes(zhi)) return '孟';
+        if (MENGZHONGJI['仲'].includes(zhi)) return '仲';
+        if (MENGZHONGJI['季'].includes(zhi)) return '季';
+        return '';
+    }
+
+    // 分析四课的贼克情况
+    analyzeSikeKe(sike) {
+        const analysis = {
+            shangke: [],  // 上克下的课
+            xiazei: [],   // 下贼上的课
+            wuke: []      // 无克的课
+        };
+
+        for (let i = 1; i <= 4; i++) {
+            const ke = sike[`ke${i}`];
+            if (this.isShangKe(ke.top, ke.bottom)) {
+                analysis.shangke.push({
+                    index: i,
+                    tianpan: ke.top,
+                    dipan: ke.bottom,
+                    tianjiang: ke.tianjiang
+                });
+            } else if (this.isXiaZei(ke.top, ke.bottom)) {
+                analysis.xiazei.push({
+                    index: i,
+                    tianpan: ke.top,
+                    dipan: ke.bottom,
+                    tianjiang: ke.tianjiang
+                });
+            } else {
+                analysis.wuke.push({
+                    index: i,
+                    tianpan: ke.top,
+                    dipan: ke.bottom,
+                    tianjiang: ke.tianjiang
+                });
+            }
+        }
+
+        return analysis;
+    }
+
+    // 九宗门起三传的主要逻辑
+    calculateSanchuan(dayStem, dayBranch, sike, heavenPlate, tianjiangMap) {
+        const analysis = this.analyzeSikeKe(sike);
+        
+        console.log('四课分析:', analysis);
+        
+        // 检查是否为特殊课格
+        // 一、八专法（日干日支相同）
+        const bazhuanFayong = this.tryBazhuanFayong(dayStem, dayBranch, sike, heavenPlate, tianjiangMap);
+        if (bazhuanFayong) {
+            console.log('使用八专法:', bazhuanFayong);
+            return bazhuanFayong;
+        }
+        
+        // 二、伏吟法（天盘与地盘相同）
+        const fuyinFayong = this.tryFuyinFayong(dayStem, dayBranch, sike, heavenPlate, tianjiangMap);
+        if (fuyinFayong) {
+            console.log('使用伏吟法:', fuyinFayong);
+            return fuyinFayong;
+        }
+        
+        // 三、反吟法（天盘与地盘相冲）
+        const fanyinFayong = this.tryFanyinFayong(dayStem, dayBranch, sike, heavenPlate, tianjiangMap);
+        if (fanyinFayong) {
+            console.log('使用反吟法:', fanyinFayong);
+            return fanyinFayong;
+        }
+        
+        // 四、贼克法
+        const zeikeFayong = this.tryZeikeFayong(dayStem, dayBranch, analysis, heavenPlate, tianjiangMap);
+        if (zeikeFayong) {
+            console.log('使用贼克法:', zeikeFayong);
+            return zeikeFayong;
+        }
+        
+        // 五、比用法
+        const biyongFayong = this.tryBiyongFayong(dayStem, dayBranch, analysis, heavenPlate, tianjiangMap);
+        if (biyongFayong) {
+            console.log('使用比用法:', biyongFayong);
+            return biyongFayong;
+        }
+        
+        // 六、遥克法
+        const yaokeFayong = this.tryYaokeFayong(dayStem, dayBranch, sike, heavenPlate, tianjiangMap);
+        if (yaokeFayong) {
+            console.log('使用遥克法:', yaokeFayong);
+            return yaokeFayong;
+        }
+        
+        // 七、别责法
+        const biezeFayong = this.tryBiezeFayong(dayStem, dayBranch, sike, heavenPlate, tianjiangMap);
+        if (biezeFayong) {
+            console.log('使用别责法:', biezeFayong);
+            return biezeFayong;
+        }
+        
+        // 八、昴星法
+        const maoxingFayong = this.tryMaoxingFayong(dayStem, dayBranch, sike, heavenPlate, tianjiangMap);
+        if (maoxingFayong) {
+            console.log('使用昴星法:', maoxingFayong);
+            return maoxingFayong;
+        }
+        
+        // 九、九丑法
+        const jiuchouFayong = this.tryJiuchouFayong(dayStem, dayBranch, sike, heavenPlate, tianjiangMap);
+        if (jiuchouFayong) {
+            console.log('使用九丑法:', jiuchouFayong);
+            return jiuchouFayong;
+        }
+        
+        // 默认返回空的三传
+        return this.createEmptySanchuan();
+    }
+
+    // 贼克法
+    tryZeikeFayong(dayStem, dayBranch, analysis, heavenPlate, tianjiangMap) {
+        // 1. 优先选择下贼上（始入课）
+        if (analysis.xiazei.length === 1) {
+            const xiazei = analysis.xiazei[0];
+            return this.createSanchuan(xiazei.tianpan, heavenPlate, tianjiangMap, '始入课');
+        }
+        
+        // 2. 无下贼上，选择上克下（元首课）
+        if (analysis.xiazei.length === 0 && analysis.shangke.length === 1) {
+            const shangke = analysis.shangke[0];
+            return this.createSanchuan(shangke.tianpan, heavenPlate, tianjiangMap, '元首课');
+        }
+        
+        // 3. 有下贼上又有上克下（重审课）
+        if (analysis.xiazei.length === 1 && analysis.shangke.length > 0) {
+            const xiazei = analysis.xiazei[0];
+            return this.createSanchuan(xiazei.tianpan, heavenPlate, tianjiangMap, '重审课');
+        }
+        
+        return null;
+    }
+
+    // 比用法
+    tryBiyongFayong(dayStem, dayBranch, analysis, heavenPlate, tianjiangMap) {
+        // 多个下贼上或多个上克下时，按阴阳相比选择
+        if (analysis.xiazei.length >= 2) {
+            return this.selectByYinYang(dayStem, analysis.xiazei, heavenPlate, tianjiangMap, '比用课');
+        }
+        
+        if (analysis.shangke.length >= 2) {
+            return this.selectByYinYang(dayStem, analysis.shangke, heavenPlate, tianjiangMap, '知一课');
+        }
+        
+        return null;
+    }
+
+    // 遥克法
+    tryYaokeFayong(dayStem, dayBranch, sike, heavenPlate, tianjiangMap) {
+        // 四课中既无上克下，也无下贼上
+        const analysis = this.analyzeSikeKe(sike);
+        if (analysis.shangke.length === 0 && analysis.xiazei.length === 0) {
+            // 检查二三四课来克日干（蒿矢）
+            const keRigan = this.checkKeRigan(dayStem, sike);
+            if (keRigan.length > 0) {
+                if (keRigan.length === 1) {
+                    return this.createSanchuan(keRigan[0].tianpan, heavenPlate, tianjiangMap, '蒿矢');
+                } else {
+                    // 多个克日干时，按阴阳相比
+                    return this.selectByYinYang(dayStem, keRigan, heavenPlate, tianjiangMap, '蒿矢');
+                }
+            }
+            
+            // 检查日干克二三四课（弹射）
+            const riganKe = this.checkRiganKe(dayStem, sike);
+            if (riganKe.length > 0) {
+                if (riganKe.length === 1) {
+                    return this.createSanchuan(riganKe[0].tianpan, heavenPlate, tianjiangMap, '弹射');
+                } else {
+                    // 多个被日干克时，按阴阳相比
+                    return this.selectByYinYang(dayStem, riganKe, heavenPlate, tianjiangMap, '弹射');
+                }
+            }
+            
+            // 检查日支的特殊情况
+            const rizhiSpecial = this.checkRizhiSpecial(dayStem, dayBranch, sike, heavenPlate, tianjiangMap);
+            if (rizhiSpecial) {
+                return rizhiSpecial;
+            }
+        }
+        
+        return null;
+    }
+
+    // 昴星法
+    tryMaoxingFayong(dayStem, dayBranch, sike, heavenPlate, tianjiangMap) {
+        const analysis = this.analyzeSikeKe(sike);
+        
+        // 四课俱全，既无上下贼克，也无遥克
+        if (analysis.shangke.length === 0 && analysis.xiazei.length === 0) {
+            const keRigan = this.checkKeRigan(dayStem, sike);
+            const riganKe = this.checkRiganKe(dayStem, sike);
+            
+            if (keRigan.length === 0 && riganKe.length === 0) {
+                // 检查四课是否俱全且无重复
+                const sikeCount = Object.keys(sike).length;
+                if (sikeCount === 4) {
+                    // 检查是否有重复的上神
+                    const uniqueTopGods = new Set([sike.ke1.top, sike.ke2.top, sike.ke3.top, sike.ke4.top]);
+                    
+                    if (uniqueTopGods.size === 4) { // 四课上神都不相同
+                        if (this.isYang(dayStem)) {
+                            // 阳日虎视：取酉上神为初传
+                            const youShangShen = heavenPlate['酉'] || '';
+                            if (youShangShen) {
+                                const zhongchuan = sike.ke3.top; // 支上神
+                                const mochuan = sike.ke1.top;    // 干上神
+                                return {
+                                    chuchuan: { 
+                                        gan: this.getTianpanGan(youShangShen), 
+                                        zhi: youShangShen, 
+                                        tianjiang: tianjiangMap[youShangShen] || '' 
+                                    },
+                                    zhongchuan: { 
+                                        gan: this.getTianpanGan(zhongchuan), 
+                                        zhi: zhongchuan, 
+                                        tianjiang: tianjiangMap[zhongchuan] || '' 
+                                    },
+                                    mochuan: { 
+                                        gan: this.getTianpanGan(mochuan), 
+                                        zhi: mochuan, 
+                                        tianjiang: tianjiangMap[mochuan] || '' 
+                                    },
+                                    kege: '虎视'
+                                };
+                            }
+                        } else {
+                            // 阴日冬蛇掩目：取卯上神为初传
+                            const maoShangShen = heavenPlate['卯'] || '';
+                            if (maoShangShen) {
+                                const zhongchuan = sike.ke1.top; // 干上神
+                                const mochuan = sike.ke3.top;    // 支上神
+                                return {
+                                    chuchuan: { 
+                                        gan: this.getTianpanGan(maoShangShen), 
+                                        zhi: maoShangShen, 
+                                        tianjiang: tianjiangMap[maoShangShen] || '' 
+                                    },
+                                    zhongchuan: { 
+                                        gan: this.getTianpanGan(zhongchuan), 
+                                        zhi: zhongchuan, 
+                                        tianjiang: tianjiangMap[zhongchuan] || '' 
+                                    },
+                                    mochuan: { 
+                                        gan: this.getTianpanGan(mochuan), 
+                                        zhi: mochuan, 
+                                        tianjiang: tianjiangMap[mochuan] || '' 
+                                    },
+                                    kege: '冬蛇掩目'
+                                };
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        return null;
+    }
+
+
+
+    // 检查二三四课是否克日干
+    checkKeRigan(dayStem, sike) {
+        const keRigan = [];
+        for (let i = 2; i <= 4; i++) {
+            const ke = sike[`ke${i}`];
+            if (this.isShangKe(ke.top, dayStem)) {
+                keRigan.push({
+                    index: i,
+                    tianpan: ke.top,
+                    dipan: ke.bottom,
+                    tianjiang: ke.tianjiang
+                });
+            }
+        }
+        return keRigan;
+    }
+
+    // 检查日干是否克二三四课
+    checkRiganKe(dayStem, sike) {
+        const riganKe = [];
+        for (let i = 2; i <= 4; i++) {
+            const ke = sike[`ke${i}`];
+            if (this.isShangKe(dayStem, ke.top)) {
+                riganKe.push({
+                    index: i,
+                    tianpan: ke.top,
+                    dipan: ke.bottom,
+                    tianjiang: ke.tianjiang
+                });
+            }
+        }
+        return riganKe;
+    }
+
+    // 创建三传结构
+    createSanchuan(chuchuan, heavenPlate, tianjiangMap, kege) {
+        const zhongchuan = heavenPlate[chuchuan] || '';
+        const mochuan = heavenPlate[zhongchuan] || '';
+        
+        // 计算天盘对应的天干
+        const chuchuanGan = this.getTianpanGan(chuchuan);
+        const zhongchuanGan = this.getTianpanGan(zhongchuan);
+        const mochuanGan = this.getTianpanGan(mochuan);
+        
+        return {
+            chuchuan: { 
+                gan: chuchuanGan, 
+                zhi: chuchuan, 
+                tianjiang: tianjiangMap[chuchuan] || '' 
+            },
+            zhongchuan: { 
+                gan: zhongchuanGan, 
+                zhi: zhongchuan, 
+                tianjiang: tianjiangMap[zhongchuan] || '' 
+            },
+            mochuan: { 
+                gan: mochuanGan, 
+                zhi: mochuan, 
+                tianjiang: tianjiangMap[mochuan] || '' 
+            },
+            kege: kege
+        };
+    }
+
+    // 创建空的三传
+    createEmptySanchuan() {
+        return {
+            chuchuan: { gan: '', zhi: '', tianjiang: '' },
+            zhongchuan: { gan: '', zhi: '', tianjiang: '' },
+            mochuan: { gan: '', zhi: '', tianjiang: '' },
+            kege: '未定'
+        };
+    }
+
+    // 八专法（日干日支相同）
+    tryBazhuanFayong(dayStem, dayBranch, sike, heavenPlate, tianjiangMap) {
+        // 检查是否为八专日（日干日支相同）
+        if (dayStem === dayBranch) {
+            console.log('检测到八专日：', dayStem + dayBranch);
+            
+            // 八专的特殊处理
+            // 阳日：干上 -> 支上 -> 干上的地盘位置
+            // 阴日：支上 -> 干上 -> 支上的地盘位置
+            const isYangRi = this.isYang(dayStem);
+            
+            if (isYangRi) {
+                // 阳日八专：干上 -> 支上 -> 干上的地盘位置
+                const chuchuan = sike.ke1.top;  // 干上
+                const zhongchuan = sike.ke3.top; // 支上
+                
+                // 末传为初传（干上）在地盘的位置
+                const mochuan = dayStem; // 因为是八专，干支相同
+                
+                return {
+                    chuchuan: { 
+                        gan: this.getTianpanGan(chuchuan), 
+                        zhi: chuchuan, 
+                        tianjiang: tianjiangMap[chuchuan] || '' 
+                    },
+                    zhongchuan: { 
+                        gan: this.getTianpanGan(zhongchuan), 
+                        zhi: zhongchuan, 
+                        tianjiang: tianjiangMap[zhongchuan] || '' 
+                    },
+                    mochuan: { 
+                        gan: this.getTianpanGan(mochuan), 
+                        zhi: mochuan, 
+                        tianjiang: tianjiangMap[mochuan] || '' 
+                    },
+                    kege: '阳日八专'
+                };
+            } else {
+                // 阴日八专：支上 -> 干上 -> 支上的地盘位置
+                const chuchuan = sike.ke3.top;  // 支上
+                const zhongchuan = sike.ke1.top; // 干上
+                
+                // 末传为初传（支上）在地盘的位置
+                const mochuan = dayBranch; // 因为是八专，干支相同
+                
+                return {
+                    chuchuan: { 
+                        gan: this.getTianpanGan(chuchuan), 
+                        zhi: chuchuan, 
+                        tianjiang: tianjiangMap[chuchuan] || '' 
+                    },
+                    zhongchuan: { 
+                        gan: this.getTianpanGan(zhongchuan), 
+                        zhi: zhongchuan, 
+                        tianjiang: tianjiangMap[zhongchuan] || '' 
+                    },
+                    mochuan: { 
+                        gan: this.getTianpanGan(mochuan), 
+                        zhi: mochuan, 
+                        tianjiang: tianjiangMap[mochuan] || '' 
+                    },
+                    kege: '阴日八专'
+                };
+            }
+        }
+        
+        return null;
+    }
+
+    // 伏吟法（天盘与地盘相同）
+    tryFuyinFayong(dayStem, dayBranch, sike, heavenPlate, tianjiangMap) {
+        // 检查是否为伏吟（天盘与地盘相同的位置数量）
+        let fuyinCount = 0;
+        const fuyinPositions = [];
+        
+        for (let groundBranch in heavenPlate) {
+            if (groundBranch === heavenPlate[groundBranch]) {
+                fuyinCount++;
+                fuyinPositions.push(groundBranch);
+            }
+        }
+        
+        // 如果有6个或更多位置为伏吟，则为伏吟课
+        if (fuyinCount >= 6) {
+            console.log('检测到伏吟课，伏吟位置：', fuyinPositions);
+            
+            // 伏吟三传的特殊取法
+            // 阳日：干上 -> 支上 -> 干上的对宫
+            // 阴日：支上 -> 干上 -> 支上的对宫
+            const isYangRi = this.isYang(dayStem);
+            
+            if (isYangRi) {
+                const chuchuan = sike.ke1.top;  // 干上
+                const zhongchuan = sike.ke3.top; // 支上
+                const mochuan = DIZHI_CHONG[chuchuan] || chuchuan; // 干上的对宫
+                
+                return {
+                    chuchuan: { 
+                        gan: this.getTianpanGan(chuchuan), 
+                        zhi: chuchuan, 
+                        tianjiang: tianjiangMap[chuchuan] || '' 
+                    },
+                    zhongchuan: { 
+                        gan: this.getTianpanGan(zhongchuan), 
+                        zhi: zhongchuan, 
+                        tianjiang: tianjiangMap[zhongchuan] || '' 
+                    },
+                    mochuan: { 
+                        gan: this.getTianpanGan(mochuan), 
+                        zhi: mochuan, 
+                        tianjiang: tianjiangMap[mochuan] || '' 
+                    },
+                    kege: '阳日伏吟'
+                };
+            } else {
+                const chuchuan = sike.ke3.top;  // 支上
+                const zhongchuan = sike.ke1.top; // 干上
+                const mochuan = DIZHI_CHONG[chuchuan] || chuchuan; // 支上的对宫
+                
+                return {
+                    chuchuan: { 
+                        gan: this.getTianpanGan(chuchuan), 
+                        zhi: chuchuan, 
+                        tianjiang: tianjiangMap[chuchuan] || '' 
+                    },
+                    zhongchuan: { 
+                        gan: this.getTianpanGan(zhongchuan), 
+                        zhi: zhongchuan, 
+                        tianjiang: tianjiangMap[zhongchuan] || '' 
+                    },
+                    mochuan: { 
+                        gan: this.getTianpanGan(mochuan), 
+                        zhi: mochuan, 
+                        tianjiang: tianjiangMap[mochuan] || '' 
+                    },
+                    kege: '阴日伏吟'
+                };
+            }
+        }
+        
+        return null;
+    }
+
+    // 反吟法（天盘与地盘相冲）
+    tryFanyinFayong(dayStem, dayBranch, sike, heavenPlate, tianjiangMap) {
+        // 检查是否为反吟（天盘与地盘相冲的位置数量）
+        let fanyinCount = 0;
+        const fanyinPositions = [];
+        
+        for (let groundBranch in heavenPlate) {
+            const heavenBranch = heavenPlate[groundBranch];
+            if (DIZHI_CHONG[groundBranch] === heavenBranch) {
+                fanyinCount++;
+                fanyinPositions.push(groundBranch);
+            }
+        }
+        
+        // 如果有6个或更多位置为反吟，则为反吟课
+        if (fanyinCount >= 6) {
+            console.log('检测到反吟课，反吟位置：', fanyinPositions);
+            
+            // 反吟三传的特殊取法
+            // 阳日：干上 -> 支上 -> 干上的正冲
+            // 阴日：支上 -> 干上 -> 支上的正冲
+            const isYangRi = this.isYang(dayStem);
+            
+            if (isYangRi) {
+                const chuchuan = sike.ke1.top;  // 干上
+                const zhongchuan = sike.ke3.top; // 支上
+                const mochuan = DIZHI_CHONG[chuchuan] || chuchuan; // 干上的正冲
+                
+                return {
+                    chuchuan: { 
+                        gan: this.getTianpanGan(chuchuan), 
+                        zhi: chuchuan, 
+                        tianjiang: tianjiangMap[chuchuan] || '' 
+                    },
+                    zhongchuan: { 
+                        gan: this.getTianpanGan(zhongchuan), 
+                        zhi: zhongchuan, 
+                        tianjiang: tianjiangMap[zhongchuan] || '' 
+                    },
+                    mochuan: { 
+                        gan: this.getTianpanGan(mochuan), 
+                        zhi: mochuan, 
+                        tianjiang: tianjiangMap[mochuan] || '' 
+                    },
+                    kege: '阳日反吟'
+                };
+            } else {
+                const chuchuan = sike.ke3.top;  // 支上
+                const zhongchuan = sike.ke1.top; // 干上
+                const mochuan = DIZHI_CHONG[chuchuan] || chuchuan; // 支上的正冲
+                
+                return {
+                    chuchuan: { 
+                        gan: this.getTianpanGan(chuchuan), 
+                        zhi: chuchuan, 
+                        tianjiang: tianjiangMap[chuchuan] || '' 
+                    },
+                    zhongchuan: { 
+                        gan: this.getTianpanGan(zhongchuan), 
+                        zhi: zhongchuan, 
+                        tianjiang: tianjiangMap[zhongchuan] || '' 
+                    },
+                    mochuan: { 
+                        gan: this.getTianpanGan(mochuan), 
+                        zhi: mochuan, 
+                        tianjiang: tianjiangMap[mochuan] || '' 
+                    },
+                    kege: '阴日反吟'
+                };
+            }
+        }
+        
+        return null;
+    }
+
+    // 别责法
+    tryBiezeFayong(dayStem, dayBranch, sike, heavenPlate, tianjiangMap) {
+        // 别责法适用于特殊的复杂情况
+        // 当前面的方法都不适用时，进行特殊判断
+        
+        // 检查是否有特殊的刑冲情况
+        const analysis = this.analyzeSikeKe(sike);
+        
+        // 如果四课都无贼克，且前面的方法都不适用
+        if (analysis.shangke.length === 0 && analysis.xiazei.length === 0) {
+            // 检查是否有特殊的刑冲关系
+            const specialCases = this.findSpecialXingChong(dayStem, dayBranch, sike);
+            
+            if (specialCases.length > 0) {
+                const selectedCase = specialCases[0]; // 选择第一个特殊情况
+                
+                return {
+                    chuchuan: { 
+                        gan: this.getTianpanGan(selectedCase.chuchuan), 
+                        zhi: selectedCase.chuchuan, 
+                        tianjiang: tianjiangMap[selectedCase.chuchuan] || '' 
+                    },
+                    zhongchuan: { 
+                        gan: this.getTianpanGan(selectedCase.zhongchuan), 
+                        zhi: selectedCase.zhongchuan, 
+                        tianjiang: tianjiangMap[selectedCase.zhongchuan] || '' 
+                    },
+                    mochuan: { 
+                        gan: this.getTianpanGan(selectedCase.mochuan), 
+                        zhi: selectedCase.mochuan, 
+                        tianjiang: tianjiangMap[selectedCase.mochuan] || '' 
+                    },
+                    kege: '别责课'
+                };
+            }
+        }
+        
+        return null;
+    }
+
+    // 九丑法
+    tryJiuchouFayong(dayStem, dayBranch, sike, heavenPlate, tianjiangMap) {
+        // 九丑法是最后的判断方法
+        // 当所有其他方法都不适用时使用
+        
+        // 九丑的特殊取法：按固定顺序取三传
+        const jiuchouOrder = ['丑', '未', '戌', '辰', '亥', '巳', '申', '寅', '酉'];
+        
+        // 找到第一个可用的作为初传
+        for (let i = 0; i < jiuchouOrder.length; i++) {
+            const potential = jiuchouOrder[i];
+            if (heavenPlate[potential]) {
+                const chuchuan = potential;
+                const zhongchuan = heavenPlate[chuchuan] || '';
+                const mochuan = heavenPlate[zhongchuan] || '';
+                
+                return {
+                    chuchuan: { 
+                        gan: this.getTianpanGan(chuchuan), 
+                        zhi: chuchuan, 
+                        tianjiang: tianjiangMap[chuchuan] || '' 
+                    },
+                    zhongchuan: { 
+                        gan: this.getTianpanGan(zhongchuan), 
+                        zhi: zhongchuan, 
+                        tianjiang: tianjiangMap[zhongchuan] || '' 
+                    },
+                    mochuan: { 
+                        gan: this.getTianpanGan(mochuan), 
+                        zhi: mochuan, 
+                        tianjiang: tianjiangMap[mochuan] || '' 
+                    },
+                    kege: '九丑课'
+                };
+            }
+        }
+        
+        return null;
+    }
+
+    // 寻找特殊的刑冲关系
+    findSpecialXingChong(dayStem, dayBranch, sike) {
+        const specialCases = [];
+        
+        // 检查四课中的特殊刑冲关系
+        for (let i = 1; i <= 4; i++) {
+            const ke = sike[`ke${i}`];
+            
+            // 检查是否有刑冲关系
+            if (DIZHI_XING[ke.top] && DIZHI_XING[ke.top] === ke.bottom) {
+                specialCases.push({
+                    chuchuan: ke.top,
+                    zhongchuan: ke.bottom,
+                    mochuan: DIZHI_CHONG[ke.top] || ke.top,
+                    type: '刑'
+                });
+            }
+            
+            if (DIZHI_CHONG[ke.top] && DIZHI_CHONG[ke.top] === ke.bottom) {
+                specialCases.push({
+                    chuchuan: ke.top,
+                    zhongchuan: ke.bottom,
+                    mochuan: DIZHI_XING[ke.top] || ke.top,
+                    type: '冲'
+                });
+            }
+        }
+        
+        return specialCases;
+    }
+
+    // 检查日支的特殊情况
+    checkRizhiSpecial(dayStem, dayBranch, sike, heavenPlate, tianjiangMap) {
+        // 检查日支与其他地支的特殊关系
+        const rizhiRelations = [];
+        
+        // 检查日支的三合关系
+        const sanhePartners = DIZHI_SANHE[dayBranch] || [];
+        for (let partner of sanhePartners) {
+            if (heavenPlate[partner]) {
+                rizhiRelations.push({
+                    branch: partner,
+                    relation: '三合',
+                    strength: 3
+                });
+            }
+        }
+        
+        // 检查日支的驿马
+        const yima = YIMA[dayBranch];
+        if (yima && heavenPlate[yima]) {
+            rizhiRelations.push({
+                branch: yima,
+                relation: '驿马',
+                strength: 2
+            });
+        }
+        
+        // 如果有特殊关系，选择最强的作为初传
+        if (rizhiRelations.length > 0) {
+            rizhiRelations.sort((a, b) => b.strength - a.strength);
+            const selectedRelation = rizhiRelations[0];
+            
+            const chuchuan = selectedRelation.branch;
+            const zhongchuan = heavenPlate[chuchuan] || '';
+            const mochuan = heavenPlate[zhongchuan] || '';
+            
+            return {
+                chuchuan: { 
+                    gan: this.getTianpanGan(chuchuan), 
+                    zhi: chuchuan, 
+                    tianjiang: tianjiangMap[chuchuan] || '' 
+                },
+                zhongchuan: { 
+                    gan: this.getTianpanGan(zhongchuan), 
+                    zhi: zhongchuan, 
+                    tianjiang: tianjiangMap[zhongchuan] || '' 
+                },
+                mochuan: { 
+                    gan: this.getTianpanGan(mochuan), 
+                    zhi: mochuan, 
+                    tianjiang: tianjiangMap[mochuan] || '' 
+                },
+                kege: `日支${selectedRelation.relation}`
+            };
+        }
+        
+        return null;
+    }
+
+    // 完善按阴阳相比的选择逻辑
+    selectByYinYang(dayStem, candidates, heavenPlate, tianjiangMap, kege) {
+        const isYangRi = this.isYang(dayStem);
+        
+        // 先按阴阳相比过滤
+        const matched = candidates.filter(c => this.isYang(c.tianpan) === isYangRi);
+        
+        if (matched.length === 1) {
+            return this.createSanchuan(matched[0].tianpan, heavenPlate, tianjiangMap, kege);
+        } else if (matched.length > 1) {
+            // 多个匹配时，按孟仲季选择
+            const mengzhongjiPriority = this.selectByMengZhongJi(matched, dayStem);
+            if (mengzhongjiPriority) {
+                return this.createSanchuan(mengzhongjiPriority.tianpan, heavenPlate, tianjiangMap, kege);
+            }
+            
+            // 如果孟仲季也相同，取第一个
+            return this.createSanchuan(matched[0].tianpan, heavenPlate, tianjiangMap, kege);
+        } else {
+            // 没有阴阳相比的，取第一个
+            return this.createSanchuan(candidates[0].tianpan, heavenPlate, tianjiangMap, kege);
+        }
+    }
+
+    // 按孟仲季选择
+    selectByMengZhongJi(candidates, dayStem) {
+        const dayMengZhongJi = this.getMengZhongJi(STEM_LODGE_MAP[dayStem]);
+        
+        // 优先选择与日干寄宫同类的孟仲季
+        const sameType = candidates.filter(c => 
+            this.getMengZhongJi(c.tianpan) === dayMengZhongJi
+        );
+        
+        if (sameType.length > 0) {
+            return sameType[0];
+        }
+        
+        // 按孟仲季优先级选择：孟 > 仲 > 季
+        const mengCandidates = candidates.filter(c => this.getMengZhongJi(c.tianpan) === '孟');
+        if (mengCandidates.length > 0) return mengCandidates[0];
+        
+        const zhongCandidates = candidates.filter(c => this.getMengZhongJi(c.tianpan) === '仲');
+        if (zhongCandidates.length > 0) return zhongCandidates[0];
+        
+        const jiCandidates = candidates.filter(c => this.getMengZhongJi(c.tianpan) === '季');
+        if (jiCandidates.length > 0) return jiCandidates[0];
+        
+        return null;
+    }
+
+    // 获取天盘地支对应的天干
+    getTianpanGan(tianpanZhi) {
+        if (!tianpanZhi) return '';
+        
+        try {
+            // 获取当前的日干支来确定旬首
+            const now = new Date();
+            const solar = Solar.fromDate(now);
+            const lunar = solar.getLunar();
+            const dayGZ = lunar.getDayInGanZhi();
+            const dayStem = dayGZ.charAt(0);
+            const dayBranch = dayGZ.charAt(1);
+            
+            // 计算旬首
+            const xunshou = this.calculateXunshou(dayStem, dayBranch);
+            const xunshouStem = xunshou.charAt(0);
+            const xunshouBranch = xunshou.charAt(1);
+            
+            // 获取旬首的天干和地支索引
+            const xunshouStemIndex = STEM_INDEX[xunshouStem];
+            const xunshouBranchIndex = BRANCH_INDEX[xunshouBranch];
+            
+            // 获取天盘地支的索引
+            const tianpanZhiIndex = BRANCH_INDEX[tianpanZhi];
+            
+            // 计算天盘地支距离旬首地支的步数
+            const steps = (tianpanZhiIndex - xunshouBranchIndex + 12) % 12;
+            
+            // 计算对应的天干索引
+            const tianpanGanIndex = (xunshouStemIndex + steps) % 10;
+            
+            // 返回对应的天干，如果超出旬的范围（>9）则为空亡
+            if (steps >= 10) {
+                return ''; // 空亡
+            }
+            
+            return HEAVENLY_STEMS[tianpanGanIndex];
+            
+        } catch (error) {
+            console.error('计算天盘天干时出错:', error);
+            return '';
+        }
+    }
+
+    // 计算六亲关系
+    calculateLiuqin(targetGan, dayStem) {
+        if (!targetGan || !dayStem) return '';
+        
+        const dayWuxing = this.getWuxing(dayStem);
+        const targetWuxing = this.getWuxing(targetGan);
+        
+        if (dayWuxing === targetWuxing) {
+            return '兄弟';  // 同我者兄弟
+        } else if (this.wuxingSheng(targetWuxing, dayWuxing)) {
+            return '父母';  // 生我者父母
+        } else if (this.wuxingSheng(dayWuxing, targetWuxing)) {
+            return '子孙';  // 我生者子孙
+        } else if (this.wuxingKe(targetWuxing, dayWuxing)) {
+            return '官鬼';  // 克我者官鬼
+        } else if (this.wuxingKe(dayWuxing, targetWuxing)) {
+            return '妻财';  // 我克者妻财
+        }
+        
+        return '';
+    }
+
+    // 计算十神关系
+    calculateShishen(targetGan, dayStem) {
+        if (!targetGan || !dayStem) return '';
+        
+        const dayWuxing = this.getWuxing(dayStem);
+        const targetWuxing = this.getWuxing(targetGan);
+        const dayYinYang = this.isYang(dayStem);
+        const targetYinYang = this.isYang(targetGan);
+        const sameYinYang = dayYinYang === targetYinYang;
+        
+        if (dayWuxing === targetWuxing) {
+            // 与日干五行相同者
+            return sameYinYang ? '比肩' : '劫财';
+        } else if (this.wuxingSheng(targetWuxing, dayWuxing)) {
+            // 生日干者
+            return sameYinYang ? '偏印' : '正印';
+        } else if (this.wuxingSheng(dayWuxing, targetWuxing)) {
+            // 日干所生者
+            return sameYinYang ? '食神' : '伤官';
+        } else if (this.wuxingKe(dayWuxing, targetWuxing)) {
+            // 日干所克者
+            return sameYinYang ? '偏财' : '正财';
+        } else if (this.wuxingKe(targetWuxing, dayWuxing)) {
+            // 克日干者
+            return sameYinYang ? '七杀' : '正官';
+        }
+        
+        return '';
+    }
+
+    // 五行相生关系
+    wuxingSheng(shengZhe, beiShengZhe) {
+        const shengRelation = {
+            '木': '火',
+            '火': '土',
+            '土': '金',
+            '金': '水',
+            '水': '木'
+        };
+        return shengRelation[shengZhe] === beiShengZhe;
+    }
+
+    // 更新三传显示
+    updateSanchuanDisplay(sanchuan) {
+        if (!this.sanchuanElements) return;
+        
+        try {
+            // 获取当前日干用于计算六亲和十神
+            const now = new Date();
+            const solar = Solar.fromDate(now);
+            const lunar = solar.getLunar();
+            const dayGZ = lunar.getDayInGanZhi();
+            const dayStem = dayGZ.charAt(0);
+            
+            // 更新初传
+            this.updateSanchuanItem(this.sanchuanElements.chuchuan, sanchuan.chuchuan, dayStem);
+            
+            // 更新中传
+            this.updateSanchuanItem(this.sanchuanElements.zhongchuan, sanchuan.zhongchuan, dayStem);
+            
+            // 更新末传
+            this.updateSanchuanItem(this.sanchuanElements.mochuan, sanchuan.mochuan, dayStem);
+            
+            console.log('三传更新完成:', sanchuan);
+        } catch (error) {
+            console.error('更新三传显示时出错:', error);
+        }
+    }
+
+    // 更新单个三传项目
+    updateSanchuanItem(elements, sanchuanData, dayStem) {
+        // 计算六亲和十神
+        const liuqin = this.calculateLiuqin(sanchuanData.gan, dayStem);
+        const shishen = this.calculateShishen(sanchuanData.gan, dayStem);
+        
+        // 更新六亲
+        if (elements.liuqin) {
+            elements.liuqin.textContent = liuqin;
+            elements.liuqin.style.color = this.getLiuqinColor(liuqin);
+            elements.liuqin.style.fontWeight = 'bold';
+        }
+        
+        // 更新十神
+        if (elements.shishen) {
+            elements.shishen.textContent = shishen;
+            elements.shishen.style.color = this.getShishenColor(shishen);
+            elements.shishen.style.fontWeight = 'bold';
+        }
+        
+        // 更新天干
+        if (elements.gan) {
+            elements.gan.textContent = sanchuanData.gan;
+            this.applyWuxingColor(elements.gan, sanchuanData.gan);
+        }
+        
+        // 更新地支
+        if (elements.zhi) {
+            elements.zhi.textContent = sanchuanData.zhi;
+            this.applyWuxingColor(elements.zhi, sanchuanData.zhi);
+        }
+        
+        // 更新天将
+        if (elements.tianjiang) {
+            elements.tianjiang.textContent = sanchuanData.tianjiang;
+            if (sanchuanData.tianjiang && TIANJIANG_COLORS[sanchuanData.tianjiang]) {
+                elements.tianjiang.style.color = TIANJIANG_COLORS[sanchuanData.tianjiang];
+                elements.tianjiang.style.fontWeight = 'bold';
+            }
+        }
+    }
+
+    // 获取六亲颜色
+    getLiuqinColor(liuqin) {
+        const liuqinColors = {
+            '父母': '#8B4513',  // 棕色
+            '兄弟': '#228B22',  // 森林绿
+            '子孙': '#FF4500',  // 橙红色
+            '妻财': '#FFD700',  // 金色
+            '官鬼': '#4B0082'   // 靛蓝色
+        };
+        return liuqinColors[liuqin] || '#333';
+    }
+
+    // 获取十神颜色
+    getShishenColor(shishen) {
+        const shishenColors = {
+            '比肩': '#228B22',  // 森林绿
+            '劫财': '#32CD32',  // 柠檬绿
+            '正印': '#8B4513',  // 棕色
+            '偏印': '#A0522D',  // 赭石色
+            '食神': '#FF4500',  // 橙红色
+            '伤官': '#FF6347',  // 番茄色
+            '正财': '#FFD700',  // 金色
+            '偏财': '#FFA500',  // 橙色
+            '正官': '#4B0082',  // 靛蓝色
+            '七杀': '#8A2BE2'   // 蓝紫色
+        };
+        return shishenColors[shishen] || '#333';
+    }
+
     // 根据当前时间更新四课
     updateSikeFromCurrentTime(heavenPlate) {
         try {
@@ -916,8 +2414,15 @@ class DaLiuRenCalculator {
             
             // 更新四课显示
             this.updateSikeDisplay(sike);
+            
+            // 计算三传
+            const sanchuan = this.calculateSanchuan(dayStem, dayBranch, sike, heavenPlate, tianjiangMap);
+            console.log('三传计算结果:', sanchuan);
+            
+            // 更新三传显示
+            this.updateSanchuanDisplay(sanchuan);
         } catch (error) {
-            console.error('计算四课时出错:', error);
+            console.error('计算四课和三传时出错:', error);
         }
     }
 

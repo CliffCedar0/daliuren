@@ -36,11 +36,9 @@ h1 {
 
 /* 四柱八字面板样式 */
 .sizhu-panel {
-    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
     border-radius: 15px;
     padding: 25px;
     margin-bottom: 30px;
-    box-shadow: 0 10px 20px rgba(240, 147, 251, 0.3);
     text-align: center;
 }
 
@@ -160,6 +158,65 @@ h1 {
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
     min-width: 100px;
     text-align: center;
+}
+
+/* 三传表格样式 */
+.sanchuan-container {
+    margin-bottom: 20px;
+}
+
+.sanchuan-container h3 {
+    text-align: center;
+    margin-bottom: 10px;
+    color: #2c3e50;
+    font-size: 1.2em;
+}
+
+.sanchuan-table {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    border-collapse: collapse;
+    background: white;
+    border: 2px solid #34495e;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.sanchuan-table th {
+    background: #34495e;
+    color: white;
+    padding: 12px;
+    text-align: center;
+    font-weight: bold;
+    border: 1px solid #2c3e50;
+}
+
+.sanchuan-cell {
+    padding: 8px;
+    text-align: center;
+    border: 1px solid #34495e;
+    font-size: 1em;
+    font-weight: 500;
+    min-width: 60px;
+    height: 45px;
+    vertical-align: middle;
+    color: #2c3e50;
+}
+
+.chuan-name {
+    background: #ecf0f1;
+    padding: 12px;
+    text-align: center;
+    border: 1px solid #34495e;
+    font-size: 1.1em;
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+.sanchuan-cell:hover {
+    cursor: default;
 }
 
 /* 四课表格样式 */
@@ -521,6 +578,23 @@ button:hover {
         min-width: 55px;
     }
     
+    .sanchuan-table {
+        max-width: 100%;
+        font-size: 0.9em;
+    }
+    
+    .sanchuan-cell {
+        padding: 6px;
+        min-width: 50px;
+        height: 38px;
+        font-size: 0.85em;
+    }
+
+    .chuan-name {
+        padding: 8px;
+        font-size: 0.9em;
+    }
+
     .sike-table {
         max-width: 100%;
         font-size: 0.9em;
@@ -611,6 +685,22 @@ button:hover {
         min-width: 50px;
     }
     
+    .sanchuan-table {
+        font-size: 0.8em;
+    }
+    
+    .sanchuan-cell {
+        padding: 4px;
+        min-width: 40px;
+        height: 32px;
+        font-size: 0.75em;
+    }
+
+    .chuan-name {
+        padding: 6px;
+        font-size: 0.8em;
+    }
+
     .sike-table {
         font-size: 0.8em;
     }
