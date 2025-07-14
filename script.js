@@ -3486,18 +3486,33 @@ class DaLiuRenCalculator {
                         // 建干从天盘时支位置开始排布
                         const jianganGan = this.calculateJiangan(groundBranch, timeBranch, heavenPlate);
                         jianganElement.textContent = jianganGan;
-                        
                         // 复建是用时干起五子元遁
                         const timeGZ = this.getTimeGanZhi(timeBranch);
                         const timeStem = timeGZ.charAt(0);
                         const fujianGan = this.calculateFujian(groundBranch, timeStem);
                         fujianElement.textContent = fujianGan;
-                        
                         // 添加五行颜色
                         this.applyWuxingColor(jianganElement, jianganGan);
                         this.applyWuxingColor(fujianElement, fujianGan);
-                        
                         console.log(`${groundBranch} 设置建干: ${jianganGan}, 复建: ${fujianGan}`);
+                        // 新增：填充建干纳音和复建纳音
+                        const jianganNayinElement = cell.querySelector('.jiangan-nayin');
+                        const fujianNayinElement = cell.querySelector('.fujian-nayin');
+                        if (jianganNayinElement && jianganGan && heavenBranch) {
+                            const nayin = calculateNayin(jianganGan, heavenBranch);
+                            jianganNayinElement.textContent = nayin ? nayin : '无纳音';
+                            jianganNayinElement.style.color = nayin ? getNayinWuxingColor(nayin) : '#bbb';
+                        }
+                        // 复建纳音显示
+                        if (fujianNayinElement && fujianGan && heavenBranch) {
+                            const ganZhi = fujianGan + heavenBranch;
+                            const nayin = calculateNayin(fujianGan, heavenBranch);
+                            // 调试输出
+                            console.log('复建纳音调试', fujianGan, heavenBranch, ganZhi, nayin);
+                            // 优化显示
+                            fujianNayinElement.textContent = nayin ? nayin : `无纳音(${ganZhi})`;
+                            fujianNayinElement.style.color = nayin ? getNayinWuxingColor(nayin) : '#bbb';
+                        }
                     }
 
                     // 更新十二长生和月令
