@@ -239,6 +239,29 @@ const TWELVE_TIANJIANGS = [
 const DAY_BRANCHES = ['卯', '辰', '巳', '午', '未', '申'];
 const NIGHT_BRANCHES = ['酉', '戌', '亥', '子', '丑', '寅'];
 
+// ---------------------------
+// 五行长生常量 (新增)
+// ---------------------------
+// 十二长生阶段名称
+const CHANGSHENG_STAGES = ['长生', '沐浴', '冠带', '临官', '帝旺', '衰', '病', '死', '墓', '绝', '胎', '养'];
+
+// 五行长生表 (甲乙同列，丙丁同列，戊己同列，庚辛同列，壬癸同列)
+const WUXING_CHANGSHENG_TABLE = {
+    '甲': ['亥','子','丑','寅','卯','辰','巳','午','未','申','酉','戌'],
+    '乙': ['亥','子','丑','寅','卯','辰','巳','午','未','申','酉','戌'],
+    '丙': ['寅','卯','辰','巳','午','未','申','酉','戌','亥','子','丑'],
+    '丁': ['寅','卯','辰','巳','午','未','申','酉','戌','亥','子','丑'],
+    '戊': ['寅','卯','辰','巳','午','未','申','酉','戌','亥','子','丑'],
+    '己': ['寅','卯','辰','巳','午','未','申','酉','戌','亥','子','丑'],
+    '庚': ['巳','午','未','申','酉','戌','亥','子','丑','寅','卯','辰'],
+    '辛': ['巳','午','未','申','酉','戌','亥','子','丑','寅','卯','辰'],
+    '壬': ['申','酉','戌','亥','子','丑','寅','卯','辰','巳','午','未'],
+    '癸': ['申','酉','戌','亥','子','丑','寅','卯','辰','巳','午','未']
+};
+
+// 十二建除名称
+const JIANCHU_NAMES = ['建','除','满','平','定','执','破','危','成','收','开','闭'];
+
 // 地支在表格中的顺序（用于天将排布）
 const BRANCH_POSITIONS = [
     '巳', '午', '未', '申', '酉', '戌', '亥', '子', '丑', '寅', '卯', '辰'
@@ -2956,6 +2979,40 @@ class DaLiuRenCalculator {
         }
         return '';
     }
+    
+    // 计算十二建除
+    calculateJianchu(monthBranch, groundBranch, heavenPlate) {
+        // 1. 找到月支在天盘中的位置（即月支对应的地盘位置）
+        let monthBranchGroundPosition = null;
+        for (let gb in heavenPlate) {
+            if (heavenPlate[gb] === monthBranch) {
+                monthBranchGroundPosition = gb;
+                break;
+            }
+        }
+        
+        if (!monthBranchGroundPosition) return '';
+        
+        // 2. 从月支在天盘中对应的地盘位置开始，按顺时针方向排列十二建除
+        const groundBranchOrder = BRANCH_POSITIONS.slice(); // 地盘顺时针顺序
+        const startIndex = groundBranchOrder.indexOf(monthBranchGroundPosition);
+        if (startIndex === -1) return '';
+        
+        // 3. 重新排序地盘位置，从月支对应的地盘位置开始
+        const reorderedGroundBranches = [
+            ...groundBranchOrder.slice(startIndex),
+            ...groundBranchOrder.slice(0, startIndex)
+        ];
+        
+        // 4. 创建地盘位置到建除的映射
+        const groundBranchToJianchu = {};
+        reorderedGroundBranches.forEach((branch, index) => {
+            groundBranchToJianchu[branch] = JIANCHU_NAMES[index];
+        });
+        
+        // 5. 返回当前地盘位置的建除
+        return groundBranchToJianchu[groundBranch] || '';
+    }
 
     // 根据当前时间更新四课
     updateSikeFromCurrentTime(heavenPlate) {
@@ -3275,6 +3332,9 @@ class DaLiuRenCalculator {
             const dayStem = dayGZ.charAt(0);
             const dayBranch = dayGZ.charAt(1);
             
+            // 当前月支
+            const lunarMonthBranch = lunar.getMonthInGanZhi().charAt(1);
+            
             console.log('更新天将和旬干，日干支:', dayGZ, '占时:', timeBranch);
             
             // 计算两个贵人位置
@@ -3547,26 +3607,90 @@ class DaLiuRenCalculator {
                         }
                     }
 
-                    // 更新十二长生和月令
-                    const yuelingDisplayElement = cell.querySelector('.yueling-display');
-                    const changshengDisplayElement = cell.querySelector('.changsheng-display');
-                    if (yuelingDisplayElement && changshengDisplayElement) {
-                        // 获取月支
-                        const now = new Date();
-                        const solar = Solar.fromDate(now);
-                        const lunar = solar.getLunar();
-                        const monthBranch = lunar.getMonthInGanZhi().charAt(1);
-                        
-                        // 计算十二长生：日干对应天盘地支
-                        const changsheng = this.calculateChangsheng(dayStem, heavenBranch);
-                        changshengDisplayElement.textContent = changsheng;
-                        
-                        // 计算月令：月支与天盘地支对比
-                        const yueling = this.calculateYueling(monthBranch, heavenBranch);
-                        yuelingDisplayElement.textContent = yueling;
-                        
-                        console.log(`${groundBranch} 设置十二长生: ${changsheng}, 月令: ${yueling} (月支: ${monthBranch}, 天盘地支: ${heavenBranch})`);
+                    // 更新十二建除、旺衰、十干长生和五行长生
+                    const changshengYuelingContainer = cell.querySelector('.changsheng-yueling-container');
+                    
+                    // 创建行容器
+                    let firstRowDiv = changshengYuelingContainer.querySelector('div:first-child');
+                    let secondRowDiv = changshengYuelingContainer.querySelector('div:last-child');
+                    
+                    // 如果行容器不存在，创建它们
+                    if (!firstRowDiv) {
+                        firstRowDiv = document.createElement('div');
+                        firstRowDiv.classList.add('first-row');
+                        changshengYuelingContainer.appendChild(firstRowDiv);
                     }
+                    
+                    if (!secondRowDiv || firstRowDiv === secondRowDiv) {
+                        secondRowDiv = document.createElement('div');
+                        secondRowDiv.classList.add('second-row');
+                        changshengYuelingContainer.appendChild(secondRowDiv);
+                    }
+                    
+                    // 获取或创建显示元素
+                    let jianchuDisplayElement = firstRowDiv.querySelector('.jianchu-display');
+                    if (!jianchuDisplayElement) {
+                        jianchuDisplayElement = document.createElement('div');
+                        jianchuDisplayElement.classList.add('jianchu-display');
+                        firstRowDiv.appendChild(jianchuDisplayElement);
+                    }
+                    
+                    let yuelingDisplayElement = firstRowDiv.querySelector('.yueling-display');
+                    if (!yuelingDisplayElement) {
+                        yuelingDisplayElement = document.createElement('div');
+                        yuelingDisplayElement.classList.add('yueling-display');
+                        firstRowDiv.appendChild(yuelingDisplayElement);
+                    }
+                    
+                    let changshengDisplayElement = secondRowDiv.querySelector('.changsheng-display');
+                    if (!changshengDisplayElement) {
+                        changshengDisplayElement = document.createElement('div');
+                        changshengDisplayElement.classList.add('changsheng-display');
+                        secondRowDiv.appendChild(changshengDisplayElement);
+                    }
+                    
+                    let wuxingChangshengDisplayElement = secondRowDiv.querySelector('.wuxing-changsheng-display');
+                    if (!wuxingChangshengDisplayElement) {
+                        wuxingChangshengDisplayElement = document.createElement('div');
+                        wuxingChangshengDisplayElement.classList.add('wuxing-changsheng-display');
+                        secondRowDiv.appendChild(wuxingChangshengDisplayElement);
+                    }
+
+                    if (yuelingDisplayElement && changshengDisplayElement && wuxingChangshengDisplayElement && jianchuDisplayElement) {
+                         // 获取月支
+                         const now = new Date();
+                         const solar = Solar.fromDate(now);
+                         const lunar = solar.getLunar();
+                         const monthBranch = lunar.getMonthInGanZhi().charAt(1);
+                         
+                         // 计算十二建除：月支在天盘的位置开始顺时针排布
+                         const jianchu = this.calculateJianchu(monthBranch, groundBranch, heavenPlate);
+                         jianchuDisplayElement.textContent = jianchu;
+                         
+                         // 计算月令：月支与天盘地支对比
+                         const yueling = this.calculateYueling(monthBranch, heavenBranch);
+                         yuelingDisplayElement.textContent = yueling;
+                         
+                         // 第一行显示：十二建除 旺衰
+                         jianchuDisplayElement.style.display = 'inline-block';
+                         yuelingDisplayElement.style.display = 'inline-block';
+                         
+                         // 计算十干长生：日干对应天盘地支
+                         const changsheng = this.calculateChangsheng(dayStem, heavenBranch);
+                         changshengDisplayElement.textContent = changsheng;
+                         changshengDisplayElement.style.color = '#dc143c'; // 红色
+                         
+                         // 计算五行长生
+                         const wuxingChangsheng = this.calculateWuxingChangsheng(dayStem, heavenBranch);
+                         wuxingChangshengDisplayElement.textContent = wuxingChangsheng;
+                         wuxingChangshengDisplayElement.style.color = '#4169e1'; // 蓝色
+                         
+                         // 第二行显示：十干长生 五行长生
+                         changshengDisplayElement.style.display = 'inline-block';
+                         wuxingChangshengDisplayElement.style.display = 'inline-block';
+                         
+                         console.log(`${groundBranch} 设置十二建除: ${jianchu}, 旺衰: ${yueling}, 十干长生: ${changsheng}, 五行长生: ${wuxingChangsheng} (月支: ${monthBranch}, 天盘地支: ${heavenBranch})`);
+                     }
                 }
             });
             
@@ -3791,6 +3915,16 @@ class DaLiuRenCalculator {
         }
         
         return { gan, isXunkong };
+    }
+
+    // 计算五行长生（根据 WUXING_CHANGSHENG_TABLE）
+    calculateWuxingChangsheng(dayStem, tianpanBranch) {
+        if (!dayStem || !tianpanBranch) return '';
+        const seq = WUXING_CHANGSHENG_TABLE[dayStem];
+        if (!seq) return '';
+        const idx = seq.indexOf(tianpanBranch);
+        if (idx === -1) return '';
+        return CHANGSHENG_STAGES[idx];
     }
 
 

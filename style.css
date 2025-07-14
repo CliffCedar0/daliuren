@@ -1178,7 +1178,8 @@ button:hover {
     }
 }
 
-/* 十二长生和月令样式 */
+/* 十二建除、旺衰、十干长生和五行长生样式 */
+/* --- 显示区域 --- */
 .changsheng-yueling-container {
     position: absolute;
     bottom: 2px;
@@ -1186,16 +1187,70 @@ button:hover {
     left: auto;
     font-size: 0.6em;
     line-height: 1;
+    z-index: 4;
+    text-align: right;
     display: flex;
     flex-direction: column;
-    gap: 1px;
-    z-index: 4;
+    width: 100%;
 }
 
-.yueling-display, .changsheng-display {
+/* 第一行：十二建除 + 旺衰 */
+.changsheng-yueling-container > div:first-child {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    margin-bottom: 1px;
+}
+
+/* 第一行：十二建除（左） */
+.jianchu-display {
     color: #000;
     font-weight: normal;
     text-align: right;
     font-size: 0.7em;
     line-height: 1.1;
+    display: inline-block;
+    margin-right: 4px;
+    order: 1;
+}
+
+/* 第一行：旺衰（右） */
+.yueling-display {
+    color: #000;
+    font-weight: normal;
+    text-align: right;
+    font-size: 0.7em;
+    line-height: 1.1;
+    display: inline-block;
+    order: 2;
+}
+
+/* 第二行：十干长生 + 五行长生 */
+.changsheng-yueling-container > div:last-child {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+}
+
+/* 第二行：十干长生（左，红色） */
+.changsheng-display {
+    color: #dc143c; /* 红色 */
+    font-weight: normal;
+    text-align: right;
+    font-size: 0.7em;
+    line-height: 1.1;
+    display: inline-block;
+    margin-right: 4px;
+    order: 3;
+}
+
+/* 第二行：五行长生（右，蓝色） */
+.wuxing-changsheng-display {
+    color: #4169e1; /* 蓝色 */
+    font-weight: normal;
+    text-align: right;
+    font-size: 0.7em;
+    line-height: 1.1;
+    display: inline-block;
+    order: 4;
 } 
