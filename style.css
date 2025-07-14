@@ -382,6 +382,9 @@ button:hover {
     border: 3px solid #e9ecef;
     transition: all 0.3s ease;
     cursor: pointer;
+    text-align: center;
+    vertical-align: middle;
+    padding: 0;
 }
 
 .branch-cell:hover {
@@ -397,63 +400,17 @@ button:hover {
     position: relative;
 }
 
-/* 四角定位样式 */
-.top-left {
-    position: absolute;
-    top: 3px;
-    left: 3px;
-    font-size: 0.8em;
-    font-weight: bold;
-    padding: 2px 4px;
-    border-radius: 4px;
-    line-height: 1;
-    min-width: 20px;
-    text-align: center;
-}
-
-.center {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 1.2em;
-    font-weight: bold;
-    padding: 4px 8px;
-    border-radius: 6px;
-    line-height: 1;
-    min-width: 24px;
-    text-align: center;
-}
-
-.bottom-left {
-    position: absolute;
-    bottom: 3px;
-    left: 3px;
-    font-size: 0.8em;
-    font-weight: bold;
-    padding: 2px 4px;
-    border-radius: 4px;
-    line-height: 1;
-    min-width: 20px;
-    text-align: center;
-}
-
-.bottom-right {
-    position: absolute;
-    bottom: 3px;
-    right: 3px;
-    font-size: 0.8em;
-    font-weight: bold;
-    padding: 2px 4px;
-    border-radius: 4px;
-    line-height: 1;
-    min-width: 20px;
-    text-align: center;
-}
+/* 删除四角定位样式，改用垂直居中布局 */
 
 /* 天将样式 */
 .tianjiang {
     color: #8e44ad;
+}
+
+/* 地盘天将样式 */
+.dipan-tianjiang {
+    color: #e67e22;
+    font-weight: bold;
 }
 
 /* 天盘样式 */
@@ -462,41 +419,116 @@ button:hover {
     font-size: 1.4em;
 }
 
-/* 遁信息容器样式 */
-.dun-info {
+/* 删除重复的.branch-cell样式定义 */
+
+/* 天盘天将样式 */
+.tianpan-tianjiang {
+    position: absolute;
+    top: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.85em;
+    font-weight: bold;
+    color: #8e44ad;
+    line-height: 1.2;
+}
+
+/* 天盘地支样式 */
+.tianpan-branch {
+    font-size: 1.4em;
+    font-weight: bold;
+    color: #00b894;
+    line-height: 1.2;
+    text-align: center;
+    position: absolute;
+    top: 25px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+}
+
+/* 地盘地支样式 */
+.dipan-branch {
+    position: absolute;
+    top: 50px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 1.1em;
+    font-weight: bold;
+    color: #e67e22;
+    line-height: 1.2;
+}
+
+/* 地盘天将样式 */
+.dipan-tianjiang-bottom {
+    position: absolute;
+    top: 75px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.85em;
+    font-weight: bold;
+    color: #e67e22;
+    line-height: 1.2;
+}
+
+/* 旬干显示样式 */
+.tianpan-row {
+    position: absolute;
+    top: 50px;
+    left: 0;
+    right: 0;
+    height: 20px;
     display: flex;
-    flex-direction: column;
-    gap: 1px;
     align-items: center;
 }
 
-/* 三遁样式 */
-.tiandun, .rendun, .xungan {
-    padding: 1px 3px;
-    border-radius: 3px;
-    min-width: 16px;
-    text-align: center;
-    font-size: 0.65em;
+.xungan-display {
+    font-size: 1.3em;
     font-weight: bold;
-    line-height: 1;
-}
-
-.tiandun {
-    color: #e74c3c;
-    background: rgba(231, 76, 60, 0.1);
-    border: 1px solid #e74c3c;
-}
-
-.rendun {
     color: #3498db;
+    text-align: left;
+    line-height: 1;
+    min-width: 16px;
+    position: absolute;
+    left: 2px;
+}
+
+/* 保留.xungan样式以支持旧的旬干显示 */
+.xungan {
+    color: #3498db !important; /* 地遁蓝色 */
     background: rgba(52, 152, 219, 0.1);
     border: 1px solid #3498db;
 }
 
-.xungan {
-    color: #f39c12;
-    background: rgba(243, 156, 18, 0.1);
-    border: 1px solid #f39c12;
+/* 旬空标志样式 */
+.xunkong-flag {
+    color: #999 !important;
+    text-decoration: line-through !important;
+}
+
+/* 三传天干旬空标志样式 */
+.sanchuan-cell.xunkong-flag {
+    color: #999 !important;
+    text-decoration: line-through !important;
+    position: relative;
+}
+
+.sanchuan-cell.xunkong-flag::after {
+    content: "空";
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    font-size: 8px;
+    color: #e74c3c;
+    background: rgba(231, 76, 60, 0.1);
+    border: 1px solid #e74c3c;
+    border-radius: 50%;
+    width: 10px;
+    height: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
 }
 
 /* 地盘样式 */
