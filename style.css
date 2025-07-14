@@ -472,6 +472,19 @@ button:hover {
 }
 
 /* 旬干显示样式 */
+/* 天遁显示样式 */
+.tiandun-display {
+    position: absolute;
+    top: 28px;
+    left: 2px;
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #ff6b6b;
+    text-align: left;
+    line-height: 1;
+    min-width: 16px;
+}
+
 .tianpan-row {
     position: absolute;
     top: 50px;

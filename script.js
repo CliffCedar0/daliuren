@@ -1592,27 +1592,67 @@ class DaLiuRenCalculator {
         return HEAVENLY_STEMS[ganIndex];
     }
 
-    // 计算天遁（时支起甲的简单算法）
-    calculateTianDun(groundBranch, timeBranch) {
-        // 天遁：从时支位置起甲，按地支顺序排列天干
-        const timeBranchIndex = BRANCH_INDEX[timeBranch];
+    // 计算时辰的旬首
+    calculateTimeXunshou(timeStem, timeBranch) {
+        // 时辰的六十甲子旬首对应表
+        const timeXunganTable = {
+            // 甲子旬
+            '甲子': '甲子', '乙丑': '甲子', '丙寅': '甲子', '丁卯': '甲子', '戊辰': '甲子',
+            '己巳': '甲子', '庚午': '甲子', '辛未': '甲子', '壬申': '甲子', '癸酉': '甲子',
+            // 甲戌旬
+            '甲戌': '甲戌', '乙亥': '甲戌', '丙子': '甲戌', '丁丑': '甲戌', '戊寅': '甲戌',
+            '己卯': '甲戌', '庚辰': '甲戌', '辛巳': '甲戌', '壬午': '甲戌', '癸未': '甲戌',
+            // 甲申旬
+            '甲申': '甲申', '乙酉': '甲申', '丙戌': '甲申', '丁亥': '甲申', '戊子': '甲申',
+            '己丑': '甲申', '庚寅': '甲申', '辛卯': '甲申', '壬辰': '甲申', '癸巳': '甲申',
+            // 甲午旬
+            '甲午': '甲午', '乙未': '甲午', '丙申': '甲午', '丁酉': '甲午', '戊戌': '甲午',
+            '己亥': '甲午', '庚子': '甲午', '辛丑': '甲午', '壬寅': '甲午', '癸卯': '甲午',
+            // 甲辰旬
+            '甲辰': '甲辰', '乙巳': '甲辰', '丙午': '甲辰', '丁未': '甲辰', '戊申': '甲辰',
+            '己酉': '甲辰', '庚戌': '甲辰', '辛亥': '甲辰', '壬子': '甲辰', '癸丑': '甲辰',
+            // 甲寅旬
+            '甲寅': '甲寅', '乙卯': '甲寅', '丙辰': '甲寅', '丁巳': '甲寅', '戊午': '甲寅',
+            '己未': '甲寅', '庚申': '甲寅', '辛酉': '甲寅', '壬戌': '甲寅', '癸亥': '甲寅'
+        };
+        
+        const timeGanzhi = timeStem + timeBranch;
+        return timeXunganTable[timeGanzhi] || '甲子';
+    }
+
+    // 计算天遁（根据时辰旬首起甲）
+    calculateTianDun(groundBranch, timeStem, timeBranch) {
+        // 获取时辰的旬首
+        const timeXunshou = this.calculateTimeXunshou(timeStem, timeBranch);
+        const xunshouStem = timeXunshou.charAt(0);
+        const xunshouBranch = timeXunshou.charAt(1);
+        
+        // 获取旬首地支的索引
+        const xunshouBranchIndex = BRANCH_INDEX[xunshouBranch];
+        // 获取目标地支的索引
         const groundBranchIndex = BRANCH_INDEX[groundBranch];
         
-        // 从时支位置起甲，计算目标地支对应的天干
-        const steps = (groundBranchIndex - timeBranchIndex + 12) % 12;
-        const ganIndex = steps % 10; // 从甲开始循环
+        // 计算目标地支距离旬首地支的步数
+        const steps = (groundBranchIndex - xunshouBranchIndex + 12) % 12;
+        
+        // 从甲开始排列
+        const ganIndex = steps % 10;
         
         return HEAVENLY_STEMS[ganIndex];
     }
 
     // 新增：计算天遁的旬空状态
-    calculateTianDunWithXunkong(groundBranch, timeBranch) {
-        // 天遁：从时支位置起甲，按地支顺序排列天干
-        const timeBranchIndex = BRANCH_INDEX[timeBranch];
+    calculateTianDunWithXunkong(groundBranch, timeStem, timeBranch) {
+        // 获取时辰的旬首
+        const timeXunshou = this.calculateTimeXunshou(timeStem, timeBranch);
+        const xunshouBranch = timeXunshou.charAt(1);
+        
+        // 获取旬首地支的索引
+        const xunshouBranchIndex = BRANCH_INDEX[xunshouBranch];
         const groundBranchIndex = BRANCH_INDEX[groundBranch];
         
-        // 从时支位置起甲，计算目标地支对应的天干
-        const steps = (groundBranchIndex - timeBranchIndex + 12) % 12;
+        // 计算目标地支距离旬首地支的步数
+        const steps = (groundBranchIndex - xunshouBranchIndex + 12) % 12;
         
         // 天遁的旬空判断：步数大于等于10时为空
         const isTimeXunkong = steps >= 10;
@@ -3814,6 +3854,21 @@ class DaLiuRenCalculator {
                         console.log(`${groundBranch} 设置地盘天将: ${dipanTianjiang}`);
                     }
                     
+                    // 更新天遁
+                    const tiandunDisplayElement = cell.querySelector('.tiandun-display');
+                    if (tiandunDisplayElement) {
+                        // 获取时辰干支
+                        const timeGZ = this.getTimeGanZhi(timeBranch);
+                        const timeStem = timeGZ.charAt(0);
+                        
+                        // 计算天遁
+                        const tiandunGan = this.calculateTianDun(groundBranch, timeStem, timeBranch);
+                        
+                        tiandunDisplayElement.textContent = tiandunGan;
+                        tiandunDisplayElement.style.visibility = tiandunGan ? 'visible' : 'hidden';
+                        console.log(`${groundBranch} 设置天遁: ${tiandunGan}`);
+                    }
+
                     // 更新旬干（基于天盘地支计算）
                     const xunganDisplayElement = cell.querySelector('.xungan-display');
                     if (xunganDisplayElement) {
