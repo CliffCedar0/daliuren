@@ -975,104 +975,136 @@ class DaLiuRenCalculator {
         }
     }
 
-    // 计算人遁（基于贵人在地盘位置的五子元遁）
+    // 计算人遁（新逻辑）
+    // 1) 找到贵人天盘地支 nobleHeavenBranch = heavenPlate[tianpanNobleGroundPosition]
+    // 2) 找到该天盘地支所在的地盘位置 groundOfNobleHeaven (实为 tianpanNobleGroundPosition)
+    // 3) 计算该位置的建干天干 jianganGan
+    // 4) 对 jianganGan 起五子元遁，得起始天干 startGan
+    // 5) 从天盘"子"所在位置开始顺时针排布天干，求出目标位置的天干即人遁
     calculateRendun(groundBranch, tianpanNobleGroundPosition, dayStem, heavenPlate) {
-        if (!tianpanNobleGroundPosition || !dayStem || !heavenPlate) return '';
-        
-        // 第一步：用日干开始的五子元遁，从子位排到贵人在地盘位置
-        const dayStemIndex = STEM_INDEX[dayStem];
-        
-        // 第二步：计算从子位到贵人在地盘位置的步数
-        const nobleGroundIndex = BRANCH_INDEX[tianpanNobleGroundPosition];
-        const stepsToNoble = (nobleGroundIndex - 0 + 12) % 12; // 从子到贵人在地盘位置
-        
-        // 第三步：得到贵人在地盘位置的天干
-        const nobleGanIndex = (dayStemIndex + stepsToNoble) % 10;
-        const nobleGan = HEAVENLY_STEMS[nobleGanIndex];
-        
-        // 第四步：以贵人位置的天干为起点，获取对应的五子元遁起始天干
-        const newZiStem = this.getWuziYuanDunZiStem(nobleGan);
-        const newZiStemIndex = STEM_INDEX[newZiStem];
-        
-        // 第五步：从贵人地盘位置开始，按天盘地支排布新的五子元遁天干
-        const heavenBranch = heavenPlate[groundBranch]; // 获取当前位置的天盘地支
-        const heavenBranchIndex = BRANCH_INDEX[heavenBranch];
-        const tianpanNobleHeavenBranch = heavenPlate[tianpanNobleGroundPosition]; // 贵人地盘位置对应的天盘地支
-        const tianpanNobleHeavenIndex = BRANCH_INDEX[tianpanNobleHeavenBranch];
-        const stepsFromNoble = (heavenBranchIndex - tianpanNobleHeavenIndex + 12) % 12; // 从贵人天盘地支到目标天盘地支的步数
-        // 修正：原来往前移动了一格，现在后移一个位置（+1）
-        const finalGanIndex = (newZiStemIndex + stepsFromNoble + 1) % 10;
-        
-        console.log(`人遁计算 ${groundBranch}:`, {
-            dayStem, 
-            tianpanNobleGroundPosition, 
-            stepsToNoble, 
-            nobleGan,
-            newZiStem,
-            heavenBranch,
-            tianpanNobleHeavenBranch,
-            stepsFromNoble,
-            result: HEAVENLY_STEMS[finalGanIndex],
-            note: '已修正：原来往前移动了一格，现在后移一个位置'
-        });
-        
-        return HEAVENLY_STEMS[finalGanIndex];
-    }
+        if (!tianpanNobleGroundPosition || !heavenPlate) return '';
 
-    // 计算建干（从当前时柱的天盘时支位置开始顺时针排布）
-    calculateJiangan(groundBranch, timeBranch, heavenPlate) {
-        if (!timeBranch || !heavenPlate) return '';
-        
-        // 获取当前时柱
-        const timeGanZhi = this.getTimeGanZhi(timeBranch);
-        const currentTimeStem = timeGanZhi.charAt(0);  // 时干
-        const currentTimeBranch = timeGanZhi.charAt(1); // 时支
-        
-        console.log(`建干计算：当前时柱 ${timeGanZhi}, 时干 ${currentTimeStem}, 时支 ${currentTimeBranch}`);
-        
-        // 找到当前时支在天盘上的位置
-        let timeBranchTianpanPosition = null;
-        for (let dipanBranch in heavenPlate) {
-            if (heavenPlate[dipanBranch] === currentTimeBranch) {
-                timeBranchTianpanPosition = dipanBranch;
+        // 1. 贵人在地盘位置对应的天盘地支
+        const nobleHeavenBranch = heavenPlate[tianpanNobleGroundPosition];
+        if (!nobleHeavenBranch) return '';
+
+        // 2. 第一次映射：nobleGround = tianpanNobleGroundPosition (例: 戌)
+        const nobleGround = tianpanNobleGroundPosition;
+
+        // 3. 第二次映射：找到天盘地支 = nobleGround 的地盘位置 secondGround (例: heavenPlate[丑] == 戌 ⇒ secondGround = 丑)
+        let secondGround = null;
+        for (let pos in heavenPlate) {
+            if (heavenPlate[pos] === nobleGround) {
+                secondGround = pos;
                 break;
             }
         }
-        
-        if (!timeBranchTianpanPosition) {
-            console.warn(`建干计算失败：时支 ${currentTimeBranch} 未在天盘中找到`);
+        if (!secondGround) {
+            console.error('calculateRendun: 未找到天盘地支 ' + nobleGround + ' 所在的地盘位置');
             return '';
         }
-        
-        console.log(`时支 ${currentTimeBranch} 在天盘位置 ${timeBranchTianpanPosition}`);
-        
-        // 计算从天盘时支位置到目标位置的步数（顺时针）
-        const timeBranchTianpanIndex = BRANCH_INDEX[timeBranchTianpanPosition];
-        const groundBranchIndex = BRANCH_INDEX[groundBranch];
-        const steps = (groundBranchIndex - timeBranchTianpanIndex + 12) % 12;
-        
-        // 从时干开始排布（例如辛未时，从辛开始：辛壬癸甲乙丙丁戊己庚）
-        const timeStemIndex = STEM_INDEX[currentTimeStem];
-        const jianganIndex = (timeStemIndex + steps) % 10;
-        
-        console.log(`建干计算 ${groundBranch}: 时干${currentTimeStem}(索引${timeStemIndex}), 距离时支位置 ${steps} 步, 结果 ${HEAVENLY_STEMS[jianganIndex]}`);
-        
+
+        // 4. 在 secondGround 上计算建干（以日干起五子元遁，从天盘子位排）
+        const jianganGan = this.calculateJiangan(secondGround, dayStem, heavenPlate);
+        if (!jianganGan) return '';
+
+        // 5. 取得五子元遁的起始天干
+        const startGan = this.getWuziYuanDunZiStem(jianganGan);
+        const startGanIndex = STEM_INDEX[startGan];
+
+        // 6. 找到天盘"子"所在的地盘位置
+        let ziPosition = null;
+        for (let pos in heavenPlate) {
+            if (heavenPlate[pos] === '子') {
+                ziPosition = pos;
+                break;
+            }
+        }
+        if (!ziPosition) return '';
+
+        // 7. 计算目标天盘地支相对"子"天盘地支的顺时针步数
+        const targetHeavenBranch = heavenPlate[groundBranch];
+        if (!targetHeavenBranch) return '';
+        const stepsFromZi = (BRANCH_INDEX[targetHeavenBranch] - BRANCH_INDEX['子'] + 12) % 12;
+
+        const rendunIndex = (startGanIndex + stepsFromZi) % 10;
+
+        console.log('人遁计算', {
+            groundBranch,
+            nobleHeavenBranch,
+            nobleGround,
+            secondGround,
+            jianganGan,
+            startGan,
+            ziPosition,
+            targetHeavenBranch,
+            stepsFromZi,
+            result: HEAVENLY_STEMS[rendunIndex]
+        });
+
+        return HEAVENLY_STEMS[rendunIndex];
+    }
+
+    // 计算建干（以日干起五子元遁，从天盘中"子"所在地盘开始顺时针排布）
+    calculateJiangan(groundBranch, dayStem, heavenPlate) {
+        if (!dayStem || !heavenPlate) return '';
+
+        // 1. 取得五子元遁起始天干（子位天干）
+        const startGan = this.getWuziYuanDunZiStem(dayStem);
+        const startGanIndex = STEM_INDEX[startGan];
+
+        // 2. 找到天盘中地支为"子"的地盘位置
+        let ziPosition = null;
+        for (let pos in heavenPlate) {
+            if (heavenPlate[pos] === '子') {
+                ziPosition = pos;
+                break;
+            }
+        }
+        if (!ziPosition) {
+            console.error('calculateJiangan: 未在天盘中找到"子"位置');
+            return '';
+        }
+
+        // 3. 计算从"子"位置到目标地支的顺时针步数
+        const stepsFromZi = (BRANCH_INDEX[groundBranch] - BRANCH_INDEX[ziPosition] + 12) % 12;
+
+        // 4. 得到目标地支的建干天干
+        const jianganIndex = (startGanIndex + stepsFromZi) % 10;
+
+        console.log(`建干计算 ${groundBranch}: 起始天干 ${startGan}(索引${startGanIndex}), "子"在地盘 ${ziPosition}, 距离 ${stepsFromZi} 步, 结果 ${HEAVENLY_STEMS[jianganIndex]}`);
+
         return HEAVENLY_STEMS[jianganIndex];
     }
 
     // 计算复建（基于时干的五子元遁）
-    calculateFujian(groundBranch, timeStem) {
-        if (!timeStem) return '';
-        
-        // 获取时干对应的五子元遁起始天干
-        const ziStem = this.getWuziYuanDunZiStem(timeStem);
-        const ziStemIndex = STEM_INDEX[ziStem];
-        
-        // 计算从子位到目标地支的步数
-        const groundBranchIndex = BRANCH_INDEX[groundBranch];
-        const stepsFromZi = (groundBranchIndex - 0 + 12) % 12; // 从子到目标位置
-        const fujianIndex = (ziStemIndex + stepsFromZi) % 10;
-        
+    calculateFujian(groundBranch, timeStem, heavenPlate) {
+        // 复建 = 对时干起五子元遁，并从天盘中"子"所在位置开始顺时针排布
+        if (!timeStem || !heavenPlate) return '';
+
+        // 1. 获取时干对应的五子元遁起始天干（子位天干）
+        const startGan = this.getWuziYuanDunZiStem(timeStem);
+        const startGanIndex = STEM_INDEX[startGan];
+
+        // 2. 在天盘中找到"子"地支所在的地盘位置
+        let ziPosition = null;
+        for (let pos in heavenPlate) {
+            if (heavenPlate[pos] === '子') {
+                ziPosition = pos;
+                break;
+            }
+        }
+        if (!ziPosition) {
+            console.error('calculateFujian: 未在天盘中找到"子"位置');
+            return '';
+        }
+
+        // 3. 计算从"子"位置到目标地支的顺时针步数
+        const stepsFromZi = (BRANCH_INDEX[groundBranch] - BRANCH_INDEX[ziPosition] + 12) % 12;
+
+        // 4. 计算目标位置的复建天干
+        const fujianIndex = (startGanIndex + stepsFromZi) % 10;
+
         return HEAVENLY_STEMS[fujianIndex];
     }
 
@@ -3484,12 +3516,12 @@ class DaLiuRenCalculator {
                     const fujianElement = cell.querySelector('.fujian');
                     if (jianganElement && fujianElement) {
                         // 建干从天盘时支位置开始排布
-                        const jianganGan = this.calculateJiangan(groundBranch, timeBranch, heavenPlate);
+                        const jianganGan = this.calculateJiangan(groundBranch, dayStem, heavenPlate);
                         jianganElement.textContent = jianganGan;
                         // 复建是用时干起五子元遁
                         const timeGZ = this.getTimeGanZhi(timeBranch);
                         const timeStem = timeGZ.charAt(0);
-                        const fujianGan = this.calculateFujian(groundBranch, timeStem);
+                        const fujianGan = this.calculateFujian(groundBranch, timeStem, heavenPlate);
                         fujianElement.textContent = fujianGan;
                         // 添加五行颜色
                         this.applyWuxingColor(jianganElement, jianganGan);
