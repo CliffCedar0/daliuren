@@ -50,10 +50,7 @@
             <div class="control-group">
                 <button id="calculate-btn">排盘 (使用当前时间)</button>
                 <button id="auto-update-btn">自动更新</button>
-                            <button onclick="window.calculator && calculator.verifyTianjiangArrangement()">验证天将排布规则</button>
-            <button onclick="window.calculator && calculator.testSanchuanTianjiangFix()">测试三传天将修复</button>
-            <button onclick="window.calculator && calculator.debugTianjiangMapping()">调试天将分布</button>
-            <button onclick="window.calculator && calculator.testTianjiangDistribution()">测试天将分布</button>
+
             <button onclick="window.calculator && calculator.setCurrentDateTime()">设置当前时间</button>
             <button onclick="window.calculator && calculator.toggleAutoUpdate()">切换自动更新</button>
             <button onclick="window.calculator && calculator.openQianfaModal()">显示钤法</button>
@@ -191,132 +188,192 @@
                         <td class="branch-cell" data-branch="巳">
                             <div class="tianpan-tianjiang tianjiang"></div>
                             <div class="tianpan-branch heaven-branch">巳</div>
+                            <div class="rendun-display"></div>
                             <div class="tiandun-display"></div>
                             <div class="tianpan-row">
                                 <div class="xungan-display xungan"></div>
                             </div>
                             <div class="dipan-branch ground-branch">巳</div>
                             <div class="dipan-tianjiang-bottom dipan-tianjiang"></div>
+                            <div class="jianjian-display">
+                                <span class="jiangan">甲</span>
+                                <span class="fujian">丙</span>
+                            </div>
                         </td>
                         <td class="branch-cell" data-branch="午">
                             <div class="tianpan-tianjiang tianjiang"></div>
                             <div class="tianpan-branch heaven-branch">午</div>
+                            <div class="rendun-display"></div>
                             <div class="tiandun-display"></div>
                             <div class="tianpan-row">
                                 <div class="xungan-display xungan"></div>
                             </div>
                             <div class="dipan-branch ground-branch">午</div>
                             <div class="dipan-tianjiang-bottom dipan-tianjiang"></div>
+                            <div class="jianjian-display">
+                                <span class="jiangan">甲</span>
+                                <span class="fujian">丙</span>
+                            </div>
                         </td>
                         <td class="branch-cell" data-branch="未">
                             <div class="tianpan-tianjiang tianjiang"></div>
                             <div class="tianpan-branch heaven-branch">未</div>
+                            <div class="rendun-display"></div>
                             <div class="tiandun-display"></div>
                             <div class="tianpan-row">
                                 <div class="xungan-display xungan"></div>
                             </div>
                             <div class="dipan-branch ground-branch">未</div>
                             <div class="dipan-tianjiang-bottom dipan-tianjiang"></div>
+                            <div class="jianjian-display">
+                                <span class="jiangan">甲</span>
+                                <span class="fujian">丙</span>
+                            </div>
                         </td>
                         <td class="branch-cell" data-branch="申">
                             <div class="tianpan-tianjiang tianjiang"></div>
                             <div class="tianpan-branch heaven-branch">申</div>
+                            <div class="rendun-display"></div>
                             <div class="tiandun-display"></div>
                             <div class="tianpan-row">
                                 <div class="xungan-display xungan"></div>
                             </div>
                             <div class="dipan-branch ground-branch">申</div>
                             <div class="dipan-tianjiang-bottom dipan-tianjiang"></div>
+                            <div class="jianjian-display">
+                                <span class="jiangan">甲</span>
+                                <span class="fujian">丙</span>
+                            </div>
                         </td>
                     </tr>
                     <tr>
                         <td class="branch-cell" data-branch="辰">
                             <div class="tianpan-tianjiang tianjiang"></div>
                             <div class="tianpan-branch heaven-branch">辰</div>
+                            <div class="rendun-display"></div>
                             <div class="tiandun-display"></div>
                             <div class="tianpan-row">
                                 <div class="xungan-display xungan"></div>
                             </div>
                             <div class="dipan-branch ground-branch">辰</div>
                             <div class="dipan-tianjiang-bottom dipan-tianjiang"></div>
+                            <div class="jianjian-display">
+                                <span class="jiangan">甲</span>
+                                <span class="fujian">丙</span>
+                            </div>
                         </td>
                         <td class="empty-cell"></td>
                         <td class="empty-cell"></td>
                         <td class="branch-cell" data-branch="酉">
                             <div class="tianpan-tianjiang tianjiang"></div>
                             <div class="tianpan-branch heaven-branch">酉</div>
+                            <div class="rendun-display"></div>
                             <div class="tiandun-display"></div>
                             <div class="tianpan-row">
                                 <div class="xungan-display xungan"></div>
                             </div>
                             <div class="dipan-branch ground-branch">酉</div>
                             <div class="dipan-tianjiang-bottom dipan-tianjiang"></div>
+                            <div class="jianjian-display">
+                                <span class="jiangan">甲</span>
+                                <span class="fujian">丙</span>
+                            </div>
                         </td>
                     </tr>
                     <tr>
                         <td class="branch-cell" data-branch="卯">
                             <div class="tianpan-tianjiang tianjiang"></div>
                             <div class="tianpan-branch heaven-branch">卯</div>
+                            <div class="rendun-display"></div>
                             <div class="tiandun-display"></div>
                             <div class="tianpan-row">
                                 <div class="xungan-display xungan"></div>
                             </div>
                             <div class="dipan-branch ground-branch">卯</div>
                             <div class="dipan-tianjiang-bottom dipan-tianjiang"></div>
+                            <div class="jianjian-display">
+                                <span class="jiangan">甲</span>
+                                <span class="fujian">丙</span>
+                            </div>
                         </td>
                         <td class="empty-cell"></td>
                         <td class="empty-cell"></td>
                         <td class="branch-cell" data-branch="戌">
                             <div class="tianpan-tianjiang tianjiang"></div>
                             <div class="tianpan-branch heaven-branch">戌</div>
+                            <div class="rendun-display"></div>
                             <div class="tiandun-display"></div>
                             <div class="tianpan-row">
                                 <div class="xungan-display xungan"></div>
                             </div>
                             <div class="dipan-branch ground-branch">戌</div>
                             <div class="dipan-tianjiang-bottom dipan-tianjiang"></div>
+                            <div class="jianjian-display">
+                                <span class="jiangan">甲</span>
+                                <span class="fujian">丙</span>
+                            </div>
                         </td>
                     </tr>
                     <tr>
                         <td class="branch-cell" data-branch="寅">
                             <div class="tianpan-tianjiang tianjiang">太常</div>
                             <div class="tianpan-branch heaven-branch">寅</div>
+                            <div class="rendun-display"></div>
                             <div class="tiandun-display"></div>
                             <div class="tianpan-row">
                                 <div class="xungan-display xungan">壬</div>
                             </div>
                             <div class="dipan-branch ground-branch">寅</div>
                             <div class="dipan-tianjiang-bottom dipan-tianjiang"></div>
+                            <div class="jianjian-display">
+                                <span class="jiangan">甲</span>
+                                <span class="fujian">丙</span>
+                            </div>
                         </td>
                         <td class="branch-cell" data-branch="丑">
                             <div class="tianpan-tianjiang tianjiang">玄武</div>
                             <div class="tianpan-branch heaven-branch">丑</div>
+                            <div class="rendun-display"></div>
                             <div class="tiandun-display"></div>
                             <div class="tianpan-row">
                                 <div class="xungan-display xungan">癸</div>
                             </div>
                             <div class="dipan-branch ground-branch">丑</div>
                             <div class="dipan-tianjiang-bottom dipan-tianjiang"></div>
+                            <div class="jianjian-display">
+                                <span class="jiangan">甲</span>
+                                <span class="fujian">丙</span>
+                            </div>
                         </td>
                         <td class="branch-cell" data-branch="子">
                             <div class="tianpan-tianjiang tianjiang">太阴</div>
                             <div class="tianpan-branch heaven-branch">子</div>
+                            <div class="rendun-display"></div>
                             <div class="tiandun-display"></div>
                             <div class="tianpan-row">
                                 <div class="xungan-display xungan">甲</div>
                             </div>
                             <div class="dipan-branch ground-branch">子</div>
                             <div class="dipan-tianjiang-bottom dipan-tianjiang"></div>
+                            <div class="jianjian-display">
+                                <span class="jiangan">甲</span>
+                                <span class="fujian">丙</span>
+                            </div>
                         </td>
                         <td class="branch-cell" data-branch="亥">
                             <div class="tianpan-tianjiang tianjiang">天后</div>
                             <div class="tianpan-branch heaven-branch">亥</div>
+                            <div class="rendun-display"></div>
                             <div class="tiandun-display"></div>
                             <div class="tianpan-row">
                                 <div class="xungan-display xungan">乙</div>
                             </div>
                             <div class="dipan-branch ground-branch">亥</div>
                             <div class="dipan-tianjiang-bottom dipan-tianjiang"></div>
+                            <div class="jianjian-display">
+                                <span class="jiangan">甲</span>
+                                <span class="fujian">丙</span>
+                            </div>
                         </td>
                     </tr>
                 </table>

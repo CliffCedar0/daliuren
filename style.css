@@ -473,9 +473,23 @@ button:hover {
 
 /* 旬干显示样式 */
 /* 天遁显示样式 */
+.rendun-display {
+    position: absolute;
+    top: 3px;
+    left: 2px;
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #f1c40f;
+    text-align: left;
+    line-height: 1;
+    min-width: 16px;
+    background: rgba(241, 196, 15, 0.1);
+    border: 1px solid #f1c40f;
+}
+
 .tiandun-display {
     position: absolute;
-    top: 28px;
+    top: 25px;
     left: 2px;
     font-size: 1.2em;
     font-weight: bold;
@@ -483,6 +497,8 @@ button:hover {
     text-align: left;
     line-height: 1;
     min-width: 16px;
+    background: rgba(255, 107, 107, 0.1);
+    border: 1px solid #ff6b6b;
 }
 
 .tianpan-row {
@@ -504,6 +520,8 @@ button:hover {
     min-width: 16px;
     position: absolute;
     left: 2px;
+    background: rgba(52, 152, 219, 0.1);
+    border: 1px solid #3498db;
 }
 
 /* 保留.xungan样式以支持旧的旬干显示 */
@@ -516,6 +534,49 @@ button:hover {
 /* 旬空标志样式 */
 .xunkong-flag {
     color: #999 !important;
+    text-decoration: line-through !important;
+}
+
+/* 旬遁旬空特殊样式 */
+.xungan-display.xunkong-flag {
+    color: #999 !important;
+    background: rgba(153, 153, 153, 0.1) !important;
+    border: 1px solid #999 !important;
+    text-decoration: line-through !important;
+}
+
+/* 人遁旬空特殊样式 */
+.rendun-display.xunkong-flag {
+    color: #dab55a !important;
+    background: rgba(218, 181, 90, 0.1) !important;
+    border: 1px solid #dab55a !important;
+    text-decoration: line-through !important;
+}
+
+/* 建干和复建显示样式 */
+.jianjian-display {
+    position: absolute;
+    bottom: 2px;
+    left: 2px;
+    font-size: 0.8em;
+    line-height: 1;
+    display: flex;
+    gap: 1px;
+}
+
+.jiangan {
+    font-weight: bold;
+}
+
+.fujian {
+    font-weight: bold;
+}
+
+/* 天遁旬空特殊样式 */
+.tiandun-display.xunkong-flag {
+    color: #ff9999 !important;
+    background: rgba(255, 153, 153, 0.1) !important;
+    border: 1px solid #ff9999 !important;
     text-decoration: line-through !important;
 }
 
@@ -728,6 +789,25 @@ button:hover {
     font-size: 1.2em;
     border-bottom: 2px solid #667eea;
     padding-bottom: 8px;
+}
+
+.qianfa-subsection {
+    margin-bottom: 20px;
+    padding: 15px;
+    background: rgba(241, 245, 249, 0.8);
+    border-radius: 8px;
+    border-left: 4px solid #e0e7ff;
+}
+
+.qianfa-subsection:last-child {
+    margin-bottom: 0;
+}
+
+.qianfa-subsection h4 {
+    margin-bottom: 12px;
+    color: #475569;
+    font-size: 1.1em;
+    font-weight: 600;
 }
 
 @media (max-width: 768px) {
