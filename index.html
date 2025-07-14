@@ -3,12 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>卿式大六壬</title>
+    <title>卿核大六壬</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
-        <h1>卿式大六壬</h1>
+        <h1>卿核大六壬</h1>
                 
         <div class="control-panel">
             <div class="control-group">
@@ -106,79 +107,186 @@
         
         <!-- 三传表格 -->
         <div class="sanchuan-container">
-            <table class="sanchuan-table">
-                <!-- <thead>
-                    <tr>
-                        <th>传</th>
-                        <th>六亲</th>
-                        <th>十神</th>
-                        <th>天干</th>
-                        <th>地支</th>
-                        <th>天将</th>
-                    </tr>
-                </thead> -->
-                <tbody>
-                    <tr>
-                        <td class="chuan-name">初传</td>
-                        <td class="sanchuan-cell" id="chuchuan-liuqin">初传六亲</td>
-                        <td class="sanchuan-cell" id="chuchuan-shishen">初传十神</td>
-                        <td class="sanchuan-cell" id="chuchuan-gan">初传天干</td>
-                        <td class="sanchuan-cell" id="chuchuan-zhi">初传地支</td>
-                        <td class="sanchuan-cell" id="chuchuan-tianjiang">初传天将</td>
-                    </tr>
-                    <tr>
-                        <td class="chuan-name">中传</td>
-                        <td class="sanchuan-cell" id="zhongchuan-liuqin">中传六亲</td>
-                        <td class="sanchuan-cell" id="zhongchuan-shishen">中传十神</td>
-                        <td class="sanchuan-cell" id="zhongchuan-gan">中传天干</td>
-                        <td class="sanchuan-cell" id="zhongchuan-zhi">中传地支</td>
-                        <td class="sanchuan-cell" id="zhongchuan-tianjiang">中传天将</td>
-                    </tr>
-                    <tr>
-                        <td class="chuan-name">末传</td>
-                        <td class="sanchuan-cell" id="mochuan-liuqin">末传六亲</td>
-                        <td class="sanchuan-cell" id="mochuan-shishen">末传十神</td>
-                        <td class="sanchuan-cell" id="mochuan-gan">末传天干</td>
-                        <td class="sanchuan-cell" id="mochuan-zhi">末传地支</td>
-                        <td class="sanchuan-cell" id="mochuan-tianjiang">末传天将</td>
-                    </tr>
-                </tbody>
-            </table>
+            <div class="row g-3 mb-4">
+                <!-- 三传 - 主卡片 -->
+                <div class="col-12">
+                    <div class="card main-card">
+                        <div class="card-body p-4">
+                            <!-- 初传卡片 -->
+                            <div class="card inner-card mb-3">
+                                <div class="card-body d-flex align-items-center">
+                                    <span class="transmission-label me-3">初传：</span>
+                                    <div class="d-flex flex-grow-1 justify-content-center align-items-center">
+                                        <div class="sanchuan-box">
+                                            <span id="chuchuan-liuqin" class="sanchuan-cell">妻财</span>
+                                        </div>
+                                        <div class="sanchuan-separator">|</div>
+                                        <div class="sanchuan-box">
+                                            <span id="chuchuan-shishen" class="sanchuan-cell">食神</span>
+                                        </div>
+                                        <div class="sanchuan-separator">|</div>
+                                        <div class="sanchuan-box">
+                                            <span id="chuchuan-gan" class="sanchuan-cell text-danger">丙</span>
+                                        </div>
+                                        <div class="sanchuan-separator">|</div>
+                                        <div class="sanchuan-box">
+                                            <span id="chuchuan-zhi" class="sanchuan-cell">戌</span>
+                                        </div>
+                                        <div class="sanchuan-separator">|</div>
+                                        <div class="sanchuan-box">
+                                            <span id="chuchuan-tianjiang" class="sanchuan-cell text-success">六合/六合</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 中传卡片 -->
+                            <div class="card inner-card mb-3">
+                                <div class="card-body d-flex align-items-center">
+                                    <span class="transmission-label me-3">中传：</span>
+                                    <div class="d-flex flex-grow-1 justify-content-center align-items-center">
+                                        <div class="sanchuan-box">
+                                            <span id="zhongchuan-liuqin" class="sanchuan-cell">子孙</span>
+                                        </div>
+                                        <div class="sanchuan-separator">|</div>
+                                        <div class="sanchuan-box">
+                                            <span id="zhongchuan-shishen" class="sanchuan-cell">比肩</span>
+                                        </div>
+                                        <div class="sanchuan-separator">|</div>
+                                        <div class="sanchuan-box">
+                                            <span id="zhongchuan-gan" class="sanchuan-cell text-secondary">甲</span>
+                                        </div>
+                                        <div class="sanchuan-separator">|</div>
+                                        <div class="sanchuan-box">
+                                            <span id="zhongchuan-zhi" class="sanchuan-cell text-danger">午</span>
+                                        </div>
+                                        <div class="sanchuan-separator">|</div>
+                                        <div class="sanchuan-box">
+                                            <span id="zhongchuan-tianjiang" class="sanchuan-cell text-primary">天后/白虎</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 末传卡片 -->
+                            <div class="card inner-card">
+                                <div class="card-body d-flex align-items-center">
+                                    <span class="transmission-label me-3">末传：</span>
+                                    <div class="d-flex flex-grow-1 justify-content-center align-items-center">
+                                        <div class="sanchuan-box">
+                                            <span id="mochuan-liuqin" class="sanchuan-cell">兄弟</span>
+                                        </div>
+                                        <div class="sanchuan-separator">|</div>
+                                        <div class="sanchuan-box">
+                                            <span id="mochuan-shishen" class="sanchuan-cell">七杀</span>
+                                        </div>
+                                        <div class="sanchuan-separator">|</div>
+                                        <div class="sanchuan-box">
+                                            <span id="mochuan-gan" class="sanchuan-cell text-warning">庚</span>
+                                        </div>
+                                        <div class="sanchuan-separator">|</div>
+                                        <div class="sanchuan-box">
+                                            <span id="mochuan-zhi" class="sanchuan-cell text-success">寅</span>
+                                        </div>
+                                        <div class="sanchuan-separator">|</div>
+                                        <div class="sanchuan-box">
+                                            <span id="mochuan-tianjiang" class="sanchuan-cell text-warning">白虎/天后</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- 四课表格 -->
         <div class="sike-container">
-            <table class="sike-table">
-                <thead>
-                    <!-- <tr>
-                        <th>四</th>
-                        <th>三</th>
-                        <th>二</th>
-                        <th>一</th>
-                    </tr> -->
-                </thead>
-                <tbody>
-                    <tr class="sike-tianjiang">
-                        <td class="sike-cell" id="sike-4-tianjiang">支阴天将</td>
-                        <td class="sike-cell" id="sike-3-tianjiang">支上天将</td>
-                        <td class="sike-cell" id="sike-2-tianjiang">干阴天将</td>
-                        <td class="sike-cell" id="sike-1-tianjiang">干上天将</td>
-                    </tr>
-                    <tr class="sike-top">
-                        <td class="sike-cell" id="sike-4-top">支阴</td>
-                        <td class="sike-cell" id="sike-3-top">支上</td>
-                        <td class="sike-cell" id="sike-2-top">干阴</td>
-                        <td class="sike-cell" id="sike-1-top">干上</td>
-                    </tr>
-                    
-                    <tr class="sike-bottom">
-                        <td class="sike-cell" id="sike-4-bottom">支上</td>
-                        <td class="sike-cell" id="sike-3-bottom">日支</td>
-                        <td class="sike-cell" id="sike-2-bottom">干上</td>
-                        <td class="sike-cell" id="sike-1-bottom">日干</td>
-                    </tr>
-                </tbody>
-            </table>
+            <div class="row g-3 mb-4">
+                <!-- 第四课 -->
+                <div class="col-3">
+                    <div class="card sike-card">
+                        <div class="card-header text-center sike-tianjiang">
+                            <span id="sike-4-tianjiang">支阴天将</span>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="sike-top text-center py-2">
+                                <span id="sike-4-top" class="sike-cell">支阴</span>
+                            </div>
+                            <hr class="my-0">
+                            <div class="sike-bottom text-center py-2">
+                                <span id="sike-4-bottom" class="sike-cell">支上</span>
+                            </div>
+                        </div>
+                        <div class="card-footer text-center">
+                            <small class="text-muted">第四课</small>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 第三课 -->
+                <div class="col-3">
+                    <div class="card sike-card">
+                        <div class="card-header text-center sike-tianjiang">
+                            <span id="sike-3-tianjiang">支上天将</span>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="sike-top text-center py-2">
+                                <span id="sike-3-top" class="sike-cell">支上</span>
+                            </div>
+                            <hr class="my-0">
+                            <div class="sike-bottom text-center py-2">
+                                <span id="sike-3-bottom" class="sike-cell">日支</span>
+                            </div>
+                        </div>
+                        <div class="card-footer text-center">
+                            <small class="text-muted">第三课</small>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 第二课 -->
+                <div class="col-3">
+                    <div class="card sike-card">
+                        <div class="card-header text-center sike-tianjiang">
+                            <span id="sike-2-tianjiang">干阴天将</span>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="sike-top text-center py-2">
+                                <span id="sike-2-top" class="sike-cell">干阴</span>
+                            </div>
+                            <hr class="my-0">
+                            <div class="sike-bottom text-center py-2">
+                                <span id="sike-2-bottom" class="sike-cell">干上</span>
+                            </div>
+                        </div>
+                        <div class="card-footer text-center">
+                            <small class="text-muted">第二课</small>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 第一课 -->
+                <div class="col-3">
+                    <div class="card sike-card">
+                        <div class="card-header text-center sike-tianjiang">
+                            <span id="sike-1-tianjiang">干上天将</span>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="sike-top text-center py-2">
+                                <span id="sike-1-top" class="sike-cell">干上</span>
+                            </div>
+                            <hr class="my-0">
+                            <div class="sike-bottom text-center py-2">
+                                <span id="sike-1-bottom" class="sike-cell">日干</span>
+                            </div>
+                        </div>
+                        <div class="card-footer text-center">
+                            <small class="text-muted">第一课</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div class="plate-container">
@@ -678,6 +786,7 @@
 
     <!-- 尝试多个CDN源，确保库能够加载 -->
     <script src="https://cdn.jsdelivr.net/npm/lunar-javascript@1.6.12/lunar.min.js" onerror="this.onerror=null;this.src='https://unpkg.com/lunar-javascript@1.6.12/lunar.min.js'"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
