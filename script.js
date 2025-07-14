@@ -354,6 +354,77 @@ const WUXING_BEI_KE = {
     '亥': '土', '子': '土'   // 水被土克
 };
 
+// 纳音对照表
+const NAYIN_TABLE = {
+    '甲子': '海中金', '乙丑': '海中金',
+    '丙寅': '炉中火', '丁卯': '炉中火',
+    '戊辰': '大林木', '己巳': '大林木',
+    '庚午': '路旁土', '辛未': '路旁土',
+    '壬申': '剑锋金', '癸酉': '剑锋金',
+    '甲戌': '山头火', '乙亥': '山头火',
+    '丙子': '涧下水', '丁丑': '涧下水',
+    '戊寅': '城头土', '己卯': '城头土',
+    '庚辰': '白蜡金', '辛巳': '白蜡金',
+    '壬午': '杨柳木', '癸未': '杨柳木',
+    '甲申': '泉中水', '乙酉': '泉中水',
+    '丙戌': '屋上土', '丁亥': '屋上土',
+    '戊子': '霹雳火', '己丑': '霹雳火',
+    '庚寅': '松柏木', '辛卯': '松柏木',
+    '壬辰': '长流水', '癸巳': '长流水',
+    '甲午': '沙中金', '乙未': '沙中金',
+    '丙申': '山下火', '丁酉': '山下火',
+    '戊戌': '平地木', '己亥': '平地木',
+    '庚子': '壁上土', '辛丑': '壁上土',
+    '壬寅': '金箔金', '癸卯': '金箔金',
+    '甲辰': '覆灯火', '乙巳': '覆灯火',
+    '丙午': '天河水', '丁未': '天河水',
+    '戊申': '大驿土', '己酉': '大驿土',
+    '庚戌': '钗钏金', '辛亥': '钗钏金',
+    '壬子': '桑柘木', '癸丑': '桑柘木',
+    '甲寅': '大溪水', '乙卯': '大溪水',
+    '丙辰': '沙中土', '丁巳': '沙中土',
+    '戊午': '天上火', '己未': '天上火',
+    '庚申': '石榴木', '辛酉': '石榴木',
+    '壬戌': '大海水', '癸亥': '大海水'
+};
+
+// 纳音五行映射表
+const NAYIN_WUXING = {
+    '海中金': '金', '炉中火': '火', '大林木': '木', '路旁土': '土', '剑锋金': '金',
+    '山头火': '火', '涧下水': '水', '城头土': '土', '白蜡金': '金', '杨柳木': '木',
+    '泉中水': '水', '屋上土': '土', '霹雳火': '火', '松柏木': '木', '长流水': '水',
+    '沙中金': '金', '山下火': '火', '平地木': '木', '壁上土': '土', '金箔金': '金',
+    '覆灯火': '火', '天河水': '水', '大驿土': '土', '钗钏金': '金', '桑柘木': '木',
+    '大溪水': '水', '沙中土': '土', '天上火': '火', '石榴木': '木', '大海水': '水'
+};
+
+// 纳音五行颜色映射
+const NAYIN_WUXING_COLORS = {
+    '金': '#e08433',  // 金色 (参考白虎)
+    '木': '#228b22',  // 绿色
+    '水': '#4169e1',  // 蓝色
+    '火': '#dc143c',  // 红色
+    '土': '#98511e'   // 土色 (参考天空)
+};
+
+// 计算纳音
+function calculateNayin(gan, zhi) {
+    if (!gan || !zhi) return '';
+    const ganZhi = gan + zhi;
+    return NAYIN_TABLE[ganZhi] || '';
+}
+
+// 获取纳音五行
+function getNayinWuxing(nayin) {
+    return NAYIN_WUXING[nayin] || '';
+}
+
+// 获取纳音五行颜色
+function getNayinWuxingColor(nayin) {
+    const wuxing = getNayinWuxing(nayin);
+    return NAYIN_WUXING_COLORS[wuxing] || '#666';
+}
+
 class DaLiuRenCalculator {
     constructor() {
         this.autoUpdateTimer = null;
@@ -2798,31 +2869,60 @@ class DaLiuRenCalculator {
 
     // 获取六亲颜色
     getLiuqinColor(liuqin) {
-        const liuqinColors = {
-            '父母': '#8B4513',  // 棕色
-            '兄弟': '#228B22',  // 森林绿
-            '子孙': '#FF4500',  // 橙红色
-            '妻财': '#FFD700',  // 金色
-            '官鬼': '#4B0082'   // 靛蓝色
-        };
-        return liuqinColors[liuqin] || '#333';
+        return '#000';  // 统一显示为黑色
     }
 
     // 获取十神颜色
     getShishenColor(shishen) {
-        const shishenColors = {
-            '比肩': '#228B22',  // 森林绿
-            '劫财': '#32CD32',  // 柠檬绿
-            '正印': '#8B4513',  // 棕色
-            '偏印': '#A0522D',  // 赭石色
-            '食神': '#FF4500',  // 橙红色
-            '伤官': '#FF6347',  // 番茄色
-            '正财': '#FFD700',  // 金色
-            '偏财': '#FFA500',  // 橙色
-            '正官': '#4B0082',  // 靛蓝色
-            '七杀': '#8A2BE2'   // 蓝紫色
+        return '#000';  // 统一显示为黑色
+    }
+
+    // 计算十二长生
+    calculateChangsheng(dayStem, tianpanBranch) {
+        // 十二长生对照表
+        const changshengTable = {
+            '甲': ['亥', '子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌'],
+            '乙': ['午', '巳', '辰', '卯', '寅', '丑', '子', '亥', '戌', '酉', '申', '未'],
+            '丙': ['寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥', '子', '丑'],
+            '丁': ['酉', '申', '未', '午', '巳', '辰', '卯', '寅', '丑', '子', '亥', '戌'],
+            '戊': ['寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥', '子', '丑'],
+            '己': ['酉', '申', '未', '午', '巳', '辰', '卯', '寅', '丑', '子', '亥', '戌'],
+            '庚': ['巳', '午', '未', '申', '酉', '戌', '亥', '子', '丑', '寅', '卯', '辰'],
+            '辛': ['子', '亥', '戌', '酉', '申', '未', '午', '巳', '辰', '卯', '寅', '丑'],
+            '壬': ['申', '酉', '戌', '亥', '子', '丑', '寅', '卯', '辰', '巳', '午', '未'],
+            '癸': ['卯', '寅', '丑', '子', '亥', '戌', '酉', '申', '未', '午', '巳', '辰']
         };
-        return shishenColors[shishen] || '#333';
+
+        const changshengNames = ['长生', '沐浴', '冠带', '临官', '帝旺', '衰', '病', '死', '墓', '绝', '胎', '养'];
+        
+        const branches = changshengTable[dayStem];
+        if (!branches) return '';
+        
+        const index = branches.indexOf(tianpanBranch);
+        if (index === -1) return '';
+        
+        return changshengNames[index];
+    }
+
+    // 计算月令
+    calculateYueling(monthBranch, tianpanBranch) {
+        // 月令旺相休囚死对照
+        const monthWuxing = this.getWuxing(monthBranch);
+        const tianpanWuxing = this.getWuxing(tianpanBranch);
+        
+        // 当令者旺，我生者相，生我者休，克我者囚，我克者死
+        if (monthWuxing === tianpanWuxing) {
+            return '旺';
+        } else if (this.wuxingSheng(monthWuxing, tianpanWuxing)) {
+            return '相';  // 我生者相
+        } else if (this.wuxingSheng(tianpanWuxing, monthWuxing)) {
+            return '休';  // 生我者休
+        } else if (this.wuxingKe(tianpanWuxing, monthWuxing)) {
+            return '囚';  // 克我者囚
+        } else if (this.wuxingKe(monthWuxing, tianpanWuxing)) {
+            return '死';  // 我克者死
+        }
+        return '';
     }
 
     // 根据当前时间更新四课
@@ -3261,6 +3361,7 @@ class DaLiuRenCalculator {
                     
                     // 更新天遁
                     const tiandunDisplayElement = cell.querySelector('.tiandun-display');
+                    const tiandunNayinElement = cell.querySelector('.tiandun-nayin');
                     if (tiandunDisplayElement) {
                         // 获取时辰干支
                         const timeGZ = this.getTimeGanZhi(timeBranch);
@@ -3271,6 +3372,16 @@ class DaLiuRenCalculator {
                         
                         tiandunDisplayElement.textContent = tiandunResult.gan;
                         tiandunDisplayElement.style.visibility = tiandunResult.gan ? 'visible' : 'hidden';
+                        
+                        // 计算天遁纳音
+                        if (tiandunNayinElement && tiandunResult.gan && heavenBranch) {
+                            const tiandunNayin = calculateNayin(tiandunResult.gan, heavenBranch);
+                            tiandunNayinElement.textContent = tiandunNayin;
+                            tiandunNayinElement.style.visibility = tiandunNayin ? 'visible' : 'hidden';
+                            if (tiandunNayin) {
+                                tiandunNayinElement.style.color = getNayinWuxingColor(tiandunNayin);
+                            }
+                        }
                         
                         // 处理天遁旬空标志
                         if (tiandunResult.isTimeXunkong) {
@@ -3287,17 +3398,30 @@ class DaLiuRenCalculator {
                     
                     // 更新人遁
                     const rendunDisplayElement = cell.querySelector('.rendun-display');
+                    const rendunNayinElement = cell.querySelector('.rendun-nayin');
                     if (rendunDisplayElement) {
                         // 计算人遁 - 基于贵人在地盘的位置
                         const rendunGan = this.calculateRendun(groundBranch, tianpanNobleGroundPosition, dayStem, heavenPlate);
                         
                         rendunDisplayElement.textContent = rendunGan;
                         rendunDisplayElement.style.visibility = rendunGan ? 'visible' : 'hidden';
+                        
+                        // 计算人遁纳音
+                        if (rendunNayinElement && rendunGan && heavenBranch) {
+                            const rendunNayin = calculateNayin(rendunGan, heavenBranch);
+                            rendunNayinElement.textContent = rendunNayin;
+                            rendunNayinElement.style.visibility = rendunNayin ? 'visible' : 'hidden';
+                            if (rendunNayin) {
+                                rendunNayinElement.style.color = getNayinWuxingColor(rendunNayin);
+                            }
+                        }
+                        
                         console.log(`${groundBranch} 设置人遁: ${rendunGan} (贵人在地盘 ${tianpanNobleGroundPosition})`);
                     }
 
                     // 更新旬干（基于天盘地支计算）
                     const xunganDisplayElement = cell.querySelector('.xungan-display');
+                    const xunganNayinElement = cell.querySelector('.xungan-nayin');
                     if (xunganDisplayElement) {
                         // 判断天盘地支是否旬空
                         const isHeavenBranchXunkong = xunkongBranches.includes(heavenBranch);
@@ -3307,6 +3431,16 @@ class DaLiuRenCalculator {
                         
                         xunganDisplayElement.textContent = xunganResult.gan;
                         xunganDisplayElement.style.visibility = xunganResult.gan ? 'visible' : 'hidden';
+                        
+                        // 计算旬干纳音
+                        if (xunganNayinElement && xunganResult.gan && heavenBranch) {
+                            const xunganNayin = calculateNayin(xunganResult.gan, heavenBranch);
+                            xunganNayinElement.textContent = xunganNayin;
+                            xunganNayinElement.style.visibility = xunganNayin ? 'visible' : 'hidden';
+                            if (xunganNayin) {
+                                xunganNayinElement.style.color = getNayinWuxingColor(xunganNayin);
+                            }
+                        }
                         
                         // 处理旬空标志
                         if (xunganResult.isXunkong) {
@@ -3319,6 +3453,30 @@ class DaLiuRenCalculator {
                             xunganDisplayElement.style.textDecoration = '';
                         }
                         console.log(`${groundBranch} 设置旬干: ${xunganResult.gan} (基于天盘地支${heavenBranch})`);
+                    }
+
+                    // 更新十神和六亲
+                    const shishenDisplayElement = cell.querySelector('.shishen-display');
+                    const liuqinDisplayElement = cell.querySelector('.liuqin-display');
+                    if (shishenDisplayElement && liuqinDisplayElement) {
+                        // 判断天盘地支是否旬空（重新计算以确保变量可用）
+                        const isHeavenBranchXunkongForShishen = xunkongBranches.includes(heavenBranch);
+                        
+                        // 计算十神：日干与旬遁天干比较
+                        const xunganForShishen = isHeavenBranchXunkongForShishen ? 
+                            this.calculateXunkongGan(heavenBranch, dayStem, dayBranch) :
+                            this.calculateXunganForPosition(heavenBranch, dayStem, dayBranch);
+                        
+                        const shishen = this.calculateShishen(xunganForShishen, dayStem);
+                        shishenDisplayElement.textContent = shishen;
+                        shishenDisplayElement.style.color = this.getShishenColor(shishen);
+                        
+                        // 计算六亲：日干与天盘地支比较
+                        const liuqin = this.calculateLiuqinGanZhi(dayStem, heavenBranch);
+                        liuqinDisplayElement.textContent = liuqin;
+                        liuqinDisplayElement.style.color = this.getLiuqinColor(liuqin);
+                        
+                        console.log(`${groundBranch} 设置十神: ${shishen}, 六亲: ${liuqin}`);
                     }
 
                     // 更新建干和复建
@@ -3340,6 +3498,27 @@ class DaLiuRenCalculator {
                         this.applyWuxingColor(fujianElement, fujianGan);
                         
                         console.log(`${groundBranch} 设置建干: ${jianganGan}, 复建: ${fujianGan}`);
+                    }
+
+                    // 更新十二长生和月令
+                    const yuelingDisplayElement = cell.querySelector('.yueling-display');
+                    const changshengDisplayElement = cell.querySelector('.changsheng-display');
+                    if (yuelingDisplayElement && changshengDisplayElement) {
+                        // 获取月支
+                        const now = new Date();
+                        const solar = Solar.fromDate(now);
+                        const lunar = solar.getLunar();
+                        const monthBranch = lunar.getMonthInGanZhi().charAt(1);
+                        
+                        // 计算十二长生：日干对应天盘地支
+                        const changsheng = this.calculateChangsheng(dayStem, heavenBranch);
+                        changshengDisplayElement.textContent = changsheng;
+                        
+                        // 计算月令：月支与天盘地支对比
+                        const yueling = this.calculateYueling(monthBranch, heavenBranch);
+                        yuelingDisplayElement.textContent = yueling;
+                        
+                        console.log(`${groundBranch} 设置十二长生: ${changsheng}, 月令: ${yueling} (月支: ${monthBranch}, 天盘地支: ${heavenBranch})`);
                     }
                 }
             });
