@@ -690,6 +690,12 @@ class DaLiuRenCalculator {
                 const customDateValue = document.getElementById('custom-date').value;
                 if (customDateValue) {
                     this.currentDateTime = new Date(customDateValue);
+                    console.log(`设置自定义时间: ${this.currentDateTime}`);
+                    
+                    // 从自定义时间中提取时辰
+                    const hour = this.currentDateTime.getHours();
+                    customTimeBranch = this.getTimeBranchByHour(hour);
+                    console.log(`从自定义时间(${hour}时)提取时辰: ${customTimeBranch}`);
                 } else {
                     alert('请选择自定义时间');
                     return;
@@ -3402,8 +3408,9 @@ class DaLiuRenCalculator {
 
             console.log('开始更新四柱，当前时间:', new Date().toLocaleString(), customTimeBranch ? `自定义时辰: ${customTimeBranch}` : '');
 
-            // 使用当前时间动态计算四柱
-            const now = new Date();
+            // 使用当前时间或自定义时间计算四柱
+            const now = this.currentDateTime || new Date();
+            console.log(`使用时间: ${now.toLocaleString()}`);
             const solar = Solar.fromDate(now);
             const lunar = solar.getLunar();
             
