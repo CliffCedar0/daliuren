@@ -466,6 +466,9 @@ class DaLiuRenCalculator {
         this.startTimeUpdate();
         this.startSizhuUpdate();
         
+        // 初始化排盘方式相关功能
+        this.initChartGenerationOptions();
+        
         // 立即强制更新一次四柱
         setTimeout(() => {
             console.log('强制更新四柱...');
@@ -486,6 +489,7 @@ class DaLiuRenCalculator {
 
     initializeElements() {
         this.monthGeneralSelect = document.getElementById('month-general');
+        this.monthGeneralManualCheckbox = document.getElementById('month-general-manual');
         this.timeBranchSelect = document.getElementById('time-branch');
         this.calculateBtn = document.getElementById('calculate-btn');
         this.autoUpdateBtn = document.getElementById('auto-update-btn');
@@ -596,6 +600,163 @@ class DaLiuRenCalculator {
         // 钤法弹出框事件
         this.initQianfaModal();
     }
+    
+    // 初始化排盘方式相关功能
+    initChartGenerationOptions() {
+        // 获取排盘按钮元素
+        this.generateChartBtn = document.getElementById('generate-chart-btn');
+        
+        // 获取所有排盘方式单选按钮
+        this.timeSelectionRadios = document.querySelectorAll('input[name="time-selection"]');
+        
+        // 获取各种输入区域
+        this.customTimeInput = document.getElementById('custom-time-input');
+        this.randomNumberInput = document.getElementById('random-number-input');
+        
+        // 获取所有图表区域
+        this.chartSections = document.querySelectorAll('.chart-section');
+        
+        // 为排盘方式单选按钮添加事件监听
+        this.timeSelectionRadios.forEach(radio => {
+            radio.addEventListener('change', () => {
+                // 隐藏所有输入区域
+                this.hideAllInputAreas();
+                
+                // 显示对应的输入区域
+                if (radio.id === 'custom-time') {
+                    this.customTimeInput.classList.remove('d-none');
+                } else if (radio.id === 'random-number') {
+                    this.randomNumberInput.classList.remove('d-none');
+                }
+            });
+        });
+        
+        // 为排盘按钮添加点击事件
+        this.generateChartBtn.addEventListener('click', () => {
+            this.generateChart();
+        });
+        
+        // 随机数生成函数
+        window.generateRandomNumber = () => {
+            const randomValue = Math.floor(Math.random() * 12) + 1;
+            document.getElementById('random-number-value').value = randomValue;
+            
+            // 显示对应的地支提示
+            const branchMapping = {
+                1: '子时 (23:00-1:00)', 2: '丑时 (1:00-3:00)', 3: '寅时 (3:00-5:00)', 
+                4: '卯时 (5:00-7:00)', 5: '辰时 (7:00-9:00)', 6: '巳时 (9:00-11:00)',
+                7: '午时 (11:00-13:00)', 8: '未时 (13:00-15:00)', 9: '申时 (15:00-17:00)', 
+                10: '酉时 (17:00-19:00)', 11: '戌时 (19:00-21:00)', 12: '亥时 (21:00-23:00)'
+            };
+            
+            const tipElement = document.querySelector('#random-number-input .form-text');
+            if (tipElement) {
+                tipElement.textContent = `数字 ${randomValue} 对应 ${branchMapping[randomValue]}`;
+            }
+        };
+    }
+    
+    // 隐藏所有输入区域
+    hideAllInputAreas() {
+        this.customTimeInput.classList.add('d-none');
+        this.randomNumberInput.classList.add('d-none');
+    }
+    
+    // 生成排盘
+    generateChart() {
+        // 显示所有图表区域
+        this.chartSections.forEach(section => {
+            section.style.display = 'block';
+        });
+        
+        // 根据选择的排盘方式获取时间
+        let selectedOption = '';
+        this.timeSelectionRadios.forEach(radio => {
+            if (radio.checked) {
+                selectedOption = radio.id;
+            }
+        });
+        
+        // 根据不同的排盘方式处理
+        let customTimeBranch = null;
+        switch (selectedOption) {
+            case 'current-time':
+                // 使用当前时间
+                this.currentDateTime = new Date();
+                break;
+                
+            case 'custom-time':
+                // 使用自定义时间
+                const customDateValue = document.getElementById('custom-date').value;
+                if (customDateValue) {
+                    this.currentDateTime = new Date(customDateValue);
+                } else {
+                    alert('请选择自定义时间');
+                    return;
+                }
+                break;
+                
+            case 'random-number':
+                // 使用随机数起盘（1-12对应子时-亥时）
+                const randomValue = parseInt(document.getElementById('random-number-value').value);
+                if (randomValue >= 1 && randomValue <= 12) {
+                    // 使用当前日期
+                    this.currentDateTime = new Date();
+                    
+                    // 映射表，将1-12直接映射到对应地支
+                    const branchMapping = {
+                        1: '子', 2: '丑', 3: '寅', 4: '卯', 5: '辰', 6: '巳',
+                        7: '午', 8: '未', 9: '申', 10: '酉', 11: '戌', 12: '亥'
+                    };
+                    
+                    // 直接使用映射表获取地支
+                    customTimeBranch = branchMapping[randomValue];
+                    
+                    // 强制设置占时地支
+                    console.log(`设置随机时辰值: ${randomValue}, 直接映射到地支: ${customTimeBranch}`);
+                } else {
+                    alert('请输入1-12之间的数字');
+                    return;
+                }
+                break;
+                
+            default:
+                // 默认使用当前时间
+                this.currentDateTime = new Date();
+                break;
+        }
+        
+        // 更新时间显示
+        this.updateCurrentTime();
+        
+                    // 计算排盘 - 如果有自定义时辰，则传递
+        if (customTimeBranch) {
+            // 设置时辰选择框显示
+            this.timeBranchSelect.value = customTimeBranch;
+            console.log(`设置时辰选择框显示为: ${customTimeBranch}`);
+            
+            // 获取月将
+            const monthGeneral = this.getCurrentMonthGeneral();
+            console.log(`获取到当前月将: ${monthGeneral}`);
+            
+            // 更新四柱信息（传递自定义时辰）
+            console.log(`更新四柱信息（自定义时辰: ${customTimeBranch}）`);
+            this.updateSizhu(customTimeBranch);
+            
+            // 使用自定义时辰计算排盘
+            console.log(`传递参数到calculatePlates: monthGeneral=${monthGeneral}, customTimeBranch=${customTimeBranch}`);
+            this.calculatePlates(monthGeneral, customTimeBranch);
+        } else {
+            // 使用当前时间计算排盘
+            console.log(`使用当前时间计算排盘，无自定义时辰`);
+            
+            // 更新四柱信息
+            console.log(`更新四柱信息（当前时间）`);
+            this.updateSizhu();
+            
+            this.calculatePlates();
+        }
+    }
 
     startTimeUpdate() {
         // 更新当前时间显示
@@ -678,7 +839,25 @@ class DaLiuRenCalculator {
         if (hour >= 19 && hour < 21) return '戌';
         if (hour >= 21 && hour < 23) return '亥';
         
+        console.log(`当前小时: ${hour}, 计算得到时辰: ${this.getTimeBranchByHour(hour)}`);
         return '子'; // 默认值
+    }
+    
+    // 新增辅助方法，便于调试
+    getTimeBranchByHour(hour) {
+        if (hour >= 23 || hour < 1) return '子';
+        if (hour >= 1 && hour < 3) return '丑';
+        if (hour >= 3 && hour < 5) return '寅';
+        if (hour >= 5 && hour < 7) return '卯';
+        if (hour >= 7 && hour < 9) return '辰';
+        if (hour >= 9 && hour < 11) return '巳';
+        if (hour >= 11 && hour < 13) return '午';
+        if (hour >= 13 && hour < 15) return '未';
+        if (hour >= 15 && hour < 17) return '申';
+        if (hour >= 17 && hour < 19) return '酉';
+        if (hour >= 19 && hour < 21) return '戌';
+        if (hour >= 21 && hour < 23) return '亥';
+        return '未知';
     }
 
     getCurrentMonthGeneral() {
@@ -2839,13 +3018,24 @@ class DaLiuRenCalculator {
         if (!this.sanchuanElements) return;
         
         try {
-            // 获取当前日干支用于计算六亲和十神
-            const now = new Date();
-            const solar = Solar.fromDate(now);
-            const lunar = solar.getLunar();
-            const dayGZ = lunar.getDayInGanZhi();
-            const dayStem = dayGZ.charAt(0);
-            const dayBranch = dayGZ.charAt(1);
+            // 使用保存的四柱信息或当前日期
+            let dayStem, dayBranch;
+            
+            if (this.currentFourPillars) {
+                // 使用保存的四柱信息
+                dayStem = this.currentFourPillars.dayGZ.charAt(0);
+                dayBranch = this.currentFourPillars.dayGZ.charAt(1);
+                console.log(`使用保存的四柱信息更新三传显示, 日干支: ${this.currentFourPillars.dayGZ}`);
+            } else {
+                // 如果没有保存的信息，使用当前日期
+                const now = new Date();
+                const solar = Solar.fromDate(now);
+                const lunar = solar.getLunar();
+                const dayGZ = lunar.getDayInGanZhi();
+                dayStem = dayGZ.charAt(0);
+                dayBranch = dayGZ.charAt(1);
+                console.log(`使用当前日期更新三传显示, 日干支: ${dayGZ}`);
+            }
             
             // 更新初传
             this.updateSanchuanItem(this.sanchuanElements.chuchuan, sanchuan.chuchuan, dayStem, dayBranch);
@@ -3067,32 +3257,57 @@ class DaLiuRenCalculator {
         }
     }
 
-    updateSizhu() {
+    updateSizhu(customTimeBranch = null) {
         try {
             if (typeof Solar === 'undefined') {
                 console.warn('lunar-javascript库未加载，无法计算四柱');
                 // 如果库未加载，显示提示信息
-                this.yearGan.textContent = '加';
-                this.yearZhi.textContent = '载';
-                this.monthGan.textContent = '中';
-                this.monthZhi.textContent = '...';
+                if (this.yearGan) this.yearGan.textContent = '加';
+                if (this.yearZhi) this.yearZhi.textContent = '载';
+                if (this.monthGan) this.monthGan.textContent = '中';
+                if (this.monthZhi) this.monthZhi.textContent = '...';
                 return;
             }
 
-            console.log('开始更新四柱，当前时间:', new Date().toLocaleString());
+            console.log('开始更新四柱，当前时间:', new Date().toLocaleString(), customTimeBranch ? `自定义时辰: ${customTimeBranch}` : '');
 
             // 使用当前时间动态计算四柱
             const now = new Date();
             const solar = Solar.fromDate(now);
             const lunar = solar.getLunar();
             
-            // 获取四柱信息（这里会根据当前时间动态变化）
-            const yearGZ = lunar.getYearInGanZhi();
-            const monthGZ = lunar.getMonthInGanZhi();
-            const dayGZ = lunar.getDayInGanZhi();
-            const timeGZ = lunar.getTimeInGanZhi();
+            // 获取基本四柱信息
+            let yearGZ = lunar.getYearInGanZhi();
+            let monthGZ = lunar.getMonthInGanZhi();
+            let dayGZ = lunar.getDayInGanZhi();
             
-            console.log('计算得到的四柱:', yearGZ, monthGZ, dayGZ, timeGZ);
+            // 如果提供了自定义时辰，则需要自定义时柱
+            let timeGZ;
+            if (customTimeBranch) {
+                // 根据自定义时辰构建时柱
+                const timeStem = this.getTimeGanZhi(customTimeBranch).charAt(0);
+                timeGZ = timeStem + customTimeBranch;
+                console.log(`使用自定义时辰: ${customTimeBranch}, 构建的时柱: ${timeGZ}`);
+            } else {
+                timeGZ = lunar.getTimeInGanZhi();
+                console.log(`使用当前时辰，得到时柱: ${timeGZ}`);
+            }
+            
+            console.log('最终使用的四柱:', {
+                yearGZ,
+                monthGZ,
+                dayGZ,
+                timeGZ
+            });
+            
+            // 保存当前使用的四柱信息，供其他方法使用
+            this.currentFourPillars = {
+                yearGZ,
+                monthGZ,
+                dayGZ,
+                timeGZ,
+                timeBranch: customTimeBranch || timeGZ.charAt(1)
+            };
             
             // 更新四柱显示
             if (this.yearGan) {
@@ -3126,36 +3341,6 @@ class DaLiuRenCalculator {
             if (this.hourZhi) {
                 this.hourZhi.textContent = timeGZ.charAt(1);
                 this.applyWuxingColor(this.hourZhi, timeGZ.charAt(1));
-            }
-            
-            // 更新中心四柱显示
-            if (this.centerYearGan) {
-                this.centerYearGan.textContent = yearGZ.charAt(0);
-                this.applyWuxingColor(this.centerYearGan, yearGZ.charAt(0));
-            }
-            if (this.centerYearZhi) {
-                this.centerYearZhi.textContent = yearGZ.charAt(1);
-                this.applyWuxingColor(this.centerYearZhi, yearGZ.charAt(1));
-            }
-            if (this.centerMonthGan) {
-                this.centerMonthGan.textContent = monthGZ.charAt(0);
-                this.applyWuxingColor(this.centerMonthGan, monthGZ.charAt(0));
-            }
-            if (this.centerMonthZhi) {
-                this.centerMonthZhi.textContent = monthGZ.charAt(1);
-                this.applyWuxingColor(this.centerMonthZhi, monthGZ.charAt(1));
-            }
-            if (this.centerDayGan) {
-                this.centerDayGan.textContent = dayGZ.charAt(0);
-                this.applyWuxingColor(this.centerDayGan, dayGZ.charAt(0));
-            }
-            if (this.centerDayZhi) {
-                this.centerDayZhi.textContent = dayGZ.charAt(1);
-                this.applyWuxingColor(this.centerDayZhi, dayGZ.charAt(1));
-            }
-            if (this.centerHourGan) {
-                this.centerHourGan.textContent = timeGZ.charAt(0);
-                this.applyWuxingColor(this.centerHourGan, timeGZ.charAt(0));
             }
             if (this.centerHourZhi) {
                 this.centerHourZhi.textContent = timeGZ.charAt(1);
@@ -3225,6 +3410,14 @@ class DaLiuRenCalculator {
         const currentMonthGeneral = this.getCurrentMonthGeneral();
         this.monthGeneralSelect.value = currentMonthGeneral;
         
+        // 记录时间信息以便调试
+        const now = new Date();
+        console.log(`=== 当前时间设置 ===`);
+        console.log(`当前时间: ${now.toLocaleTimeString()}`);
+        console.log(`当前小时: ${now.getHours()}`);
+        console.log(`计算时辰: ${currentBranch}`);
+        console.log(`当前月将: ${currentMonthGeneral}`);
+        
         // 更新中心时间显示
         this.updateCenterTime();
         
@@ -3247,9 +3440,20 @@ class DaLiuRenCalculator {
         }
     }
 
-    calculatePlates() {
-        const monthGeneral = this.monthGeneralSelect.value;
-        const timeBranch = this.timeBranchSelect.value;
+    calculatePlates(customMonthGeneral, customTimeBranch) {
+        // 使用自定义参数或从选择框获取值
+        const monthGeneral = customMonthGeneral || this.monthGeneralSelect.value;
+        let timeBranch = customTimeBranch;
+        
+        if (!timeBranch) {
+            // 如果没有提供自定义时辰，从选择框获取
+            timeBranch = this.timeBranchSelect.value;
+            console.log(`从选择框获取占时: ${timeBranch}`);
+        } else {
+            console.log(`使用自定义时辰: ${timeBranch}`);
+        }
+        
+        console.log(`计算排盘：月将=${monthGeneral}, 占时=${timeBranch}`, customTimeBranch ? '(自定义时辰)' : '');
         
         if (!monthGeneral || !timeBranch) {
             this.calculationInfo.textContent = '请选择月将和占时';
@@ -3262,11 +3466,66 @@ class DaLiuRenCalculator {
         // 更新天盘显示
         this.updateCombinedPlate(heavenPlate);
         
-        // 计算和更新天将、旬干
-        this.updateTianjiangAndXungan(timeBranch);
-        
-        // 计算和更新四课
-        this.updateSikeFromCurrentTime(heavenPlate);
+        try {
+            // 使用之前保存的四柱信息或当前日期（用于四课三传计算）
+            let dayStem, dayBranch;
+            
+            if (this.currentFourPillars) {
+                // 使用保存的四柱信息
+                dayStem = this.currentFourPillars.dayGZ.charAt(0);
+                dayBranch = this.currentFourPillars.dayGZ.charAt(1);
+                console.log(`使用保存的四柱信息计算四课三传, 日干支: ${this.currentFourPillars.dayGZ}, 占时: ${timeBranch}`);
+            } else {
+                // 如果没有保存的信息，使用当前日期
+                const now = new Date();
+                const solar = Solar.fromDate(now);
+                const lunar = solar.getLunar();
+                let dayGZ = lunar.getDayInGanZhi();
+                dayStem = dayGZ.charAt(0);
+                dayBranch = dayGZ.charAt(1);
+                console.log(`使用当前日期计算四课三传, 日干支: ${dayGZ}, 占时: ${timeBranch}`);
+            }
+            
+            // 计算和更新天将、旬干
+            this.updateTianjiangAndXungan(timeBranch);
+            
+            // 获取天将排布信息
+            const nobles = this.getBothNoblePersons(dayStem, timeBranch);
+            
+            // 找到贵人在地盘的位置
+            let tianpanNobleGroundPosition = null;
+            for (let groundBranch in heavenPlate) {
+                if (heavenPlate[groundBranch] === nobles.tianpanNoble) {
+                    tianpanNobleGroundPosition = groundBranch;
+                    break;
+                }
+            }
+            
+            // 找到地盘贵人在地盘的位置
+            let dipanNobleGroundPosition = null;
+            for (let groundBranch in heavenPlate) {
+                if (heavenPlate[groundBranch] === nobles.dipanNoble) {
+                    dipanNobleGroundPosition = groundBranch;
+                    break;
+                }
+            }
+            
+            // 计算天将排布
+            const tianpanTianjiangMap = this.arrangeTwelveTianjiangs(nobles.tianpanNoble, tianpanNobleGroundPosition);
+            const dipanTianjiangMap = this.arrangeDipanTianjiangs(nobles.dipanNoble, dipanNobleGroundPosition);
+            
+            // 计算和更新四课
+            const sike = this.calculateSike(dayStem, dayBranch, heavenPlate, tianpanTianjiangMap, dipanTianjiangMap);
+            console.log('四课计算结果:', sike);
+            this.updateSikeDisplay(sike);
+            
+            // 计算和更新三传
+            const sanchuan = this.calculateSanchuan(dayStem, dayBranch, sike, heavenPlate, tianpanTianjiangMap, dipanTianjiangMap);
+            console.log('三传计算结果:', sanchuan);
+            this.updateSanchuanDisplay(sanchuan);
+        } catch (error) {
+            console.error('计算四课和三传时出错:', error);
+        }
         
         // 更新计算信息
         this.updateCalculationInfo(monthGeneral, timeBranch);
@@ -3703,28 +3962,18 @@ class DaLiuRenCalculator {
         const monthGeneralName = MONTH_GENERALS[monthGeneral];
         const timeBranchTime = BRANCH_TIMES[timeBranch];
         
-        let lunarInfo = '';
-        try {
-            if (typeof Solar !== 'undefined') {
-                const now = new Date();
-                const solar = Solar.fromDate(now);
-                const lunar = solar.getLunar();
-                
-                lunarInfo = `
-                    当前时间：${solar.toYmdHms()}<br>
-                    农历：${lunar.toString()}<br>
-                    节气：${solar.getTerm() || '无'}<br>
-                    生肖：${lunar.getYearShengXiao()}<br>
-                `;
-            }
-        } catch (error) {
-            console.error('获取农历信息失败:', error);
-            lunarInfo = `当前时间：${new Date().toLocaleString('zh-CN')}<br>`;
-        }
+        // 获取当前日期的信息
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = now.getMonth() + 1;
+        const day = now.getDate();
+        const hours = now.getHours().toString().padStart(2, '0');
+        const minutes = now.getMinutes().toString().padStart(2, '0');
+        const seconds = now.getSeconds().toString().padStart(2, '0');
         
         this.calculationInfo.innerHTML = `
             <strong>大六壬排盘结果：</strong><br>
-            ${lunarInfo}
+            当前时间：${year}年${month}月${day}日 ${hours}:${minutes}:${seconds}<br>
             月将：${monthGeneral}（${monthGeneralName}）<br>
             占时：${timeBranch}时（${timeBranchTime}）<br>
             <strong>天盘已按"月将加时"逻辑生成</strong><br>

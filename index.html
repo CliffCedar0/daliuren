@@ -13,7 +13,11 @@
                 
         <div class="control-panel">
             <div class="control-group">
-                <label for="month-general">月将 (自动):</label>
+                <div class="d-flex align-items-center">
+                    <input type="checkbox" id="month-general-manual" class="me-2">
+                    <label for="month-general-manual" class="me-2">手动选择</label>
+                    <label for="month-general">月将:</label>
+                </div>
                 <select id="month-general">
                     <option value="亥">正月雨水后 - 亥(登明)</option>
                     <option value="戌">二月春分后 - 戌(河魁)</option>
@@ -58,8 +62,62 @@
             </div>
         </div>
         
+        <!-- 排盘方式 -->
+        <div class="row mb-3 mt-3">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">排盘方式</div>
+                    <div class="card-body">
+                        <div class="row mb-2">
+                            <div class="col-6">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="time-selection" id="current-time" checked>
+                                    <label class="form-check-label" for="current-time">当前时间</label>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="time-selection" id="random-number">
+                                    <label class="form-check-label" for="random-number">随机数起盘</label>
+                                </div>
+                            </div>
+                        </div>
+                                        <div class="row mb-3">
+                    <div class="col-6">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="time-selection" id="custom-time">
+                            <label class="form-check-label" for="custom-time">自定义时间</label>
+                        </div>
+                    </div>
+                </div>
+
+                        <!-- 自定义时间输入 -->
+                        <div id="custom-time-input" class="mt-3 d-none">
+                            <input type="datetime-local" id="custom-date" class="form-control">
+                        </div>
+
+                        <!-- 随机数输入 -->
+                        <div id="random-number-input" class="mt-3 d-none">
+                            <div class="input-group">
+                                <input type="number" id="random-number-value" class="form-control" min="1" max="12" value="1">
+                                <button class="btn btn-outline-secondary" type="button" onclick="generateRandomNumber()">随机</button>
+                            </div>
+                            <small class="form-text text-muted">数字1对应子时(23:00-1:00)</small>
+                        </div>
+
+                        
+                        
+                        <!-- 排盘按钮 -->
+                        <div class="mt-3 text-center">
+                            <button id="generate-chart-btn" class="btn btn-primary">排盘</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
         <!-- 四柱显示 -->
-        <div class="sizhu-panel">
+        <div class="sizhu-panel chart-section" style="display: none;">
             <table class="sizhu-table">
                 <thead>
                     <tr>
@@ -106,7 +164,7 @@
 
         
         <!-- 三传表格 -->
-        <div class="sanchuan-container">
+        <div class="sanchuan-container chart-section" style="display: none;">
             <div class="row g-3 mb-4">
                 <!-- 三传 - 主卡片 -->
                 <div class="col-12">
@@ -201,7 +259,7 @@
         </div>
 
         <!-- 四课表格 -->
-        <div class="sike-container">
+        <div class="sike-container chart-section" style="display: none;">
             <div class="row g-3 mb-4">
                 <!-- 第四课 -->
                 <div class="col-3">
@@ -289,7 +347,7 @@
             </div>
         </div>
 
-        <div class="plate-container">
+        <div class="plate-container chart-section" style="display: none;">
             <div class="plate-wrapper">
                 <table class="plate-table">
                     <tr>
@@ -764,7 +822,7 @@
             </div>
         </div>
         
-        <div class="result-info">
+        <div class="result-info chart-section" style="display: none;">
             <p id="calculation-info">请计算天地盘</p>
         </div>
         
