@@ -1483,11 +1483,13 @@ button:hover {
     grid-template-columns: 1fr;
     gap: 10px;
     margin-bottom: 20px;
+    text-align: center;
 }
 
 .jinkou-item {
     display: flex;
     align-items: center;
+    justify-content: center;
     padding: 8px;
     background-color: #f8f9fa;
     border-radius: 6px;
@@ -1497,11 +1499,13 @@ button:hover {
     font-weight: bold;
     color: #333;
     margin-right: 10px;
-    min-width: 120px;
+    min-width: 80px;
+    text-align: right;
 }
 
 .jinkou-value {
     font-size: 1.2em;
+    text-align: left;
 }
 
 /* 八动样式 */

@@ -4484,19 +4484,19 @@ class DaLiuRenCalculator {
         let html = `<div class="jinkou-grid">
             <div class="jinkou-item">
                 <div class="jinkou-label">人元:</div>
-                <div class="jinkou-value" style="color: ${WUXING_COLORS[xungan] || '#333'}; font-weight: bold;">${xungan || '无'}</div>
+                <div class="jinkou-value" style="color: ${WUXING_COLORS[xungan] || '#333'}; font-weight: bold; text-align: center;">${xungan || '无'}</div>
             </div>
             <div class="jinkou-item">
                 <div class="jinkou-label">贵神:</div>
-                <div class="jinkou-value" style="color: ${WUXING_COLORS[tianjiangBranch] || '#333'}; font-weight: bold;">${tianjiangBranch || '无'}</div>
+                <div class="jinkou-value" style="color: ${WUXING_COLORS[tianjiangBranch] || '#333'}; font-weight: bold; text-align: center;">${tianjiangBranch || '无'}</div>
             </div>
             <div class="jinkou-item">
                 <div class="jinkou-label">将神:</div>
-                <div class="jinkou-value" style="color: ${WUXING_COLORS[tianpanBranch] || '#333'}; font-weight: bold;">${tianpanBranch || '无'}</div>
+                <div class="jinkou-value" style="color: ${WUXING_COLORS[tianpanBranch] || '#333'}; font-weight: bold; text-align: center;">${tianpanBranch || '无'}</div>
             </div>
             <div class="jinkou-item">
                 <div class="jinkou-label">地分:</div>
-                <div class="jinkou-value" style="color: ${WUXING_COLORS[groundBranch] || '#333'}; font-weight: bold;">${groundBranch || '无'}</div>
+                <div class="jinkou-value" style="color: ${WUXING_COLORS[groundBranch] || '#333'}; font-weight: bold; text-align: center;">${groundBranch || '无'}</div>
             </div>`;
             
         // 如果有八动，添加到HTML中
