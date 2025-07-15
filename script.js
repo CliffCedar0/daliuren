@@ -4,6 +4,28 @@ const HEAVENLY_STEMS = ['甲', '乙', '丙', '丁', '戊', '己', '庚', '辛', 
 // 十二地支排列顺序
 const BRANCHES = ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'];
 
+// 年份对应的干支表（从1924年开始）
+const YEAR_GANZHI = {
+    1924: '甲子', 1925: '乙丑', 1926: '丙寅', 1927: '丁卯', 1928: '戊辰', 1929: '己巳',
+    1930: '庚午', 1931: '辛未', 1932: '壬申', 1933: '癸酉', 1934: '甲戌', 1935: '乙亥',
+    1936: '丙子', 1937: '丁丑', 1938: '戊寅', 1939: '己卯', 1940: '庚辰', 1941: '辛巳',
+    1942: '壬午', 1943: '癸未', 1944: '甲申', 1945: '乙酉', 1946: '丙戌', 1947: '丁亥',
+    1948: '戊子', 1949: '己丑', 1950: '庚寅', 1951: '辛卯', 1952: '壬辰', 1953: '癸巳',
+    1954: '甲午', 1955: '乙未', 1956: '丙申', 1957: '丁酉', 1958: '戊戌', 1959: '己亥',
+    1960: '庚子', 1961: '辛丑', 1962: '壬寅', 1963: '癸卯', 1964: '甲辰', 1965: '乙巳',
+    1966: '丙午', 1967: '丁未', 1968: '戊申', 1969: '己酉', 1970: '庚戌', 1971: '辛亥',
+    1972: '壬子', 1973: '癸丑', 1974: '甲寅', 1975: '乙卯', 1976: '丙辰', 1977: '丁巳',
+    1978: '戊午', 1979: '己未', 1980: '庚申', 1981: '辛酉', 1982: '壬戌', 1983: '癸亥',
+    1984: '甲子', 1985: '乙丑', 1986: '丙寅', 1987: '丁卯', 1988: '戊辰', 1989: '己巳',
+    1990: '庚午', 1991: '辛未', 1992: '壬申', 1993: '癸酉', 1994: '甲戌', 1995: '乙亥',
+    1996: '丙子', 1997: '丁丑', 1998: '戊寅', 1999: '己卯', 2000: '庚辰', 2001: '辛巳',
+    2002: '壬午', 2003: '癸未', 2004: '甲申', 2005: '乙酉', 2006: '丙戌', 2007: '丁亥',
+    2008: '戊子', 2009: '己丑', 2010: '庚寅', 2011: '辛卯', 2012: '壬辰', 2013: '癸巳',
+    2014: '甲午', 2015: '乙未', 2016: '丙申', 2017: '丁酉', 2018: '戊戌', 2019: '己亥',
+    2020: '庚子', 2021: '辛丑', 2022: '壬寅', 2023: '癸卯', 2024: '甲辰', 2025: '乙巳',
+    2026: '丙午', 2027: '丁未', 2028: '戊申', 2029: '己酉', 2030: '庚戌', 2031: '辛亥'
+};
+
 // 天将对应地支映射表（金口诀）
 const TIANJIANG_BRANCH_MAP = {
     '天后': '子',
@@ -471,6 +493,15 @@ class DaLiuRenCalculator {
         this.timeUpdateTimer = null;
         this.sizhuUpdateTimer = null;
         
+        // 本命和行年元素引用
+        this.benmingGan = null;
+        this.benmingZhi = null;
+        this.xingnianGan = null;
+        this.xingnianZhi = null;
+        this.birthYearSelect = null;
+        this.genderMaleRadio = null;
+        this.genderFemaleRadio = null;
+        
         // 添加全局引用用于调试
         window.daLiuRenCalculator = this;
         
@@ -498,7 +529,11 @@ class DaLiuRenCalculator {
             }, 500);
         }, 1000);
         
-
+        // 设置默认出生年为1980年
+        if (this.birthYearSelect) {
+            this.birthYearSelect.value = "1980";
+            this.updateBenmingAndXingnian();
+        }
     }
     
 
@@ -514,6 +549,15 @@ class DaLiuRenCalculator {
         this.centerTime = document.getElementById('center-time');
         this.centerTime2 = document.getElementById('center-time2');
         this.currentTime = document.getElementById('current-time');
+        
+        // 本命和行年元素引用
+        this.benmingGan = document.getElementById('benming-gan');
+        this.benmingZhi = document.getElementById('benming-zhi');
+        this.xingnianGan = document.getElementById('xingnian-gan');
+        this.xingnianZhi = document.getElementById('xingnian-zhi');
+        this.birthYearSelect = document.getElementById('birth-year');
+        this.genderMaleRadio = document.getElementById('gender-male');
+        this.genderFemaleRadio = document.getElementById('gender-female');
         
         // 四柱元素
         this.yearGan = document.getElementById('year-gan');
@@ -604,6 +648,8 @@ class DaLiuRenCalculator {
             this.setCurrentDateTime();
             this.calculatePlates();
             this.updateSizhu();
+            // 更新本命和行年
+            this.updateBenmingAndXingnian();
             console.log('强制更新完成');
         });
         
@@ -612,6 +658,25 @@ class DaLiuRenCalculator {
         // 实时计算
         this.monthGeneralSelect.addEventListener('change', () => this.calculatePlates());
         this.timeBranchSelect.addEventListener('change', () => this.calculatePlates());
+        
+        // 本命和行年相关事件
+        if (this.birthYearSelect) {
+            this.birthYearSelect.addEventListener('change', () => {
+                this.updateBenmingAndXingnian();
+            });
+        }
+        
+        if (this.genderMaleRadio) {
+            this.genderMaleRadio.addEventListener('change', () => {
+                this.updateBenmingAndXingnian();
+            });
+        }
+        
+        if (this.genderFemaleRadio) {
+            this.genderFemaleRadio.addEventListener('change', () => {
+                this.updateBenmingAndXingnian();
+            });
+        }
         
         // 钤法弹出框事件
         this.initQianfaModal();
@@ -679,6 +744,122 @@ class DaLiuRenCalculator {
     }
     
     // 生成排盘
+    // 根据出生年和性别计算本命和行年
+    updateBenmingAndXingnian() {
+        if (!this.birthYearSelect || !this.benmingGan || !this.benmingZhi) {
+            console.log('本命和行年元素未初始化');
+            return;
+        }
+        
+        const birthYear = this.birthYearSelect.value;
+        const isMale = this.genderMaleRadio.checked;
+        
+        if (!birthYear) {
+            // 如果未选择出生年，清空显示
+            this.benmingGan.textContent = '-';
+            this.benmingZhi.textContent = '-';
+            this.xingnianGan.textContent = '-';
+            this.xingnianZhi.textContent = '-';
+            return;
+        }
+        
+        try {
+            // 获取本命干支
+            const birthGanzhi = YEAR_GANZHI[birthYear];
+            if (!birthGanzhi) {
+                console.error('未找到对应年份的干支:', birthYear);
+                return;
+            }
+            
+            const benmingGan = birthGanzhi.charAt(0);
+            const benmingZhi = birthGanzhi.charAt(1);
+            
+            // 更新本命显示
+            this.benmingGan.textContent = benmingGan;
+            this.benmingZhi.textContent = benmingZhi;
+            
+            // 应用五行颜色
+            this.applyWuxingColor(this.benmingGan, benmingGan);
+            this.applyWuxingColor(this.benmingZhi, benmingZhi);
+            
+            // 计算行年
+            this.calculateXingnian(benmingZhi, isMale);
+            
+        } catch (error) {
+            console.error('计算本命和行年时出错:', error);
+        }
+    }
+    
+    // 计算行年
+    calculateXingnian(benmingZhi, isMale) {
+        try {
+            // 获取当前年份和出生年份
+            const currentYear = new Date().getFullYear();
+            const birthYearValue = parseInt(this.birthYearSelect.value);
+            
+            if (isNaN(birthYearValue)) {
+                console.error('无效的出生年份');
+                return;
+            }
+            
+            // 计算年龄数
+            const ageDiff = currentYear - birthYearValue;
+            console.log(`当前年份=${currentYear}, 出生年份=${birthYearValue}, 年龄数=${ageDiff}`);
+            
+            // 男命从丙寅开始顺排，女命从壬申开始逆排
+            const maleStartGan = '丙';
+            const maleStartZhi = '寅';
+            const femaleStartGan = '壬';
+            const femaleStartZhi = '申';
+            
+            const maleStartGanIndex = HEAVENLY_STEMS.indexOf(maleStartGan);
+            const maleStartZhiIndex = BRANCHES.indexOf(maleStartZhi);
+            const femaleStartGanIndex = HEAVENLY_STEMS.indexOf(femaleStartGan);
+            const femaleStartZhiIndex = BRANCHES.indexOf(femaleStartZhi);
+            
+            // 计算行年天干地支索引
+            let xingnianGanIndex, xingnianZhiIndex;
+            
+            if (isMale) {
+                // 男命从丙寅开始顺排
+                xingnianGanIndex = (maleStartGanIndex + ageDiff) % 10;
+                xingnianZhiIndex = (maleStartZhiIndex + ageDiff) % 12;
+                console.log(`男命行年计算: 从丙寅开始顺排，年龄数=${ageDiff}, 天干索引=${xingnianGanIndex}, 地支索引=${xingnianZhiIndex}`);
+            } else {
+                // 女命从壬申开始逆排
+                xingnianGanIndex = (femaleStartGanIndex - ageDiff + 1000) % 10;
+                xingnianZhiIndex = (femaleStartZhiIndex - ageDiff + 1200) % 12;
+                console.log(`女命行年计算: 从壬申开始逆排，年龄数=${ageDiff}, 天干索引=${xingnianGanIndex}, 地支索引=${xingnianZhiIndex}`);
+            }
+            
+            const xingnianGan = HEAVENLY_STEMS[xingnianGanIndex];
+            const xingnianZhi = BRANCHES[xingnianZhiIndex];
+            
+            // 更新行年显示
+            if (this.xingnianGan) this.xingnianGan.textContent = xingnianGan;
+            if (this.xingnianZhi) this.xingnianZhi.textContent = xingnianZhi;
+            
+            // 应用五行颜色
+            if (this.xingnianGan) this.applyWuxingColor(this.xingnianGan, xingnianGan);
+            if (this.xingnianZhi) this.applyWuxingColor(this.xingnianZhi, xingnianZhi);
+            
+            // 获取本命干支用于日志输出
+            const birthGanzhi = YEAR_GANZHI[birthYearValue];
+            const benmingGan = birthGanzhi ? birthGanzhi.charAt(0) : '未知';
+            
+            // 获取当前年干支
+            const currentYearGanzhi = YEAR_GANZHI[currentYear] || '未知';
+            
+            // 记录起始地支
+            const startBranch = isMale ? maleStartZhi : femaleStartZhi;
+            
+            console.log(`本命: ${benmingGan}${benmingZhi}, 性别: ${isMale ? '男' : '女'}, 起始地支: ${startBranch}, 当前流年: ${currentYearGanzhi}, 行年: ${xingnianGan}${xingnianZhi}`);
+            
+        } catch (error) {
+            console.error('计算行年时出错:', error);
+        }
+    }
+    
     generateChart() {
         // 显示所有图表区域
         this.chartSections.forEach(section => {
@@ -800,6 +981,12 @@ class DaLiuRenCalculator {
             
             this.calculatePlates();
         }
+        
+        // 更新本命和行年
+        this.updateBenmingAndXingnian();
+        
+        // 更新本命和行年
+        this.updateBenmingAndXingnian();
     }
 
     startTimeUpdate() {
