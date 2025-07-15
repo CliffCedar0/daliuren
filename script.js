@@ -683,6 +683,15 @@ class DaLiuRenCalculator {
             case 'current-time':
                 // 使用当前时间
                 this.currentDateTime = new Date();
+                console.log(`设置为当前系统时间: ${this.currentDateTime}`);
+                
+                // 清除任何可能存在的自定义时辰
+                customTimeBranch = null;
+                
+                // 从系统时间中提取时辰
+                const currentHour = this.currentDateTime.getHours();
+                const systemTimeBranch = this.getTimeBranchByHour(currentHour);
+                console.log(`从系统时间(${currentHour}时)提取时辰: ${systemTimeBranch}`);
                 break;
                 
             case 'custom-time':
@@ -696,6 +705,19 @@ class DaLiuRenCalculator {
                     const hour = this.currentDateTime.getHours();
                     customTimeBranch = this.getTimeBranchByHour(hour);
                     console.log(`从自定义时间(${hour}时)提取时辰: ${customTimeBranch}`);
+                    
+                    // 尝试预先计算日干，用于后续的时干计算
+                    try {
+                        if (typeof Solar !== 'undefined') {
+                            const customSolar = Solar.fromDate(this.currentDateTime);
+                            const customLunar = customSolar.getLunar();
+                            const customDayGZ = customLunar.getDayInGanZhi();
+                            const customDayStem = customDayGZ.charAt(0);
+                            console.log(`自定义时间的日干支: ${customDayGZ}, 日干: ${customDayStem}`);
+                        }
+                    } catch (error) {
+                        console.error('预先计算自定义日期的日干时出错:', error);
+                    }
                 } else {
                     alert('请选择自定义时间');
                     return;
@@ -1353,13 +1375,21 @@ class DaLiuRenCalculator {
         return { gan, isRendunXunkong };
     }
 
-    // 根据时支获取时干支
-    getTimeGanZhi(timeBranch) {
-        const now = new Date();
-        const solar = Solar.fromDate(now);
-        const lunar = solar.getLunar();
-        const dayGZ = lunar.getDayInGanZhi();
-        const dayStem = dayGZ.charAt(0);
+    // 根据时支获取时干支（使用五子元遁法）
+    getTimeGanZhi(timeBranch, customDayStem = null) {
+        // 如果提供了自定义日干，使用它，否则从当前日期获取
+        let dayStem;
+        if (customDayStem) {
+            dayStem = customDayStem;
+            console.log(`使用自定义日干: ${dayStem} 计算时干`);
+        } else {
+            const now = new Date();
+            const solar = Solar.fromDate(now);
+            const lunar = solar.getLunar();
+            const dayGZ = lunar.getDayInGanZhi();
+            dayStem = dayGZ.charAt(0);
+            console.log(`从当前日期获取日干: ${dayStem} 计算时干`);
+        }
         
         // 根据日干和时支计算时干
         let timeStemIndex;
@@ -3410,7 +3440,7 @@ class DaLiuRenCalculator {
 
             // 使用当前时间或自定义时间计算四柱
             const now = this.currentDateTime || new Date();
-            console.log(`使用时间: ${now.toLocaleString()}`);
+            console.log(`使用时间: ${now.toLocaleString()}, 是否使用自定义时间: ${this.currentDateTime ? '是' : '否'}`);
             const solar = Solar.fromDate(now);
             const lunar = solar.getLunar();
             
@@ -3422,10 +3452,11 @@ class DaLiuRenCalculator {
             // 如果提供了自定义时辰，则需要自定义时柱
             let timeGZ;
             if (customTimeBranch) {
-                // 根据自定义时辰构建时柱
-                const timeStem = this.getTimeGanZhi(customTimeBranch).charAt(0);
+                // 根据自定义时辰和日干构建时柱（使用五子元遁法）
+                const dayStem = dayGZ.charAt(0); // 使用当前日干
+                const timeStem = this.getTimeGanZhi(customTimeBranch, dayStem).charAt(0);
                 timeGZ = timeStem + customTimeBranch;
-                console.log(`使用自定义时辰: ${customTimeBranch}, 构建的时柱: ${timeGZ}`);
+                console.log(`使用自定义时辰: ${customTimeBranch}, 日干: ${dayStem}, 构建的时柱: ${timeGZ}`);
             } else {
                 timeGZ = lunar.getTimeInGanZhi();
                 console.log(`使用当前时辰，得到时柱: ${timeGZ}`);
