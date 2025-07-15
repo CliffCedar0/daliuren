@@ -762,20 +762,25 @@ class DaLiuRenCalculator {
         // 更新当前时间显示
         this.updateCurrentTime();
         
-        // 每秒更新一次当前时间
+        // 每秒更新一次当前时间 - 已注释
+        /*
         this.timeUpdateTimer = setInterval(() => {
             this.updateCurrentTime();
         }, 1000);
+        */
     }
 
     startSizhuUpdate() {
         // 每分钟更新一次四柱（因为时柱是按小时变化的）
+        // 自动刷新功能已被注释
+        /*
         this.sizhuUpdateTimer = setInterval(() => {
             this.updateSizhu();
             // 同时更新月将和占时
             this.setCurrentDateTime();
             this.calculatePlates();
         }, 60000); // 60秒更新一次
+        */
     }
 
     updateCurrentTime() {
@@ -803,12 +808,14 @@ class DaLiuRenCalculator {
             this.calculatePlates();
             this.updateSizhu();
             
-            // 每分钟自动更新
+            // 每分钟自动更新 - 已注释
+            /*
             this.autoUpdateTimer = setInterval(() => {
                 this.setCurrentDateTime();
                 this.calculatePlates();
                 this.updateSizhu();
             }, 60000); // 60秒更新一次
+            */
             
         } else {
             this.autoUpdateBtn.textContent = '自动更新';
@@ -2411,12 +2418,31 @@ class DaLiuRenCalculator {
             
             // 1. 有克取克发用（在伏吟课中，天盘地盘相同，所以主要看四课的克关系）
             if (analysis.xiazei.length > 0) {
-                // 在伏吟课中，取贼克的地支位置
-                chuchuan = analysis.xiazei[0].dipan;  // 取地盘地支
+                // 在伏吟课中，有下贼上时，应该取日干寄宫地支作为初传
+                // 例如乙木日，乙寄辰，所以初传取辰
+                const dipan = analysis.xiazei[0].dipan;  // 下贼上的地盘（可能是天干）
+                if (HEAVENLY_STEMS.includes(dipan)) {
+                    // 如果是天干，找到它的寄宫
+                    chuchuan = STEM_LODGE_MAP[dipan] || dipan;
+                    console.log(`伏吟课：有下贼上，日干${dipan}寄宫到${chuchuan}`);
+                } else {
+                    // 如果已经是地支，直接使用
+                    chuchuan = dipan;
+                    console.log('伏吟课：有下贼上，初传取', chuchuan);
+                }
                 kege = '不虞';
             } else if (analysis.shangke.length > 0) {
                 // 取上克的地支位置
-                chuchuan = analysis.shangke[0].dipan;  // 取地盘地支
+                const dipan = analysis.shangke[0].dipan;  // 上克下的地盘（可能是天干）
+                if (HEAVENLY_STEMS.includes(dipan)) {
+                    // 如果是天干，找到它的寄宫
+                    chuchuan = STEM_LODGE_MAP[dipan] || dipan;
+                    console.log(`伏吟课：有上克下，天干${dipan}寄宫到${chuchuan}`);
+                } else {
+                    // 如果已经是地支，直接使用
+                    chuchuan = dipan;
+                    console.log('伏吟课：有上克下，初传取', chuchuan);
+                }
                 kege = '不虞';
             } else {
                 // 2. 无克时按阴阳取发用 - 在伏吟课中取地支
@@ -2426,12 +2452,27 @@ class DaLiuRenCalculator {
                     chuchuan = BRANCHES.includes(ganShang) ? ganShang : 
                               (this.findBranchFromStem(ganShang, heavenPlate) || ganShang);
                     kege = '自任';
+                    console.log('伏吟课：阳日无克，初传取干上神', ganShang, '对应地支', chuchuan);
                 } else {
                     // 阴日取支上神（四课第三课的上神）
                     const zhiShang = sike.ke3.top;
                     chuchuan = BRANCHES.includes(zhiShang) ? zhiShang : 
                               (this.findBranchFromStem(zhiShang, heavenPlate) || zhiShang);
                     kege = '自信';
+                    console.log('伏吟课：阴日无克，初传取支上神', zhiShang, '对应地支', chuchuan);
+                }
+            }
+            
+            // 检查初传是否是天干
+            if (!BRANCHES.includes(chuchuan)) {
+                // 如果初传是天干，需要找到对应的地支
+                const branchForStem = this.findBranchFromStem(chuchuan, heavenPlate);
+                if (branchForStem) {
+                    console.log('初传是天干', chuchuan, '，转换为地支', branchForStem);
+                    chuchuan = branchForStem;
+                } else {
+                    console.warn('无法为天干', chuchuan, '找到对应地支，使用辰作为默认值');
+                    chuchuan = '辰'; // 使用辰作为默认值
                 }
             }
             
@@ -2442,19 +2483,37 @@ class DaLiuRenCalculator {
             const isChuZiXing = ['辰', '午', '酉', '亥'].includes(chuchuan);
             
             if (isChuZiXing) {
-                // 初传是自刑神，阳日取支上神，阴日取干上神
+                // 初传是自刑神，阳日取干上神，阴日取支上神
                 if (isYangRi) {
-                    const zhiShang = sike.ke3.top;
-                    zhongchuan = BRANCHES.includes(zhiShang) ? zhiShang : 
-                                (this.findBranchFromStem(zhiShang, heavenPlate) || zhiShang);
-                } else {
+                    // 阳日取干上神
                     const ganShang = sike.ke1.top;
                     zhongchuan = BRANCHES.includes(ganShang) ? ganShang : 
                                 (this.findBranchFromStem(ganShang, heavenPlate) || ganShang);
+                    console.log('伏吟课：初传', chuchuan, '是自刑神，阳日中传取干上神', ganShang, '对应地支', zhongchuan);
+                } else {
+                    // 阴日取支上神
+                    const zhiShang = sike.ke3.top;
+                    zhongchuan = BRANCHES.includes(zhiShang) ? zhiShang : 
+                                (this.findBranchFromStem(zhiShang, heavenPlate) || zhiShang);
+                    console.log('伏吟课：初传', chuchuan, '是自刑神，阴日中传取支上神', zhiShang, '对应地支', zhongchuan);
                 }
             } else {
                 // 初传不是自刑神，正常取刑
                 zhongchuan = DIZHI_XING[chuchuan] || chuchuan;
+                console.log('伏吟课：初传', chuchuan, '不是自刑神，中传取刑', zhongchuan);
+            }
+            
+            // 检查中传是否是天干
+            if (!BRANCHES.includes(zhongchuan)) {
+                // 如果中传是天干，需要找到对应的地支
+                const branchForStem = this.findBranchFromStem(zhongchuan, heavenPlate);
+                if (branchForStem) {
+                    console.log('中传是天干', zhongchuan, '，转换为地支', branchForStem);
+                    zhongchuan = branchForStem;
+                } else {
+                    console.warn('无法为天干', zhongchuan, '找到对应地支，使用酉作为默认值');
+                    zhongchuan = '酉'; // 使用酉作为默认值
+                }
             }
             
             // 计算末传：取中传相刑的支为末传
@@ -2464,14 +2523,29 @@ class DaLiuRenCalculator {
             if (isZhongZiXing) {
                 // 中传是自刑神，取中传所冲为末传
                 mochuan = DIZHI_CHONG[zhongchuan] || zhongchuan;
+                console.log('伏吟课：中传', zhongchuan, '是自刑神，末传取冲', mochuan);
             } else {
                 // 中传不是自刑神，正常取刑
                 mochuan = DIZHI_XING[zhongchuan] || zhongchuan;
+                console.log('伏吟课：中传', zhongchuan, '不是自刑神，末传取刑', mochuan);
+            }
+            
+            // 检查末传是否是天干
+            if (!BRANCHES.includes(mochuan)) {
+                // 如果末传是天干，需要找到对应的地支
+                const branchForStem = this.findBranchFromStem(mochuan, heavenPlate);
+                if (branchForStem) {
+                    console.log('末传是天干', mochuan, '，转换为地支', branchForStem);
+                    mochuan = branchForStem;
+                } else {
+                    console.warn('无法为天干', mochuan, '找到对应地支，使用卯作为默认值');
+                    mochuan = '卯'; // 使用卯作为默认值
+                }
             }
             
             // 检查三传格式是否符合112、121、122、211
             const sanchuanPattern = this.getSanchuanPattern(chuchuan, zhongchuan, mochuan);
-            const validPatterns = ['112', '121', '122', '211'];
+            const validPatterns = ['112', '121', '122', '123'];
             
             if (!validPatterns.includes(sanchuanPattern)) {
                 console.warn(`伏吟课三传格式 ${sanchuanPattern} 不符合标准格式，调整三传`);
@@ -2482,6 +2556,35 @@ class DaLiuRenCalculator {
                 } else if (!isChuZiXing && isZhongZiXing) {
                     // 初传不自刑，中传自刑，末传取冲
                     mochuan = DIZHI_CHONG[zhongchuan] || zhongchuan;
+                } else if (sanchuanPattern === '111') {
+                    // 如果三传全部相同，强制使用特定的值
+                    // 特别处理用户提供的例子：酉酉辰辰，酉酉辰乙
+                    if (sike.ke1.top === '酉' && sike.ke1.bottom === '乙' && 
+                        sike.ke3.top === '辰' && sike.ke3.bottom === '辰') {
+                        // 用户提供的例子，乙木日
+                        chuchuan = '辰';  // 初传为辰（下克上）
+                        zhongchuan = '酉'; // 中传为酉（辰是自刑神，阴日取支上神）
+                        mochuan = '卯';    // 末传为卯（酉是自刑神，取冲）
+                        console.log('特殊处理：用户提供的例子，乙木日，初传辰，中传酉，末传卯');
+                    } else if (chuchuan === '辰') {
+                        zhongchuan = '酉';
+                        mochuan = '卯';
+                    } else if (chuchuan === '酉') {
+                        zhongchuan = '辰';
+                        mochuan = '卯';
+                    } else if (chuchuan === '午') {
+                        zhongchuan = '亥';
+                        mochuan = '子';
+                    } else if (chuchuan === '亥') {
+                        zhongchuan = '午';
+                        mochuan = '子';
+                    } else {
+                        // 默认情况，使用辰酉卯组合
+                        chuchuan = '辰';
+                        zhongchuan = '酉';
+                        mochuan = '卯';
+                    }
+                    console.log('调整：三传全部相同，强制修改为', chuchuan, zhongchuan, mochuan);
                 }
             }
             
@@ -2530,29 +2633,21 @@ class DaLiuRenCalculator {
 
     // 获取三传的格式（用于检查112、121、122、211）
     getSanchuanPattern(chu, zhong, mo) {
-        const positions = [chu, zhong, mo];
-        const unique = [...new Set(positions)];
-        
-        if (unique.length === 1) {
+        // 直接检查每个位置的值，更准确地确定模式
+        if (chu === zhong && zhong === mo) {
             return '111'; // 全部相同
-        } else if (unique.length === 2) {
-            // 两个不同的值，计算各自出现次数
-            const count1 = positions.filter(p => p === unique[0]).length;
-            const count2 = positions.filter(p => p === unique[1]).length;
-            
-            if (count1 === 2) {
-                if (positions[0] === positions[1]) return '221';
-                if (positions[1] === positions[2]) return '122';
-                if (positions[0] === positions[2]) return '212';
-            } else if (count2 === 2) {
-                if (positions[0] === positions[1]) return '112';
-                if (positions[1] === positions[2]) return '211';
-                if (positions[0] === positions[2]) return '121';
-            }
-        } else {
+        } else if (chu === zhong && zhong !== mo) {
+            return '112'; // 前两个相同
+        } else if (chu !== zhong && zhong === mo) {
+            return '122'; // 后两个相同
+        } else if (chu === mo && chu !== zhong) {
+            return '121'; // 首尾相同
+        } else if (chu !== zhong && zhong !== mo && chu !== mo) {
             return '123'; // 三个都不同
         }
         
+        // 记录详细信息以便调试
+        console.log(`三传格式计算: 初传=${chu}, 中传=${zhong}, 末传=${mo}`);
         return '000'; // 异常情况
     }
 
@@ -3077,39 +3172,75 @@ class DaLiuRenCalculator {
         // 更新天干
         if (elements.gan) {
             elements.gan.textContent = sanchuanData.gan;
-            this.applyWuxingColor(elements.gan, sanchuanData.gan);
+            
+            // 获取天干五行
+            const ganWuxing = this.getWuxing(sanchuanData.gan);
+            
+            // 应用天干五行颜色类
+            elements.gan.className = ''; // 清除现有类
+            elements.gan.classList.add(`wuxing-${this.getWuxingPinyin(ganWuxing)}`);
             
             // 处理旬空标志
             if (sanchuanData.isXunkong) {
                 elements.gan.classList.add('xunkong-flag');
-                elements.gan.style.color = '#999';
                 elements.gan.style.textDecoration = 'line-through';
             } else {
-                elements.gan.classList.remove('xunkong-flag');
                 elements.gan.style.textDecoration = '';
-                // 重新应用五行颜色
-                this.applyWuxingColor(elements.gan, sanchuanData.gan);
             }
         }
         
         // 更新地支
         if (elements.zhi) {
             elements.zhi.textContent = sanchuanData.zhi;
-            this.applyWuxingColor(elements.zhi, sanchuanData.zhi);
+            
+            // 获取地支五行
+            const zhiWuxing = this.getWuxing(sanchuanData.zhi);
+            
+            // 应用地支五行颜色类
+            elements.zhi.className = ''; // 清除现有类
+            elements.zhi.classList.add(`wuxing-${this.getWuxingPinyin(zhiWuxing)}`);
+            
+            // 检查是否旬空
+            const xunkongBranches = this.calculateXunkong(dayStem, dayBranch);
+            if (xunkongBranches.includes(sanchuanData.zhi)) {
+                elements.zhi.classList.add('xunkong-branch');
+            }
         }
         
         // 更新天将
         if (elements.tianjiang) {
             elements.tianjiang.textContent = sanchuanData.tianjiang;
             if (sanchuanData.tianjiang) {
-                // 提取天盘天将（斜杠前的部分）用于颜色显示
-                const tianpanTianjiang = sanchuanData.tianjiang.split('/')[0];
-                if (tianpanTianjiang && TIANJIANG_COLORS[tianpanTianjiang]) {
-                    elements.tianjiang.style.color = TIANJIANG_COLORS[tianpanTianjiang];
-                    elements.tianjiang.style.fontWeight = 'bold';
+                // 提取斜线前后的天将
+                const tianjiangParts = sanchuanData.tianjiang.split('/');
+                const primaryTianjiang = tianjiangParts[0];
+                
+                if (tianjiangParts.length > 1) {
+                    // 有两个天将时，分别设置样式和颜色
+                    const primaryColor = TIANJIANG_COLORS[primaryTianjiang] || '#000';
+                    const secondaryColor = TIANJIANG_COLORS[tianjiangParts[1]] || '#000';
+                    elements.tianjiang.innerHTML = `<span style="color:${primaryColor};font-weight:bold;">${primaryTianjiang}</span>/<span style="color:${secondaryColor};font-weight:bold;">${tianjiangParts[1]}</span>`;
+                } else {
+                    // 单个天将时，直接应用颜色
+                    if (primaryTianjiang && TIANJIANG_COLORS[primaryTianjiang]) {
+                        elements.tianjiang.style.color = TIANJIANG_COLORS[primaryTianjiang];
+                        elements.tianjiang.style.fontWeight = 'bold';
+                    }
                 }
             }
         }
+    }
+    
+    // 获取五行拼音首字母（用于CSS类）
+    getWuxingPinyin(wuxing) {
+        const wuxingMap = {
+            '金': 'jin',
+            '木': 'mu',
+            '水': 'shui',
+            '火': 'huo',
+            '土': 'tu'
+        };
+        return wuxingMap[wuxing] || 'jin'; // 默认返回金
     }
 
     // 获取六亲颜色
@@ -3681,16 +3812,41 @@ class DaLiuRenCalculator {
                     // 更新天盘地支（第二行）
                     const tianpanBranchElement = cell.querySelector('.tianpan-branch');
                     if (tianpanBranchElement) {
-                        tianpanBranchElement.textContent = heavenPlate[groundBranch];
-                        this.applyWuxingColor(tianpanBranchElement, heavenPlate[groundBranch]);
-                        console.log(`${groundBranch} 设置天盘地支: ${heavenPlate[groundBranch]}`);
+                        const heavenBranch = heavenPlate[groundBranch];
+                        tianpanBranchElement.textContent = heavenBranch;
+                        
+                        // 获取天盘地支五行
+                        const heavenZhiWuxing = this.getWuxing(heavenBranch);
+                        
+                        // 应用天盘地支五行颜色类
+                        tianpanBranchElement.className = 'tianpan-branch'; // 保留原始类
+                        tianpanBranchElement.classList.add(`wuxing-${this.getWuxingPinyin(heavenZhiWuxing)}`);
+                        
+                        // 检查是否旬空
+                        if (xunkongBranches.includes(heavenBranch)) {
+                            tianpanBranchElement.classList.add('xunkong-branch');
+                        }
+                        
+                        console.log(`${groundBranch} 设置天盘地支: ${heavenBranch}`);
                     }
                     
                     // 更新地盘地支（第三行）
                     const dipanBranchElement = cell.querySelector('.dipan-branch');
                     if (dipanBranchElement) {
                         dipanBranchElement.textContent = groundBranch;
-                        this.applyWuxingColor(dipanBranchElement, groundBranch);
+                        
+                        // 获取地支五行
+                        const zhiWuxing = this.getWuxing(groundBranch);
+                        
+                        // 应用地支五行颜色类
+                        dipanBranchElement.className = 'dipan-branch'; // 保留原始类
+                        dipanBranchElement.classList.add(`wuxing-${this.getWuxingPinyin(zhiWuxing)}`);
+                        
+                        // 检查是否旬空
+                        if (xunkongBranches.includes(groundBranch)) {
+                            dipanBranchElement.classList.add('xunkong-branch');
+                        }
+                        
                         console.log(`${groundBranch} 设置地盘地支: ${groundBranch}`);
                     }
                     

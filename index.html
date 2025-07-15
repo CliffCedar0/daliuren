@@ -5,7 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>卿核大六壬</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=2.2">
+    <style>
+        /* 可以添加任何额外的内联样式 */
+    </style>
 </head>
 <body>
     <div class="container">
@@ -845,6 +848,147 @@
     <!-- 尝试多个CDN源，确保库能够加载 -->
     <script src="https://cdn.jsdelivr.net/npm/lunar-javascript@1.6.12/lunar.min.js" onerror="this.onerror=null;this.src='https://unpkg.com/lunar-javascript@1.6.12/lunar.min.js'"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="script.js"></script>
+    <script src="script.js?v=1.9"></script>
+
+<script>
+// 在页面加载完成后执行
+document.addEventListener('DOMContentLoaded', function() {
+    // 天将五行颜色映射 - 天地盘用
+    const tianjiangWuxing = {
+        '螣蛇': 'fire', '朱雀': 'fire',  // 火
+        '勾陈': 'earth', '太常': 'earth', '天空': 'earth', '贵人': 'earth',  // 土
+        '六合': 'wood', '青龙': 'wood',  // 木
+        '天后': 'water', '玄武': 'water',  // 水
+        '白虎': 'metal', '太阴': 'metal'   // 金
+    };
+
+    // 天将颜色映射 - 天盘天将颜色
+    const tianpanColors = {
+        '螣蛇': '#ce2d20', '朱雀': '#ce2d20',  // 火
+        '勾陈': '#98511e', '太常': '#98511e', '天空': '#98511e', '贵人': '#98511e',  // 土
+        '六合': '#317023', '青龙': '#317023',  // 木
+        '天后': '#0803a8', '玄武': '#0803a8',  // 水
+        '白虎': '#e08433', '太阴': '#e08433'   // 金
+    };
+
+    // 天将颜色映射 - 地盘天将颜色（使用更亮的色调）
+    const dipanColors = {
+        '螣蛇': '#ff5a4c', '朱雀': '#ff5a4c',  // 火 - 更亮
+        '勾陈': '#c06a29', '太常': '#c06a29', '天空': '#c06a29', '贵人': '#c06a29',  // 土 - 更亮
+        '六合': '#42a832', '青龙': '#42a832',  // 木 - 更亮
+        '天后': '#1c3cff', '玄武': '#1c3cff',  // 水 - 更亮
+        '白虎': '#ffaa4c', '太阴': '#ffaa4c'   // 金 - 更亮
+    };
+
+    // 获取天将的颜色 - 天盘
+    function getTianpanColor(tianjiang) {
+        for (const [name, color] of Object.entries(tianpanColors)) {
+            if (tianjiang.includes(name)) {
+                return color;
+            }
+        }
+        return '';
+    }
+
+    // 获取天将的颜色 - 地盘
+    function getDipanColor(tianjiang) {
+        for (const [name, color] of Object.entries(dipanColors)) {
+            if (tianjiang.includes(name)) {
+                return color;
+            }
+        }
+        return '';
+    }
+
+    // 获取天将的五行类
+    function getTianjiangClass(tianjiang) {
+        for (const [name, wuxing] of Object.entries(tianjiangWuxing)) {
+            if (tianjiang.includes(name)) {
+                return 'tianjiang-' + wuxing;
+            }
+        }
+        return '';
+    }
+
+    // 处理天将显示
+    function processTianjiangDisplay() {
+        // 处理三传天将
+        const sanchuanTianjiang = document.querySelectorAll('#chuchuan-tianjiang, #zhongchuan-tianjiang, #mochuan-tianjiang');
+        sanchuanTianjiang.forEach(function(element) {
+            if (element && element.textContent) {
+                const parts = element.textContent.split('/');
+                if (parts.length === 2) {
+                    const tianpanColor = getTianpanColor(parts[0]);
+                    const dipanColor = getDipanColor(parts[1]);
+                    element.innerHTML = '<span class="tianjiang-combo">' +
+                        '<span class="tianpan-part" style="color:' + tianpanColor + ';font-weight:bold;">' + parts[0] + '</span>' +
+                        '<span class="dipan-part" style="color:' + dipanColor + ';font-weight:bold;">' + parts[1] + '</span>' +
+                        '</span>';
+                }
+            }
+        });
+
+        // 处理四课天将
+        const sikeTianjiang = document.querySelectorAll('.sike-cell');
+        sikeTianjiang.forEach(function(element) {
+            const text = element.textContent;
+            if (text && text.includes('/')) {
+                const parts = text.split('/');
+                if (parts.length === 2) {
+                    const tianpanColor = getTianpanColor(parts[0]);
+                    const dipanColor = getDipanColor(parts[1]);
+                    element.innerHTML = '<span class="tianjiang-combo">' +
+                        '<span class="tianpan-part" style="color:' + tianpanColor + ';font-weight:bold;">' + parts[0] + '</span>' +
+                        '<span class="dipan-part" style="color:' + dipanColor + ';font-weight:bold;">' + parts[1] + '</span>' +
+                        '</span>';
+                }
+            }
+        });
+
+        // 处理天盘天将
+        const tianpanTianjiang = document.querySelectorAll('.tianpan-tianjiang');
+        tianpanTianjiang.forEach(function(element) {
+            if (element && element.textContent) {
+                const tianjiangName = element.textContent.trim();
+                const tianjiangClass = getTianjiangClass(tianjiangName);
+                if (tianjiangClass) {
+                    element.classList.add(tianjiangClass);
+                }
+            }
+        });
+
+        // 处理地盘天将
+        const dipanTianjiang = document.querySelectorAll('.dipan-tianjiang-bottom');
+        dipanTianjiang.forEach(function(element) {
+            if (element && element.textContent) {
+                const tianjiangName = element.textContent.trim();
+                const tianjiangClass = getTianjiangClass(tianjiangName);
+                if (tianjiangClass) {
+                    element.classList.add(tianjiangClass);
+                }
+            }
+        });
+    }
+
+    // 初始处理
+    setTimeout(processTianjiangDisplay, 1000);
+
+    // 监听排盘按钮点击
+    const calculateBtn = document.getElementById('calculate-btn');
+    if (calculateBtn) {
+        calculateBtn.addEventListener('click', function() {
+            setTimeout(processTianjiangDisplay, 1000);
+        });
+    }
+
+    // 监听生成图表按钮点击
+    const generateChartBtn = document.getElementById('generate-chart-btn');
+    if (generateChartBtn) {
+        generateChartBtn.addEventListener('click', function() {
+            setTimeout(processTianjiangDisplay, 1000);
+        });
+    }
+});
+</script>
 </body>
 </html>
