@@ -4,6 +4,12 @@
     box-sizing: border-box;
 }
 
+:root {
+    --modal-top: 100px;
+    --modal-left: 50%;
+    --modal-width: 90%;
+}
+
 body {
     font-family: 'Microsoft YaHei', '宋体', serif;
     background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
@@ -802,10 +808,27 @@ button:hover {
     padding: 0;
     border: none;
     width: 90%;
+    /* top: 100%; */
     max-width: 800px;
     border-radius: 15px;
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
     animation: modalFadeIn 0.3s ease-out;
+}
+
+/* 新增：用于与天地盘对齐的弹窗样式 */
+.modal-content.plate-aligned {
+    position: fixed;
+    margin: 0;
+    background-color: #f8f9fa;
+    border: 1px solid #ddd;
+    width: var(--modal-width);
+    max-width: 900px;
+    /* top: var(--modal-top); */
+    left: var(--modal-left);
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    overflow: auto;
+    z-index: 1001;
 }
 
 @keyframes modalFadeIn {
@@ -1144,10 +1167,10 @@ button:hover {
     
     /* 移动端钤法弹出框样式 */
     .modal-content {
-        width: 95%;
-        margin: 5% auto;
-        max-height: 85vh;
-        overflow-y: auto;
+        width: 400px !important; /* 固定宽度 */
+        max-width: 95% !important;
+        max-height: 80vh !important; /* 最大高度为视窗高度的80% */
+        overflow-y: auto !important; /* 内容超出时显示滚动条 */
     }
     
     .modal-header {
@@ -1452,4 +1475,85 @@ button:hover {
 .tianpan-tianjiang.tianjiang-metal,
 .dipan-tianjiang-bottom.tianjiang-metal {
     color: #e08433 !important; /* 金 - 白虎, 太阴 */
+} 
+
+/* 金口诀样式 */
+.jinkou-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.jinkou-item {
+    display: flex;
+    align-items: center;
+    padding: 8px;
+    background-color: #f8f9fa;
+    border-radius: 6px;
+}
+
+.jinkou-label {
+    font-weight: bold;
+    color: #333;
+    margin-right: 10px;
+    min-width: 120px;
+}
+
+.jinkou-value {
+    font-size: 1.2em;
+}
+
+/* 八动样式 */
+.jinkou-item:last-child {
+    background-color: #f0f8ff;
+    border: 1px solid #d1e9ff;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.jinkou-item:last-child .jinkou-label {
+    color: #0066cc;
+}
+
+.jinkou-reference {
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-radius: 6px;
+}
+
+.jinkou-reference h4 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    color: #333;
+    font-size: 1em;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 5px;
+}
+
+.jinkou-table {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+}
+
+.jinkou-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px;
+    background-color: rgba(255, 255, 255, 0.7);
+    border-radius: 4px;
+}
+
+.jinkou-tianjiang {
+    margin-right: 5px;
+}
+
+.jinkou-arrow {
+    margin: 0 5px;
+    color: #999;
+}
+
+.jinkou-branch {
+    margin-left: 5px;
 } 

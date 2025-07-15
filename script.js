@@ -4,6 +4,22 @@ const HEAVENLY_STEMS = ['甲', '乙', '丙', '丁', '戊', '己', '庚', '辛', 
 // 十二地支排列顺序
 const BRANCHES = ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'];
 
+// 天将对应地支映射表（金口诀）
+const TIANJIANG_BRANCH_MAP = {
+    '天后': '子',
+    '贵人': '丑',
+    '青龙': '寅',
+    '六合': '卯',
+    '勾陈': '辰',
+    '螣蛇': '巳',
+    '朱雀': '午',
+    '太常': '未',
+    '白虎': '申',
+    '太阴': '酉',
+    '天空': '戌',
+    '玄武': '亥'
+};
+
 // 天干对应的索引
 const STEM_INDEX = {
     '甲': 0, '乙': 1, '丙': 2, '丁': 3, '戊': 4, '己': 5,
@@ -4191,7 +4207,7 @@ class DaLiuRenCalculator {
                 const heavenBranch = branchCell.querySelector('.tianpan-branch').textContent;
                 
                 if (tianpanTianjiang || dipanTianjiang) {
-                    this.showQianfaModal(tianpanTianjiang, dipanTianjiang, branch, heavenBranch);
+                    this.showQianfaModal(tianpanTianjiang, dipanTianjiang, branch, heavenBranch, e);
                 }
             }
         });
@@ -4216,17 +4232,63 @@ class DaLiuRenCalculator {
         });
     }
     
-    showQianfaModal(tianpanTianjiang, dipanTianjiang, groundBranch, heavenBranch) {
+    showQianfaModal(tianpanTianjiang, dipanTianjiang, groundBranch, heavenBranch, event) {
         this.currentTianpanTianjiang = tianpanTianjiang;
         this.currentDipanTianjiang = dipanTianjiang;
         this.currentGroundBranch = groundBranch;
         this.currentHeavenBranch = heavenBranch;
         
-        // 显示弹出框
-        this.qianfaModal.style.display = 'block';
-        
         // 显示钤法内容
         this.updateQianfaContent();
+        
+        // 获取弹窗内容元素
+        const modalContent = this.qianfaModal.querySelector('.modal-content');
+        if (!modalContent) {
+            console.error('无法找到 modal-content 元素');
+            this.qianfaModal.style.display = 'block';
+            return;
+        }
+        
+        try {
+            // 尝试获取天地盘表格
+            let plateTable = null;
+            
+            // 尝试多种方式获取天地盘表格
+            if (this.plateTable) {
+                plateTable = this.plateTable;
+            } else {
+                plateTable = document.querySelector('.plate-table');
+            }
+            
+            // 添加与天地盘对齐的CSS类
+            modalContent.classList.add('plate-aligned');
+            
+            // 直接设置固定位置，更靠左
+            modalContent.style.position = 'fixed';
+            modalContent.style.top = '55%';
+            modalContent.style.left = '5%';
+            modalContent.style.maxHeight = '80vh'; // 防止内容过多时超出屏幕
+            
+            if (plateTable) {
+                try {
+                    const tableRect = plateTable.getBoundingClientRect();
+                    // 设置弹窗宽度与天地盘相同
+                    modalContent.style.width = tableRect.width + 'px';
+                    console.log('弹窗位置和大小计算: 位置=50px, 100px, 大小=', tableRect.width);
+                } catch (e) {
+                    console.warn('获取表格位置失败:', e);
+                    modalContent.style.width = '90%';
+                }
+            } else {
+                // 如果找不到表格，使用默认宽度
+                modalContent.style.width = '90%';
+            }
+        } catch (e) {
+            console.error('设置弹窗位置时出错:', e);
+        }
+        
+        // 显示弹出框 (在设置位置后显示)
+        this.qianfaModal.style.display = 'block';
     }
     
     hideQianfaModal() {
@@ -4236,11 +4298,46 @@ class DaLiuRenCalculator {
     updateQianfaContent() {
         if (!this.currentGroundBranch || !this.currentHeavenBranch) return;
         
-        let content = '';
+        // 添加标题显示当前地支
+        const headerHTML = `<div class="modal-title mb-3">
+            <h4 style="text-align: center; margin-bottom: 15px;">
+                <span style="color: ${WUXING_COLORS[this.currentGroundBranch] || '#333'}; font-weight: bold;">${this.currentGroundBranch}</span> 
+                详细信息
+            </h4>
+        </div>`;
+        
+        // 创建选项卡导航
+        let tabNav = `
+        <ul class="nav nav-tabs mb-3" id="qianfaTab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="jinkou-tab" data-bs-toggle="tab" data-bs-target="#jinkou-content" type="button" role="tab" aria-controls="jinkou-content" aria-selected="true">金口诀</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="qianfa-tab" data-bs-toggle="tab" data-bs-target="#qianfa-content-tab" type="button" role="tab" aria-controls="qianfa-content-tab" aria-selected="false">钤法</button>
+            </li>
+        </ul>`;
+        
+        // 创建选项卡内容
+        let tabContent = `<div class="tab-content" id="qianfaTabContent">`;
+        
+        // 金口诀选项卡内容
+        tabContent += `<div class="tab-pane fade show active" id="jinkou-content" role="tabpanel" aria-labelledby="jinkou-tab">
+            <div class="qianfa-section">
+                <h3 style="color: #ff9800;">金口诀</h3>
+                <div class="qianfa-subsection">
+                    ${this.generateJinkouItem()}
+                </div>
+            </div>
+        </div>`;
+        
+        // 钤法选项卡内容
+        tabContent += `<div class="tab-pane fade" id="qianfa-content-tab" role="tabpanel" aria-labelledby="qianfa-tab">`;
+        
+        let qianfaContent = '';
         
         // 天盘天将的钤法
         if (this.currentTianpanTianjiang) {
-            content += `<div class="qianfa-section">
+            qianfaContent += `<div class="qianfa-section">
                 <h3 style="color: #1976d2;">天盘天将钤法</h3>
                 <div class="qianfa-subsection">
                     <h4>天盘天将加天盘 - ${this.currentTianpanTianjiang}加${this.currentHeavenBranch}</h4>
@@ -4255,7 +4352,7 @@ class DaLiuRenCalculator {
         
         // 地盘天将的钤法
         if (this.currentDipanTianjiang) {
-            content += `<div class="qianfa-section">
+            qianfaContent += `<div class="qianfa-section">
                 <h3 style="color: #d32f2f;">地盘天将钤法</h3>
                 <div class="qianfa-subsection">
                     <h4>地盘天将加天盘 - ${this.currentDipanTianjiang}加${this.currentHeavenBranch}</h4>
@@ -4268,11 +4365,17 @@ class DaLiuRenCalculator {
             </div>`;
         }
         
-        if (!content) {
-            content = '<p style="text-align: center; color: #666; margin: 20px 0;">无天将信息</p>';
+        if (!qianfaContent) {
+            qianfaContent = '<p style="text-align: center; color: #666; margin: 20px 0;">无天将信息</p>';
         }
         
-        this.qianfaContent.innerHTML = content;
+        tabContent += qianfaContent + `</div>`; // 关闭钤法选项卡
+        tabContent += `</div>`; // 关闭选项卡内容
+        
+        // 组合最终内容
+        let finalContent = headerHTML + tabNav + tabContent;
+        
+        this.qianfaContent.innerHTML = finalContent;
     }
     
     generateQianfaItem(tianjiang, branch) {
@@ -4287,6 +4390,133 @@ class DaLiuRenCalculator {
         } else {
             html = '<p style="text-align: center; color: #666; margin: 20px 0;">暂无钤法数据</p>';
         }
+        
+        return html;
+    }
+    
+    // 生成金口诀内容
+    generateJinkouItem() {
+        // 获取当前单元格的信息
+        const xungan = this.calculateXunganForPosition(this.currentGroundBranch, this.dayGan.textContent, this.dayZhi.textContent);
+        const tianpanBranch = this.currentHeavenBranch;
+        const groundBranch = this.currentGroundBranch;
+        
+        // 获取天将对应的地支
+        let tianjiangBranch = '';
+        if (this.currentTianpanTianjiang && TIANJIANG_BRANCH_MAP[this.currentTianpanTianjiang]) {
+            tianjiangBranch = TIANJIANG_BRANCH_MAP[this.currentTianpanTianjiang];
+        }
+        
+        // 获取五行属性
+        const renYuanWuxing = this.getWuxing(xungan);
+        const guiShenWuxing = this.getWuxing(tianjiangBranch);
+        const jiangShenWuxing = this.getWuxing(tianpanBranch);
+        const diFenWuxing = this.getWuxing(groundBranch);
+        
+        // 计算八动 - 使用数组存储多个八动
+        const baDongList = [];
+        
+        // 如果人元克叫地分做妻动
+        if (renYuanWuxing && diFenWuxing && this.wuxingKe(renYuanWuxing, diFenWuxing)) {
+            baDongList.push({
+                text: '妻动',
+                color: '#E91E63', // 粉红色
+                description: '人元克地分'
+            });
+        }
+        // 如果地分克人元叫做鬼动
+        if (diFenWuxing && renYuanWuxing && this.wuxingKe(diFenWuxing, renYuanWuxing)) {
+            baDongList.push({
+                text: '鬼动',
+                color: '#9C27B0', // 紫色
+                description: '地分克人元'
+            });
+        }
+        // 如果贵神克人元叫做官动
+        if (guiShenWuxing && renYuanWuxing && this.wuxingKe(guiShenWuxing, renYuanWuxing)) {
+            baDongList.push({
+                text: '官动',
+                color: '#3F51B5', // 靛蓝色=
+            });
+        }
+        // 如果贵神克将神叫做贼动
+        if (guiShenWuxing && jiangShenWuxing && this.wuxingKe(guiShenWuxing, jiangShenWuxing)) {
+            baDongList.push({
+                text: '贼动',
+                color: '#F44336', // 红色
+                description: '贵神克将神'
+            });
+        }
+        // 如果将神克贵神叫做财动
+        if (jiangShenWuxing && guiShenWuxing && this.wuxingKe(jiangShenWuxing, guiShenWuxing)) {
+            baDongList.push({
+                text: '财动',
+                color: '#FFC107', // 琥珀色
+                description: '将神克贵神'
+            });
+        }
+        // 如果地分生人元叫做父母动
+        if (diFenWuxing && renYuanWuxing && this.wuxingSheng(diFenWuxing, renYuanWuxing)) {
+            baDongList.push({
+                text: '父母动',
+                color: '#4CAF50', // 绿色
+                description: '地分生人元'
+            });
+        }
+        // 如果地分和人元一样叫做兄弟动
+        if (diFenWuxing && renYuanWuxing && diFenWuxing === renYuanWuxing) {
+            baDongList.push({
+                text: '兄弟动',
+                color: '#FF9800', // 橙色
+                description: '地分和人元相同'
+            });
+        }
+        // 如果人元生地分叫做子孙动
+        if (renYuanWuxing && diFenWuxing && this.wuxingSheng(renYuanWuxing, diFenWuxing)) {
+            baDongList.push({
+                text: '子孙动',
+                color: '#2196F3', // 蓝色
+                description: '人元生地分'
+            });
+        }
+        
+        // 创建带颜色的HTML内容
+        let html = `<div class="jinkou-grid">
+            <div class="jinkou-item">
+                <div class="jinkou-label">人元:</div>
+                <div class="jinkou-value" style="color: ${WUXING_COLORS[xungan] || '#333'}; font-weight: bold;">${xungan || '无'}</div>
+            </div>
+            <div class="jinkou-item">
+                <div class="jinkou-label">贵神:</div>
+                <div class="jinkou-value" style="color: ${WUXING_COLORS[tianjiangBranch] || '#333'}; font-weight: bold;">${tianjiangBranch || '无'}</div>
+            </div>
+            <div class="jinkou-item">
+                <div class="jinkou-label">将神:</div>
+                <div class="jinkou-value" style="color: ${WUXING_COLORS[tianpanBranch] || '#333'}; font-weight: bold;">${tianpanBranch || '无'}</div>
+            </div>
+            <div class="jinkou-item">
+                <div class="jinkou-label">地分:</div>
+                <div class="jinkou-value" style="color: ${WUXING_COLORS[groundBranch] || '#333'}; font-weight: bold;">${groundBranch || '无'}</div>
+            </div>`;
+            
+        // 如果有八动，添加到HTML中
+        if (baDongList.length > 0) {
+            html += `
+            <div class="jinkou-item">
+                <div class="jinkou-label">八动:</div>
+                <div class="jinkou-value">`;
+            
+            // 添加每个八动
+            baDongList.forEach((baDong, index) => {
+                html += `<div style="color: ${baDong.color}; font-weight: bold; margin-bottom: 5px;">
+                    ${baDong.text} 
+                </div>`;
+            });
+            
+            html += `</div></div>`;
+        }
+        
+        html += `</div>`;
         
         return html;
     }
