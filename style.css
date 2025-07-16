@@ -176,6 +176,25 @@ h1 {
 /* 三传表格样式 */
 .sanchuan-container {
     margin-bottom: 20px;
+    max-width: 550px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* 四课表格样式 */
+.sike-container {
+    margin-bottom: 20px;
+    max-width: 550px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.sike-container .row {
+    justify-content: center;
+}
+
+.sike-container .col-3 {
+    padding: 0 4px;
 }
 
 .sanchuan-container h3 {
@@ -231,16 +250,25 @@ h1 {
     cursor: default;
 }
 
-/* 四课表格样式 */
-.sike-container {
-    margin-bottom: 20px;
+/* 四课卡片样式 */
+.sike-card {
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    height: 100%;
+    border: none;
+    margin: 0 2px;
 }
 
-.sike-container h3 {
-    text-align: center;
-    margin-bottom: 10px;
-    color: #2c3e50;
-    font-size: 1.2em;
+.sike-card .card-body {
+    border: none;
+    padding: 0;
+}
+
+.sike-top .sike-cell,
+.sike-bottom .sike-cell {
+    border: none;
 }
 
 .sike-table {
@@ -354,19 +382,22 @@ button:hover {
     justify-content: center;
     align-items: center;
     margin-bottom: 40px;
+    max-width: 550px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .plate-wrapper {
     position: relative;
     width: 100%;
-    max-width: 800px;
+    max-width: 550px; /* 增加宽度以匹配更大的天地盘 */
 }
 
 /* 表格布局样式 */
 .plate-table {
     width: 100%;
     border-collapse: separate;
-    border-spacing: 6px;
+    border-spacing: 8px; /* 增加单元格间距 */
     border-radius: 15px;
     padding: 15px;
     border: 3px solid #667eea;
@@ -375,14 +406,14 @@ button:hover {
 .empty-cell {
     background: transparent;
     border: none;
-    width: 100px;
-    height: 100px;
+    width: 110px; /* 增加单元格宽度 */
+    height: 110px; /* 增加单元格高度 */
 }
 
 .branch-cell {
     position: relative;
-    width: 100px;
-    height: 100px;
+    width: 110px; /* 增加单元格宽度 */
+    height: 110px; /* 增加单元格高度 */
     border-radius: 10px;
     border: 2px solid #e9ecef;
     transition: all 0.3s ease;
@@ -400,8 +431,8 @@ button:hover {
 .center-cell {
     border-radius: 10px;
     border: 2px solid rgba(255, 255, 255, 0.3);
-    width: 100px;
-    height: 100px;
+    width: 110px; /* 增加单元格宽度 */
+    height: 110px; /* 增加单元格高度 */
     position: relative;
 }
 
@@ -432,23 +463,23 @@ button:hover {
     top: 1px;
     left: 50%;
     transform: translateX(-50%);
-    font-size: 1.1em;
+    font-size: 1.2em; /* 增加字体大小 */
     font-weight: bold;
     line-height: 1.2;
 }
 
 /* 天盘地支样式 */
 .tianpan-branch {
-    font-size: 1.3em;
+    font-size: 1.4em; /* 增加字体大小 */
     font-weight: bold;
     color: #00b894;
     line-height: 1.2;
     text-align: center;
     position: absolute;
-    top: 25px;
+    top: 28px; /* 调整位置 */
     left: 50%;
     transform: translateX(-50%);
-    width: 40px; /* 固定宽度与地盘地支一致 */
+    width: 45px; /* 增加宽度 */
     padding: 2px 3px;
     border-radius: 4px;
     border: 1px solid #00b894;
@@ -459,15 +490,15 @@ button:hover {
 /* 地盘地支样式 - 默认没有框 */
 .dipan-branch {
     position: absolute;
-    top: 55px;
+    top: 60px; /* 调整位置 */
     left: 50%;
     transform: translateX(-50%);
-    font-size: 1em;
+    font-size: 1.1em; /* 增加字体大小 */
     font-weight: bold;
     color: #e67e22;
     line-height: 1.2;
     z-index: 0;
-    width: 40px; /* 固定宽度 */
+    width: 45px; /* 增加宽度 */
     padding: 2px 3px;
     display: inline-block;
     text-align: center;
@@ -476,10 +507,10 @@ button:hover {
 /* 地盘天将样式 */
 .dipan-tianjiang-bottom {
     position: absolute;
-    top: 80px;
+    top: 85px; /* 调整位置 */
     left: 50%;
     transform: translateX(-50%);
-    font-size: 0.8em;
+    font-size: 0.9em; /* 增加字体大小 */
     font-weight: bold;
     color: #e67e22;
     line-height: 1.2;
@@ -490,39 +521,40 @@ button:hover {
 /* 三遁容器 */
 .sandun-container {
     position: absolute;
-    top: 3px;
-    left: 2px;
-    right: 2px;
+    top: 4px;
+    left: 3px;
+    right: 3px;
     z-index: 1;
+    width: 85px;
 }
 
 /* 人遁横向排列 */
 .rendun-row {
     display: flex;
-    gap: 1px;
-    margin-bottom: 2px;
+    gap: 2px; /* 增加间距 */
+    margin-bottom: 3px;
     align-items: center;
 }
 
 /* 天遁横向排列 */
 .tiandun-row {
     display: flex;
-    gap: 1px;
-    margin-bottom: 2px;
+    gap: 2px; /* 增加间距 */
+    margin-bottom: 3px;
     align-items: center;
 }
 
 /* 旬干横向排列 */
 .xungan-row {
     display: flex;
-    gap: 1px;
-    margin-bottom: 1px;
+    gap: 2px; /* 增加间距 */
+    margin-bottom: 2px;
     align-items: center;
 }
 
 .rendun-display {
-    flex: 0 0 18px;
-    font-size: 10px;
+    flex: 0 0 20px; /* 增加宽度 */
+    font-size: 11px; /* 增加字体大小 */
     font-weight: bold;
     color: #f1c40f;
     text-align: center;
@@ -531,15 +563,15 @@ button:hover {
     background: rgba(241, 196, 15, 0.2);
     border: 1px solid #f1c40f;
     border-radius: 2px;
-    min-height: 12px;
+    min-height: 14px; /* 增加高度 */
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
 .tiandun-display {
-    flex: 0 0 18px;
-    font-size: 10px;
+    flex: 0 0 20px; /* 增加宽度 */
+    font-size: 11px; /* 增加字体大小 */
     font-weight: bold;
     color: #ff6b6b;
     text-align: center;
@@ -548,15 +580,15 @@ button:hover {
     background: rgba(255, 107, 107, 0.2);
     border: 1px solid #ff6b6b;
     border-radius: 2px;
-    min-height: 12px;
+    min-height: 14px; /* 增加高度 */
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
 .xungan-display {
-    flex: 0 0 18px;
-    font-size: 11px;
+    flex: 0 0 20px; /* 增加宽度 */
+    font-size: 11px; /* 增加字体大小 */
     font-weight: bold;
     color: #3498db;
     text-align: center;
@@ -565,7 +597,7 @@ button:hover {
     background: rgba(52, 152, 219, 0.2);
     border: 1px solid #3498db;
     border-radius: 2px;
-    min-height: 12px;
+    min-height: 14px; /* 增加高度 */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -603,13 +635,13 @@ button:hover {
 /* 十神六亲显示样式 */
 .shishen-liuqin-container {
     position: absolute;
-    top: 2px;
-    right: 2px;
-    font-size: 0.95em;
-    line-height: 1;
+    top: 3px;
+    right: 3px;
+    font-size: 0.8em; /* 增加字体大小 */
+    line-height: 1.1;
     display: flex;
     flex-direction: column;
-    gap: 1px;
+    gap: 2px;
     z-index: 4;
 }
 
@@ -617,9 +649,9 @@ button:hover {
     padding: 1px 3px;
     font-weight: bold;
     text-align: center;
-    min-width: 12px;
-    font-size: 0.95em;
-    line-height: 1.1;
+    min-width: 14px; /* 增加宽度 */
+    font-size: 1em; /* 增加字体大小 */
+    line-height: 1.2;
 }
 
 .shishen-display {
@@ -634,13 +666,13 @@ button:hover {
 /* 建干和复建显示样式 */
 .jianjian-display {
     position: absolute;
-    bottom: 5px;
-    left: 2px;
-    font-size: 0.8em;
-    line-height: 1;
+    bottom: 6px;
+    left: 3px;
+    font-size: 0.85em; /* 增加字体大小 */
+    line-height: 1.1;
     display: flex;
     flex-direction: column;
-    gap: 1px;
+    gap: 2px;
 }
 
 .jiangan-row, .fujian-row {
@@ -667,10 +699,10 @@ button:hover {
 /* 纳音显示样式 */
 .rendun-nayin, .tiandun-nayin, .xungan-nayin {
     flex: 1;
-    font-size: 8px;
-    color: #555;
+    font-size: 7px;
+    color: #333;
     text-align: left;
-    padding: 1px 3px;
+    padding: 1px 2px;
     line-height: 1.1;
     min-height: 12px;
     display: flex;
@@ -678,239 +710,54 @@ button:hover {
     justify-content: flex-start;
     font-weight: 600;
     margin-left: 2px;
+    background-color: rgba(255, 255, 255, 0.5);
+    border-radius: 2px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 65px;
 }
 
-
-
-/* 天遁旬空特殊样式 */
-.tiandun-display.xunkong-flag {
-    color: #ff9999 !important;
-    background: rgba(255, 153, 153, 0.1) !important;
-    border: 1px solid #ff9999 !important;
-    text-decoration: line-through !important;
-}
-
-/* 三传天干旬空标志样式 */
-.sanchuan-cell.xunkong-flag {
-    color: #999 !important;
-    text-decoration: line-through !important;
-    position: relative;
-}
-
-.sanchuan-cell.xunkong-flag::after {
-    content: "空";
-    position: absolute;
-    top: -5px;
-    right: -5px;
-    font-size: 8px;
-    color: #e74c3c;
-    background: rgba(231, 76, 60, 0.1);
-    border: 1px solid #e74c3c;
-    border-radius: 50%;
-    width: 10px;
-    height: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    line-height: 1;
-}
-
-/* 地盘样式 */
-.ground-branch {
-    color: #e67e22;
-}
-
-/* 中心信息样式 */
-.center-info {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    text-align: center;
-    color: white;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 8px;
-}
-
-.center-sizhu {
-    margin-bottom: 6px;
-}
-
-.sizhu-row {
-    display: flex;
-    justify-content: center;
-    gap: 4px;
-    margin-bottom: 2px;
-}
-
-.sizhu-row span {
-    font-size: 0.7em;
-    font-weight: bold;
-    padding: 1px 2px;
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 3px;
-    min-width: 12px;
-    text-align: center;
+/* 建干和复建纳音样式 */
+.jiangan-nayin, .fujian-nayin {
+    font-size: 7px;
+    color: #333;
+    min-width: 16px;
+    text-align: left;
+    display: block;
     line-height: 1.1;
+    margin-left: 2px;
+    font-weight: 600;
+    background-color: rgba(255, 255, 255, 0.5);
+    border-radius: 2px;
+    padding: 1px 2px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 65px;
 }
 
-.center-info-text {
-    margin-bottom: 4px;
-}
-
-.center-subtitle {
-    font-size: 0.7em;
-    opacity: 0.9;
-    margin-bottom: 2px;
-}
-
-.center-time {
-    font-size: 0.6em;
-    opacity: 0.8;
-    font-weight: normal;
-}
-
-.result-info {
-    text-align: center;
-    padding: 25px;
-    border-radius: 15px;
-    margin-top: 20px;
-}
-
-.result-info p {
-    font-size: 1.1em;
-    color: #333;
-    line-height: 1.8;
-    margin: 0;
-}
-
-/* 响应式设计 */
-/* 弹出框样式 */
-.modal {
+/* 纳音显示样式 - 隐藏在格子中，只在弹窗中显示 */
+.rendun-nayin, .tiandun-nayin, .xungan-nayin, .jiangan-nayin, .fujian-nayin {
     display: none;
-    position: fixed;
-    z-index: 1000;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
 }
 
-.modal-content {
-    background-color: #fefefe;
-    margin: 5% auto;
-    padding: 0;
-    border: none;
-    width: 90%;
-    /* top: 100%; */
-    max-width: 800px;
-    border-radius: 15px;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
-    animation: modalFadeIn 0.3s ease-out;
+/* 纳音弹出框样式 */
+#nayin-modal .modal-content {
+    max-width: 700px;
 }
 
-/* 新增：用于与天地盘对齐的弹窗样式 */
-.modal-content.plate-aligned {
-    position: fixed;
-    margin: 0;
-    background-color: #f8f9fa;
-    border: 1px solid #ddd;
-    width: var(--modal-width);
-    max-width: 900px;
-    /* top: var(--modal-top); */
-    left: var(--modal-left);
-    border-radius: 8px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-    overflow: auto;
-    z-index: 1001;
-}
-
-@keyframes modalFadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(-50px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px 30px;
-    border-bottom: 1px solid #eee;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border-radius: 15px 15px 0 0;
-}
-
-.modal-header h2 {
-    margin: 0;
-    color: white;
-    font-size: 1.5em;
-}
-
-.close {
-    color: white;
-    font-size: 28px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: color 0.3s;
-}
-
-.close:hover {
-    color: #ddd;
-}
-
-.modal-body {
-    padding: 20px 30px 30px;
-}
-
-.qianfa-content {
-    max-height: 400px;
+.nayin-content {
+    max-height: 500px;
     overflow-y: auto;
-    padding: 10px 0;
+    padding: 15px 0;
 }
 
-.qianfa-item {
-    display: flex;
-    align-items: flex-start;
-    margin-bottom: 15px;
-    padding: 10px;
-    border-radius: 8px;
-    background: #f8f9fa;
-    border-left: 4px solid #667eea;
-}
-
-.qianfa-name {
-    font-weight: bold;
-    color: #333;
-    min-width: 120px;
-    margin-right: 15px;
-}
-
-.qianfa-desc {
-    color: #666;
-    line-height: 1.5;
-}
-
-.qianfa-section {
+.nayin-section {
     margin-bottom: 25px;
 }
 
-.qianfa-section:last-child {
-    margin-bottom: 0;
-}
-
-.qianfa-section h3 {
+.nayin-section h3 {
     margin-bottom: 15px;
     color: #333;
     font-size: 1.2em;
@@ -918,408 +765,207 @@ button:hover {
     padding-bottom: 8px;
 }
 
-.qianfa-subsection {
-    margin-bottom: 20px;
-    padding: 15px;
-    background: rgba(241, 245, 249, 0.8);
-    border-radius: 8px;
-    border-left: 4px solid #e0e7ff;
+.nayin-list {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
 }
 
-.qianfa-subsection:last-child {
-    margin-bottom: 0;
+.nayin-item {
+    padding: 10px;
+    background: #f8f9fa;
+    border-radius: 6px;
+    border-left: 3px solid #667eea;
 }
 
-.qianfa-subsection h4 {
-    margin-bottom: 12px;
-    color: #475569;
+.nayin-label {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.nayin-value {
+    color: #555;
+}
+
+.nayin-wuxing {
+    font-size: 0.9em;
+    margin-top: 5px;
+    padding: 2px 5px;
+    border-radius: 3px;
+    display: inline-block;
+}
+
+/* 五行颜色 */
+.wuxing-jin .nayin-wuxing {
+    background-color: rgba(218, 165, 32, 0.2);
+    color: #DAA520;
+    border: 1px solid #DAA520;
+}
+
+.wuxing-mu .nayin-wuxing {
+    background-color: rgba(34, 139, 34, 0.2);
+    color: #228B22;
+    border: 1px solid #228B22;
+}
+
+.wuxing-shui .nayin-wuxing {
+    background-color: rgba(8, 3, 168, 0.2);
+    color: #0803a8;
+    border: 1px solid #0803a8;
+}
+
+.wuxing-huo .nayin-wuxing {
+    background-color: rgba(255, 69, 0, 0.2);
+    color: #FF4500;
+    border: 1px solid #FF4500;
+}
+
+.wuxing-tu .nayin-wuxing {
+    background-color: rgba(152, 81, 30, 0.2);
+    color: #98511e;
+    border: 1px solid #98511e;
+}
+
+/* 添加查看纳音按钮 */
+.view-nayin-btn {
+    background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    margin-top: 10px;
+    cursor: pointer;
+    font-weight: bold;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    transition: all 0.3s ease;
+}
+
+.view-nayin-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+} 
+
+.nayin-subsection {
+    margin-bottom: 15px;
+    background-color: rgba(255, 255, 255, 0.7);
+    border-radius: 6px;
+    padding: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.nayin-subsection h4 {
+    margin-bottom: 10px;
+    color: #4a5568;
     font-size: 1.1em;
-    font-weight: 600;
+    border-bottom: 1px solid #e2e8f0;
+    padding-bottom: 5px;
+}
+
+.nayin-sublist {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
 }
 
 @media (max-width: 768px) {
-    .container {
-        padding: 20px;
-    }
-    
-    .sizhu-grid {
+    .nayin-list {
         grid-template-columns: repeat(2, 1fr);
-        gap: 15px;
     }
     
-    .sizhu-column {
-        padding: 12px;
-    }
-    
-    .gan, .zhi {
-        font-size: 1.5em;
-        padding: 6px;
-    }
-    
-    .xungan-info, .time-info {
-        margin-top: 15px;
-        padding: 12px;
-    }
-    
-    .xungan-label, .time-label {
-        font-size: 1em;
-    }
-    
-    .xungan-value, .time-value {
-        font-size: 1.3em;
-        padding: 6px 12px;
-        min-width: 55px;
-    }
-    
-    .sanchuan-table {
-        max-width: 100%;
-        font-size: 0.9em;
-    }
-    
-    .sanchuan-cell {
-        padding: 6px;
-        min-width: 50px;
-        height: 38px;
-        font-size: 0.85em;
-    }
-
-    .chuan-name {
-        padding: 8px;
-        font-size: 0.9em;
-    }
-
-    .sike-table {
-        max-width: 100%;
-        font-size: 0.9em;
-    }
-    
-    .sike-cell {
-        padding: 8px;
-        min-width: 60px;
-        height: 40px;
-        font-size: 0.9em;
-    }
-
-    .control-panel {
-        flex-direction: column;
-        gap: 20px;
-    }
-    
-    .control-group select {
-        min-width: 280px;
-    }
-    
-    .plate-table {
-        padding: 15px;
-        border-spacing: 6px;
-    }
-    
-    .branch-cell, .center-cell, .empty-cell {
-        width: 90px;
-        height: 90px;
-    }
-    
-    .center {
-        font-size: 1em;
-    }
-    
-    .tianjiang, .ground-branch {
-        font-size: 0.6em;
-        padding: 1px 3px;
-        min-width: 16px;
-    }
-    
-    .tiandun, .rendun, .xungan {
-        font-size: 0.55em;
-        padding: 1px 2px;
-        min-width: 14px;
-    }
-    
-    .heaven-branch {
-        font-size: 1.1em;
-    }
-    
-    .sizhu-row span {
-        font-size: 0.6em;
-        min-width: 10px;
-        padding: 1px;
-    }
-    
-    .center-subtitle {
-        font-size: 0.6em;
-    }
-    
-    .center-time {
-        font-size: 0.5em;
-    }
-    
-    h1 {
-        font-size: 2.2em;
+    .nayin-sublist {
+        grid-template-columns: 1fr;
     }
 }
 
 @media (max-width: 480px) {
-    .sizhu-grid {
+    .nayin-list, .nayin-sublist {
         grid-template-columns: 1fr;
-        gap: 10px;
     }
-    
-    .gan, .zhi {
-        font-size: 1.3em;
-        padding: 5px;
-    }
-    
-    .xungan-info, .time-info {
-        margin-top: 10px;
-        padding: 10px;
-    }
-    
-    .xungan-label, .time-label {
-        font-size: 0.9em;
-    }
-    
-    .xungan-value, .time-value {
-        font-size: 1.2em;
-        padding: 5px 10px;
-        min-width: 50px;
-    }
-    
-    .sanchuan-table {
-        font-size: 0.8em;
-    }
-    
-    .sanchuan-cell {
-        padding: 4px;
-        min-width: 40px;
-        height: 32px;
-        font-size: 0.75em;
-    }
-
-    .chuan-name {
-        padding: 6px;
-        font-size: 0.8em;
-    }
-
-    .sike-table {
-        font-size: 0.8em;
-    }
-    
-    .sike-cell {
-        padding: 6px;
-        min-width: 50px;
-        height: 35px;
-        font-size: 0.8em;
-    }
-
-    .plate-table {
-        padding: 10px;
-        border-spacing: 4px;
-    }
-    
-    .branch-cell, .center-cell, .empty-cell {
-        width: 70px;
-        height: 70px;
-    }
-    
-    .center {
-        font-size: 0.9em;
-    }
-    
-    .tianjiang, .ground-branch {
-        font-size: 0.5em;
-        padding: 1px 2px;
-        min-width: 12px;
-    }
-    
-    .tiandun, .rendun, .xungan {
-        font-size: 0.45em;
-        padding: 1px 2px;
-        min-width: 12px;
-    }
-    
-    .heaven-branch {
-        font-size: 1em;
-    }
-    
-    .sizhu-row span {
-        font-size: 0.5em;
-        min-width: 8px;
-        padding: 1px;
-    }
-    
-    .center-subtitle {
-        font-size: 0.5em;
-    }
-    
-    .center-time {
-        font-size: 0.4em;
-    }
-    
-    .control-group select {
-        min-width: 240px;
-        font-size: 0.9em;
-    }
-    
-    button {
-        font-size: 1em;
-        padding: 12px 24px;
-    }
-    
-    /* 移动端钤法弹出框样式 */
-    .modal-content {
-        width: 400px !important; /* 固定宽度 */
-        max-width: 95% !important;
-        max-height: 80vh !important; /* 最大高度为视窗高度的80% */
-        overflow-y: auto !important; /* 内容超出时显示滚动条 */
-    }
-    
-    .modal-header {
-        padding: 15px 20px;
-    }
-    
-    .modal-header h2 {
-        font-size: 1.3em;
-    }
-    
-    .modal-body {
-        padding: 15px 20px 20px;
-    }
-    
-    .qianfa-section h3 {
-        font-size: 1.1em;
-        margin-bottom: 12px;
-    }
-    
-    .qianfa-item {
-        margin-bottom: 12px;
-        padding: 8px;
-        flex-direction: column;
-    }
-    
-    .qianfa-name {
-        min-width: auto;
-        font-size: 0.9em;
-        margin-bottom: 5px;
-    }
-    
-    .qianfa-desc {
-        font-size: 0.85em;
-        margin-left: 0;
-    }
-}
-
-/* 十二建除、旺衰、十干长生和五行长生样式 */
-/* --- 显示区域 --- */
-.changsheng-yueling-container {
-    position: absolute;
-    bottom: 2px;
-    right: 2px;
-    left: auto;
-    font-size: 1。1em;
-    line-height: 1;
-    z-index: 4;
-    text-align: right;
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-}
-
-/* 第一行：十二建除 + 旺衰 */
-.changsheng-yueling-container > div:first-child {
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-end;
-    margin-bottom: 1px;
-}
-
-/* 第一行：十二建除（左） */
-.jianchu-display {
-    color: #000;
-    font-weight: normal;
-    text-align: right;
-    font-size: 0.9em;
-    line-height: 1.1;
-    display: inline-block;
-    margin-right: 4px;
-    order: 1;
-}
-
-/* 第一行：旺衰（右） */
-.yueling-display {
-    color: #000;
-    font-weight: normal;
-    text-align: right;
-    font-size: 0.9em;
-    line-height: 1.1;
-    display: inline-block;
-    order: 2;
-}
-
-/* 第二行：十干长生 + 五行长生 */
-.changsheng-yueling-container > div:last-child {
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-end;
-}
-
-/* 第二行：十干长生（左，红色） */
-.changsheng-display {
-    color: #dc143c; /* 红色 */
-    font-weight: normal;
-    text-align: right;
-    font-size: 0.9em;
-    line-height: 1.1;
-    display: inline-block;
-    margin-right: 4px;
-    order: 3;
-}
-
-/* 第二行：五行长生（右，蓝色） */
-.wuxing-changsheng-display {
-    color: #4169e1; /* 蓝色 */
-    font-weight: normal;
-    text-align: right;
-    font-size: 0.9em;
-    line-height: 1.1;
-    display: inline-block;
-    order: 4;
 } 
 
-/* 三传卡片布局样式 */
-.main-card {
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+/* 钤法模态框中的纳音样式 */
+.qianfa-content .nayin-item {
+    padding: 10px;
+    background: #f8f9fa;
+    border-radius: 6px;
+    border-left: 3px solid #667eea;
+    margin-bottom: 10px;
 }
 
-.inner-card {
-    border: 1px solid #e9ecef;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-    margin-bottom: 15px;
-}
-
-.inner-card:last-child {
-    margin-bottom: 0;
-}
-
-.transmission-label {
+.qianfa-content .nayin-label {
     font-weight: bold;
-    font-size: 1.2em;
-    color: #333;
-    min-width: 60px;
+    margin-bottom: 5px;
+}
+
+.qianfa-content .nayin-value {
+    color: #555;
+}
+
+.qianfa-content .nayin-wuxing {
+    font-size: 0.9em;
+    margin-top: 5px;
+    padding: 2px 5px;
+    border-radius: 3px;
+    display: inline-block;
+}
+
+/* 五行颜色 */
+.qianfa-content .wuxing-jin .nayin-wuxing {
+    background-color: rgba(218, 165, 32, 0.2);
+    color: #DAA520;
+    border: 1px solid #DAA520;
+}
+
+.qianfa-content .wuxing-mu .nayin-wuxing {
+    background-color: rgba(34, 139, 34, 0.2);
+    color: #228B22;
+    border: 1px solid #228B22;
+}
+
+.qianfa-content .wuxing-shui .nayin-wuxing {
+    background-color: rgba(8, 3, 168, 0.2);
+    color: #0803a8;
+    border: 1px solid #0803a8;
+}
+
+.qianfa-content .wuxing-huo .nayin-wuxing {
+    background-color: rgba(255, 69, 0, 0.2);
+    color: #FF4500;
+    border: 1px solid #FF4500;
+}
+
+.qianfa-content .wuxing-tu .nayin-wuxing {
+    background-color: rgba(152, 81, 30, 0.2);
+    color: #98511e;
+    border: 1px solid #98511e;
+} 
+
+/* 三传卡片内容布局 */
+.d-flex.flex-grow-1.justify-content-center.align-items-center {
+    flex-wrap: nowrap;
+    justify-content: center;
+    gap: 2px;
 }
 
 .sanchuan-box {
     border: none;
-    padding: 8px 15px;
-    margin: 0 2px;
-    min-width: 60px;
+    padding: 2px 5px;
+    margin: 0;
+    min-width: 40px;
     text-align: center;
 }
 
 .sanchuan-separator {
     color: #dee2e6;
-    margin: 0 5px;
+    margin: 0;
+    font-size: 0.9em;
 }
+
+/* 三传单元格文字大小 */
+.sanchuan-cell {
+    font-size: 0.9em;
+    white-space: nowrap;
+} 
 
 /* 四课卡片样式 - 移除边框 */
 .sike-card {
@@ -1560,4 +1206,331 @@ button:hover {
 
 .jinkou-branch {
     margin-left: 5px;
+} 
+
+/* 三传卡片内容布局 */
+.d-flex.flex-grow-1.justify-content-center.align-items-center {
+    flex-wrap: nowrap;
+    justify-content: center;
+    gap: 2px;
+}
+
+.sanchuan-box {
+    border: none;
+    padding: 2px 5px;
+    margin: 0;
+    min-width: 40px;
+    text-align: center;
+}
+
+.sanchuan-separator {
+    color: #dee2e6;
+    margin: 0;
+    font-size: 0.9em;
+}
+
+/* 三传单元格文字大小 */
+.sanchuan-cell {
+    font-size: 0.9em;
+    white-space: nowrap;
+} 
+
+/* 纳音弹出框样式 */
+#nayin-modal .modal-content {
+    max-width: 700px;
+}
+
+.nayin-content {
+    max-height: 500px;
+    overflow-y: auto;
+    padding: 15px 0;
+}
+
+.nayin-section {
+    margin-bottom: 25px;
+}
+
+.nayin-section h3 {
+    margin-bottom: 15px;
+    color: #333;
+    font-size: 1.2em;
+    border-bottom: 2px solid #667eea;
+    padding-bottom: 8px;
+}
+
+.nayin-list {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+
+.nayin-item {
+    padding: 10px;
+    background: #f8f9fa;
+    border-radius: 6px;
+    border-left: 3px solid #667eea;
+}
+
+.nayin-label {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.nayin-value {
+    color: #555;
+}
+
+.nayin-wuxing {
+    font-size: 0.9em;
+    margin-top: 5px;
+    padding: 2px 5px;
+    border-radius: 3px;
+    display: inline-block;
+}
+
+/* 五行颜色 */
+.wuxing-jin .nayin-wuxing {
+    background-color: rgba(218, 165, 32, 0.2);
+    color: #DAA520;
+    border: 1px solid #DAA520;
+}
+
+.wuxing-mu .nayin-wuxing {
+    background-color: rgba(34, 139, 34, 0.2);
+    color: #228B22;
+    border: 1px solid #228B22;
+}
+
+.wuxing-shui .nayin-wuxing {
+    background-color: rgba(8, 3, 168, 0.2);
+    color: #0803a8;
+    border: 1px solid #0803a8;
+}
+
+.wuxing-huo .nayin-wuxing {
+    background-color: rgba(255, 69, 0, 0.2);
+    color: #FF4500;
+    border: 1px solid #FF4500;
+}
+
+.wuxing-tu .nayin-wuxing {
+    background-color: rgba(152, 81, 30, 0.2);
+    color: #98511e;
+    border: 1px solid #98511e;
+}
+
+/* 添加查看纳音按钮 */
+.view-nayin-btn {
+    background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    margin-top: 10px;
+    cursor: pointer;
+    font-weight: bold;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    transition: all 0.3s ease;
+}
+
+.view-nayin-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+} 
+
+.nayin-subsection {
+    margin-bottom: 15px;
+    background-color: rgba(255, 255, 255, 0.7);
+    border-radius: 6px;
+    padding: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.nayin-subsection h4 {
+    margin-bottom: 10px;
+    color: #4a5568;
+    font-size: 1.1em;
+    border-bottom: 1px solid #e2e8f0;
+    padding-bottom: 5px;
+}
+
+.nayin-sublist {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+}
+
+@media (max-width: 768px) {
+    .nayin-list {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .nayin-sublist {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .nayin-list, .nayin-sublist {
+        grid-template-columns: 1fr;
+    }
+} 
+
+/* 钤法模态框中的纳音样式 */
+.qianfa-content .nayin-item {
+    padding: 10px;
+    background: #f8f9fa;
+    border-radius: 6px;
+    border-left: 3px solid #667eea;
+    margin-bottom: 10px;
+}
+
+.qianfa-content .nayin-label {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.qianfa-content .nayin-value {
+    color: #555;
+}
+
+.qianfa-content .nayin-wuxing {
+    font-size: 0.9em;
+    margin-top: 5px;
+    padding: 2px 5px;
+    border-radius: 3px;
+    display: inline-block;
+}
+
+/* 五行颜色 */
+.qianfa-content .wuxing-jin .nayin-wuxing {
+    background-color: rgba(218, 165, 32, 0.2);
+    color: #DAA520;
+    border: 1px solid #DAA520;
+}
+
+.qianfa-content .wuxing-mu .nayin-wuxing {
+    background-color: rgba(34, 139, 34, 0.2);
+    color: #228B22;
+    border: 1px solid #228B22;
+}
+
+.qianfa-content .wuxing-shui .nayin-wuxing {
+    background-color: rgba(8, 3, 168, 0.2);
+    color: #0803a8;
+    border: 1px solid #0803a8;
+}
+
+.qianfa-content .wuxing-huo .nayin-wuxing {
+    background-color: rgba(255, 69, 0, 0.2);
+    color: #FF4500;
+    border: 1px solid #FF4500;
+}
+
+.qianfa-content .wuxing-tu .nayin-wuxing {
+    background-color: rgba(152, 81, 30, 0.2);
+    color: #98511e;
+    border: 1px solid #98511e;
+} 
+
+/* 十二建除和五行长生旺衰显示样式 */
+.jianchu-wangshui-container {
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    font-size: 1em; /* 与十神相同大小 */
+    line-height: 1.1;
+    z-index: 10;
+}
+
+/* 建除和旺衰在同一行的容器 */
+.jianchu-wangshui-row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+    margin-bottom: 1px;
+}
+
+.jianchu-display {
+    font-weight: bold;
+    color: #000; /* 黑色字体 */
+    border-radius: 2px;
+    padding: 1px 3px;
+    font-size: 0.7em;
+    margin-right: 2px;
+    right: -90%;
+    min-width: 14px;
+    text-align: center;
+}
+
+.wangshui-display {
+    font-weight: bold;
+    color: #000; /* 黑色字体 */
+    border-radius: 2px;
+    font-size: 0.7em;
+    padding: 1px 3px;
+    min-width: 14px;
+    text-align: center;
+}
+
+.changsheng-display {
+    font-size: 0.7em;
+    font-weight: bold;
+    color: #000; /* 黑色字体 */
+    border-radius: 2px;
+    padding: 1px 3px;
+    min-width: 28px; /* 增加宽度以适应两种长生信息 */
+    text-align: center;
+    white-space: nowrap; /* 防止文字换行 */
+    overflow: hidden; /* 超出部分隐藏 */
+    text-overflow: ellipsis; /* 超出部分显示省略号 */
+}
+
+/* 五行旺衰颜色 */
+.wang { color: #000; }
+.xiang { color: #000; }
+.xiu { color: #000; }
+.qiu { color: #000; }
+.si { color: #000; }
+
+/* 十二建除颜色 */
+.jian { color: #000; }
+.chu { color: #000; }
+.man { color: #000; }
+.ping { color: #000; }
+.ding { color: #000; }
+.zhi { color: #000; }
+.po { color: #000; }
+.wei { color: #000; }
+.cheng { color: #000; }
+.shou { color: #000; }
+.kai { color: #000; }
+.bi { color: #000; }
+
+/* 十二长生颜色 */
+.sheng { color: #000; }
+.mu { color: #000; }
+.guan { color: #000; }
+.lin { color: #000; }
+.wang-cs { color: #000; }
+.shuai { color: #000; }
+.bing { color: #000; }
+.si-cs { color: #000; }
+.jue { color: #000; }
+.tai { color: #000; }
+.yang { color: #000; } 
+
+/* 五行长生和十干长生都使用黑色 */
+.wuxing-changsheng {
+    color: #000; /* 黑色字体 */
+    /* font-weight: bold; */
+}
+
+.shigan-changsheng {
+    color: #000; /* 黑色字体 */
+    /* font-weight: bold; */
 } 
