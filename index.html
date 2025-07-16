@@ -969,25 +969,18 @@
                         const jianchuWangshuiRow = document.createElement('div');
                         jianchuWangshuiRow.className = 'jianchu-wangshui-row';
                         
-                        // 创建一个组合显示容器，用于十二建除/旺衰
-                        const jianchuWangshuiDisplay = document.createElement('div');
-                        jianchuWangshuiDisplay.className = 'jianchu-wangshui-display';
-                        jianchuWangshuiDisplay.title = '十二建除/旺衰';
-                        
-                        // 添加十二建除显示（隐藏，仅用于存储数据）
+                        // 添加十二建除显示
                         const jianchuDisplay = document.createElement('div');
                         jianchuDisplay.className = 'jianchu-display';
-                        jianchuDisplay.style.display = 'none';
+                        jianchuDisplay.style.display = 'inline-block';
+                        jianchuDisplay.style.marginRight = '4px';
                         jianchuWangshuiRow.appendChild(jianchuDisplay);
                         
-                        // 添加旺衰显示（隐藏，仅用于存储数据）
+                        // 添加旺衰显示
                         const wangshuiDisplay = document.createElement('div');
                         wangshuiDisplay.className = 'wangshui-display';
-                        wangshuiDisplay.style.display = 'none';
+                        wangshuiDisplay.style.display = 'inline-block';
                         jianchuWangshuiRow.appendChild(wangshuiDisplay);
-                        
-                        // 添加组合显示到行容器
-                        jianchuWangshuiRow.appendChild(jianchuWangshuiDisplay);
                         
                         // 将行容器添加到主容器
                         container.appendChild(jianchuWangshuiRow);

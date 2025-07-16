@@ -1453,6 +1453,7 @@ button:hover {
     align-items: center;
     justify-content: flex-end;
     margin-bottom: 1px;
+    width: 100%;
 }
 
 .jianchu-display {
@@ -1461,10 +1462,10 @@ button:hover {
     border-radius: 2px;
     padding: 1px 3px;
     font-size: 0.7em;
-    margin-right: 2px;
-    right: -90%;
     min-width: 14px;
     text-align: center;
+    display: inline-block;
+    margin-right: 4px;
 }
 
 .wangshui-display {
@@ -1475,6 +1476,7 @@ button:hover {
     padding: 1px 3px;
     min-width: 14px;
     text-align: center;
+    display: inline-block;
 }
 
 .changsheng-display {
@@ -1490,24 +1492,17 @@ button:hover {
     text-overflow: ellipsis; /* 超出部分显示省略号 */
 }
 
-/* 十二建除和旺衰的组合显示 */
+/* 组合显示 */
 .jianchu-wangshui-display {
-    right: -90%;
     font-weight: bold;
-    color: #000; /* 黑色字体 */
-    border-radius: 2px;
-    padding: 1px 3px;
     font-size: 0.7em;
-    min-width: 28px; /* 增加宽度以适应两种信息 */
-    text-align: center;
-    display: inline-flex;
-    justify-content: center;
+    display: flex;
+    flex-direction: row;
     align-items: center;
-    gap: 1px; /* 减少间隔，使更紧凑 */
+    justify-content: center;
 }
 
 .jianchu-part, .wangshui-part {
-    font-weight: bold;
     display: inline-block;
 }
 

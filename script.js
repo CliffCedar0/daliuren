@@ -1722,8 +1722,8 @@ class DaLiuRenCalculator {
         const noblePosIndex = STANDARD_BRANCH_ORDER.indexOf(noblePosition);
         
         // 天盘天将排布规则：根据贵人在地盘的位置决定方向
-        // 贵人在地盘（亥子丑寅卯辰）：顺时针排贵人
-        // 贵人在地盘（巳午未申酉戌）：逆时针排贵人
+        // 贵人在地宫（亥子丑寅卯辰）：顺时针排贵人
+        // 贵人在天宫（巳午未申酉戌）：逆时针排贵人
         const digongGroup = ['亥', '子', '丑', '寅', '卯', '辰'];  // 地宫
         const tiangongGroup = ['巳', '午', '未', '申', '酉', '戌'];  // 天宫
         
@@ -3926,6 +3926,43 @@ class DaLiuRenCalculator {
             this.calculationInfo.textContent = '请选择月将和占时';
             return;
         }
+        
+        // 确保所有单元格都有十二建除和旺衰容器
+        document.querySelectorAll('.branch-cell').forEach(cell => {
+            // 检查单元格是否已有jianchu-wangshui-container
+            if (!cell.querySelector('.jianchu-wangshui-container')) {
+                const container = document.createElement('div');
+                container.className = 'jianchu-wangshui-container';
+                
+                // 创建一个行容器，用于放置十二建除和旺衰
+                const jianchuWangshuiRow = document.createElement('div');
+                jianchuWangshuiRow.className = 'jianchu-wangshui-row';
+                
+                // 添加十二建除显示
+                const jianchuDisplay = document.createElement('div');
+                jianchuDisplay.className = 'jianchu-display';
+                jianchuDisplay.style.display = 'inline-block';
+                jianchuDisplay.style.marginRight = '4px';
+                jianchuWangshuiRow.appendChild(jianchuDisplay);
+                
+                // 添加旺衰显示
+                const wangshuiDisplay = document.createElement('div');
+                wangshuiDisplay.className = 'wangshui-display';
+                wangshuiDisplay.style.display = 'inline-block';
+                jianchuWangshuiRow.appendChild(wangshuiDisplay);
+                
+                // 将行容器添加到主容器
+                container.appendChild(jianchuWangshuiRow);
+                
+                // 添加长生显示
+                const changshengDisplay = document.createElement('div');
+                changshengDisplay.className = 'changsheng-display';
+                changshengDisplay.title = '五行长生/十干长生';
+                container.appendChild(changshengDisplay);
+                
+                cell.appendChild(container);
+            }
+        });
 
         // 计算天盘
         const heavenPlate = this.calculateHeavenPlate(monthGeneral, timeBranch);
@@ -4038,6 +4075,92 @@ class DaLiuRenCalculator {
                 }
             }
         });
+        
+        // 特别处理巳位置的十二建除和旺衰显示
+        setTimeout(() => {
+            const siCell = document.querySelector('.branch-cell[data-branch="巳"]');
+            if (siCell) {
+                console.log('特别处理巳位置的十二建除和旺衰显示');
+                
+                // 移除原有的容器
+                const oldContainer = siCell.querySelector('.jianchu-wangshui-container');
+                if (oldContainer) {
+                    oldContainer.remove();
+                }
+                
+                // 创建新的容器
+                const container = document.createElement('div');
+                container.className = 'jianchu-wangshui-container';
+                container.style.position = 'absolute';
+                container.style.bottom = '2px';
+                container.style.right = '2px';
+                container.style.zIndex = '20';
+                
+                // 创建一个行容器，用于放置十二建除和旺衰
+                const jianchuWangshuiRow = document.createElement('div');
+                jianchuWangshuiRow.className = 'jianchu-wangshui-row';
+                jianchuWangshuiRow.style.display = 'flex';
+                jianchuWangshuiRow.style.flexDirection = 'row';
+                jianchuWangshuiRow.style.alignItems = 'center';
+                
+                // 添加十二建除显示
+                const jianchuDisplay = document.createElement('div');
+                jianchuDisplay.className = 'jianchu-display';
+                jianchuDisplay.style.display = 'inline-block';
+                jianchuDisplay.style.marginRight = '4px';
+                jianchuDisplay.style.fontWeight = 'bold';
+                jianchuDisplay.style.fontSize = '0.7em';
+                
+                // 添加旺衰显示
+                const wangshuiDisplay = document.createElement('div');
+                wangshuiDisplay.className = 'wangshui-display';
+                wangshuiDisplay.style.display = 'inline-block';
+                wangshuiDisplay.style.fontWeight = 'bold';
+                wangshuiDisplay.style.fontSize = '0.7em';
+                
+                // 获取日干支（基于当前时间）
+                const now = new Date();
+                const solar = Solar.fromDate(now);
+                const lunar = solar.getLunar();
+                const dayStem = lunar.getDayInGanZhi().charAt(0);
+                
+                // 计算十二建除和旺衰的值
+                const monthBranch = lunar.getMonthInGanZhi().charAt(1);
+                const heavenBranch = heavenPlate['巳'];
+                
+                // 计算十二建除
+                const jianchu = this.calculateJianchu(monthBranch, '巳', heavenPlate);
+                jianchuDisplay.textContent = jianchu;
+                jianchuDisplay.title = '十二建除';
+                
+                // 计算旺衰
+                const wangshui = this.calculateYueling(monthBranch, heavenBranch);
+                wangshuiDisplay.textContent = wangshui;
+                wangshuiDisplay.title = '旺衰';
+                
+                // 组装元素
+                jianchuWangshuiRow.appendChild(jianchuDisplay);
+                jianchuWangshuiRow.appendChild(wangshuiDisplay);
+                container.appendChild(jianchuWangshuiRow);
+                
+                // 添加长生显示
+                const changshengDisplay = document.createElement('div');
+                changshengDisplay.className = 'changsheng-display';
+                changshengDisplay.title = '五行长生/十干长生';
+                
+                // 计算五行长生
+                const wuxingChangsheng = this.calculateChangsheng(dayStem, heavenBranch);
+                // 计算十干长生
+                const shiganChangsheng = this.calculateShiganChangsheng(dayStem, heavenBranch);
+                
+                // 显示长生信息
+                changshengDisplay.innerHTML = `<span class="wuxing-changsheng">${wuxingChangsheng || ''}</span>/<span class="shigan-changsheng">${shiganChangsheng || ''}</span>`;
+                container.appendChild(changshengDisplay);
+                
+                // 添加到单元格
+                siCell.appendChild(container);
+            }
+        }, 500);
     }
     
     // 更新天将和旬干
@@ -4055,6 +4178,90 @@ class DaLiuRenCalculator {
             const lunarMonthBranch = lunar.getMonthInGanZhi().charAt(1);
             
             console.log('更新天将和旬干，日干支:', dayGZ, '占时:', timeBranch);
+            
+            // 特别处理巳位置的十二建除和旺衰显示
+            setTimeout(() => {
+                const siCell = document.querySelector('.branch-cell[data-branch="巳"]');
+                if (siCell) {
+                    console.log('特别处理巳位置的十二建除和旺衰显示');
+                    
+                    // 移除原有的容器
+                    const oldContainer = siCell.querySelector('.jianchu-wangshui-container');
+                    if (oldContainer) {
+                        oldContainer.remove();
+                    }
+                    
+                    // 创建新的容器
+                    const container = document.createElement('div');
+                    container.className = 'jianchu-wangshui-container';
+                    container.style.position = 'absolute';
+                    container.style.bottom = '2px';
+                    container.style.right = '2px';
+                    container.style.zIndex = '20';
+                    
+                    // 创建一个行容器，用于放置十二建除和旺衰
+                    const jianchuWangshuiRow = document.createElement('div');
+                    jianchuWangshuiRow.className = 'jianchu-wangshui-row';
+                    jianchuWangshuiRow.style.display = 'flex';
+                    jianchuWangshuiRow.style.flexDirection = 'row';
+                    jianchuWangshuiRow.style.alignItems = 'center';
+                    
+                    // 添加十二建除显示
+                    const jianchuDisplay = document.createElement('div');
+                    jianchuDisplay.className = 'jianchu-display';
+                    jianchuDisplay.style.display = 'inline-block';
+                    jianchuDisplay.style.marginRight = '4px';
+                    jianchuDisplay.style.fontWeight = 'bold';
+                    jianchuDisplay.style.fontSize = '0.7em';
+                    
+                    // 添加旺衰显示
+                    const wangshuiDisplay = document.createElement('div');
+                    wangshuiDisplay.className = 'wangshui-display';
+                    wangshuiDisplay.style.display = 'inline-block';
+                    wangshuiDisplay.style.fontWeight = 'bold';
+                    wangshuiDisplay.style.fontSize = '0.7em';
+                    
+                    // 计算十二建除和旺衰的值
+                    const monthBranch = lunar.getMonthInGanZhi().charAt(1);
+                    
+                    // 计算天盘
+                    const monthGeneral = this.monthGeneralSelect.value;
+                    const heavenPlate = this.calculateHeavenPlate(monthGeneral, timeBranch);
+                    const heavenBranch = heavenPlate['巳'];
+                    
+                    // 计算十二建除
+                    const jianchu = this.calculateJianchu(monthBranch, '巳', heavenPlate);
+                    jianchuDisplay.textContent = jianchu;
+                    jianchuDisplay.title = '十二建除';
+                    
+                    // 计算旺衰
+                    const wangshui = this.calculateYueling(monthBranch, heavenBranch);
+                    wangshuiDisplay.textContent = wangshui;
+                    wangshuiDisplay.title = '旺衰';
+                    
+                    // 组装元素
+                    jianchuWangshuiRow.appendChild(jianchuDisplay);
+                    jianchuWangshuiRow.appendChild(wangshuiDisplay);
+                    container.appendChild(jianchuWangshuiRow);
+                    
+                    // 添加长生显示
+                    const changshengDisplay = document.createElement('div');
+                    changshengDisplay.className = 'changsheng-display';
+                    changshengDisplay.title = '五行长生/十干长生';
+                    
+                    // 计算五行长生
+                    const wuxingChangsheng = this.calculateChangsheng(dayStem, heavenBranch);
+                    // 计算十干长生
+                    const shiganChangsheng = this.calculateShiganChangsheng(dayStem, heavenBranch);
+                    
+                    // 显示长生信息
+                    changshengDisplay.innerHTML = `<span class="wuxing-changsheng">${wuxingChangsheng || ''}</span>/<span class="shigan-changsheng">${shiganChangsheng || ''}</span>`;
+                    container.appendChild(changshengDisplay);
+                    
+                    // 添加到单元格
+                    siCell.appendChild(container);
+                }
+            }, 500);
             
             // 计算两个贵人位置
             const nobles = this.getBothNoblePersons(dayStem, timeBranch);
@@ -4357,7 +4564,6 @@ class DaLiuRenCalculator {
                     if (jianchuWangshuiContainer) {
                         const jianchuElement = jianchuWangshuiContainer.querySelector('.jianchu-display');
                         const wangshuiElement = jianchuWangshuiContainer.querySelector('.wangshui-display');
-                        const jianchuWangshuiDisplayElement = jianchuWangshuiContainer.querySelector('.jianchu-wangshui-display');
                         const changshengElement = jianchuWangshuiContainer.querySelector('.changsheng-display');
                         
                         // 获取月支
@@ -4371,6 +4577,8 @@ class DaLiuRenCalculator {
                         if (jianchuElement) {
                             jianchuElement.textContent = jianchu;
                             jianchuElement.className = 'jianchu-display';
+                            jianchuElement.style.display = 'inline-block';
+                            jianchuElement.style.marginRight = '4px';
                             if (jianchu) {
                                 const pinyin = {
                                     '建': 'jian', '除': 'chu', '满': 'man', '平': 'ping',
@@ -4386,6 +4594,7 @@ class DaLiuRenCalculator {
                         if (wangshuiElement) {
                             wangshuiElement.textContent = wangshui;
                             wangshuiElement.className = 'wangshui-display';
+                            wangshuiElement.style.display = 'inline-block';
                             if (wangshui) {
                                 const pinyin = {
                                     '旺': 'wang', '相': 'xiang', '休': 'xiu',
@@ -4393,12 +4602,6 @@ class DaLiuRenCalculator {
                                 }[wangshui];
                                 if (pinyin) wangshuiElement.classList.add(pinyin);
                             }
-                        }
-                        
-                        // 更新十二建除/旺衰组合显示
-                        if (jianchuWangshuiDisplayElement) {
-                            jianchuWangshuiDisplayElement.innerHTML = `<span class="jianchu-part">${jianchu}</span>/<span class="wangshui-part">${wangshui}</span>`;
-                            jianchuWangshuiDisplayElement.title = `十二建除: ${jianchu}, 旺衰: ${wangshui}`;
                         }
                         
                         // 计算五行长生：日干对应天盘地支
@@ -4674,9 +4877,6 @@ class DaLiuRenCalculator {
             qianfaContent = '<p style="text-align: center; color: #666; margin: 20px 0;">无天将信息</p>';
         }
         
-        tabContent += qianfaContent + `</div>`; // 关闭钤法选项卡
-        
-        // 纳音选项卡内容
         tabContent += `<div class="tab-pane fade" id="nayin-content-tab" role="tabpanel" aria-labelledby="nayin-tab">`;
         
         // 获取当前单元格的纳音信息
@@ -4760,48 +4960,6 @@ class DaLiuRenCalculator {
                     </div>
                 </div>`;
             }
-            
-            // nayinContent += `</div>`;
-            
-            // // 天盘纳音
-            // const tianpanBranch = cell.querySelector('.tianpan-branch')?.textContent;
-            // const tianpanGan = this.getTianpanGan(tianpanBranch);
-            // if (tianpanBranch && tianpanGan) {
-            //     const nayin = calculateNayin(tianpanGan, tianpanBranch);
-            //     const wuxing = getNayinWuxing(nayin);
-            //     nayinContent += `
-            //     <div class="qianfa-section">
-            //         <h3 style="color: #00695c;">天盘纳音</h3>
-            //         <div class="qianfa-subsection">
-            //             <h4>天盘干支 - ${tianpanGan}${tianpanBranch}</h4>
-            //             <div class="nayin-item wuxing-${this.getWuxingPinyin(wuxing)}">
-            //                 <div class="nayin-label">${tianpanGan}${tianpanBranch}</div>
-            //                 <div class="nayin-value">${nayin}</div>
-            //                 <div class="nayin-wuxing">${wuxing}</div>
-            //             </div>
-            //         </div>
-            //     </div>`;
-            // }
-            
-            // 地盘纳音
-            // const dipanBranch = this.currentGroundBranch;
-            // const dipanGan = this.getTianpanGan(dipanBranch);
-            // if (dipanBranch && dipanGan) {
-            //     const nayin = calculateNayin(dipanGan, dipanBranch);
-            //     const wuxing = getNayinWuxing(nayin);
-            //     nayinContent += `
-            //     <div class="qianfa-section">
-            //         <h3 style="color: #5d4037;">地盘纳音</h3>
-            //         <div class="qianfa-subsection">
-            //             <h4>地盘干支 - ${dipanGan}${dipanBranch}</h4>
-            //             <div class="nayin-item wuxing-${this.getWuxingPinyin(wuxing)}">
-            //                 <div class="nayin-label">${dipanGan}${dipanBranch}</div>
-            //                 <div class="nayin-value">${nayin}</div>
-            //                 <div class="nayin-wuxing">${wuxing}</div>
-            //             </div>
-            //         </div>
-            //     </div>`;
-            // }
         }
         if (!nayinContent) {
             nayinContent = '<p style="text-align: center; color: #666; margin: 20px 0;">无纳音信息</p>';
