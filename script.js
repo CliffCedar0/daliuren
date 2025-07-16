@@ -4107,7 +4107,6 @@ class DaLiuRenCalculator {
                 const jianchuDisplay = document.createElement('div');
                 jianchuDisplay.className = 'jianchu-display';
                 jianchuDisplay.style.display = 'inline-block';
-                jianchuDisplay.style.marginRight = '4px';
                 jianchuDisplay.style.fontWeight = 'bold';
                 jianchuDisplay.style.fontSize = '0.7em';
                 
@@ -4138,8 +4137,17 @@ class DaLiuRenCalculator {
                 wangshuiDisplay.textContent = wangshui;
                 wangshuiDisplay.title = '旺衰';
                 
+                // 添加分隔符
+                const separator = document.createElement('span');
+                separator.textContent = '/';
+                separator.style.display = 'inline-block';
+                separator.style.margin = '0 2px';
+                separator.style.fontWeight = 'bold';
+                separator.style.fontSize = '0.7em';
+                
                 // 组装元素
                 jianchuWangshuiRow.appendChild(jianchuDisplay);
+                jianchuWangshuiRow.appendChild(separator);
                 jianchuWangshuiRow.appendChild(wangshuiDisplay);
                 container.appendChild(jianchuWangshuiRow);
                 
@@ -4877,6 +4885,10 @@ class DaLiuRenCalculator {
             qianfaContent = '<p style="text-align: center; color: #666; margin: 20px 0;">无天将信息</p>';
         }
         
+        // 添加钤法内容并关闭钤法选项卡
+        tabContent += qianfaContent + `</div>`;
+        
+        // 纳音选项卡内容
         tabContent += `<div class="tab-pane fade" id="nayin-content-tab" role="tabpanel" aria-labelledby="nayin-tab">`;
         
         // 获取当前单元格的纳音信息

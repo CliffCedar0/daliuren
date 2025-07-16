@@ -973,8 +973,17 @@
                         const jianchuDisplay = document.createElement('div');
                         jianchuDisplay.className = 'jianchu-display';
                         jianchuDisplay.style.display = 'inline-block';
-                        jianchuDisplay.style.marginRight = '4px';
+                        jianchuDisplay.style.marginRight = '2px';
                         jianchuWangshuiRow.appendChild(jianchuDisplay);
+                        
+                        // 添加分隔符
+                        const separator = document.createElement('span');
+                        separator.textContent = '/';
+                        separator.style.display = 'inline-block';
+                        separator.style.margin = '0 2%';
+                        separator.style.fontWeight = 'bold';
+                        separator.style.fontSize = '0.7em';
+                        jianchuWangshuiRow.appendChild(separator);
                         
                         // 添加旺衰显示
                         const wangshuiDisplay = document.createElement('div');
