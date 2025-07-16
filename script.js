@@ -643,13 +643,40 @@ class DaLiuRenCalculator {
     }
 
     bindEvents() {
-        this.calculateBtn.addEventListener('click', () => {
+                         this.calculateBtn.addEventListener('click', () => {
             console.log('用户点击排盘按钮，强制更新');
+            // 清除所有盘内容
+            this.clearAllPlateContent();
+            
+            // 强制选中"当前时间"选项
+            const currentTimeRadio = document.getElementById('current-time');
+            if (currentTimeRadio) {
+                currentTimeRadio.checked = true;
+            }
+            
+            // 隐藏所有输入区域
+            this.hideAllInputAreas();
+            
             this.setCurrentDateTime();
-            this.calculatePlates();
-            this.updateSizhu();
+            
+            // 获取当前时间对应的时辰
+            const now = new Date();
+            const currentHour = now.getHours();
+            const currentTimeBranch = this.getTimeBranchByHour(currentHour);
+            
+            // 强制更新时辰选择框
+            this.timeBranchSelect.value = currentTimeBranch;
+            
+            // 获取月将
+            const monthGeneral = this.getCurrentMonthGeneral();
+            
+            // 使用当前时间计算排盘
+            this.calculatePlates(monthGeneral, currentTimeBranch);
+            this.updateSizhu(currentTimeBranch);
+            
             // 更新本命和行年
             this.updateBenmingAndXingnian();
+            
             // 显示所有图表区域
             this.chartSections.forEach(section => {
                 section.style.display = 'block';
@@ -749,6 +776,58 @@ class DaLiuRenCalculator {
     
     // 生成排盘
     // 根据出生年和性别计算本命和行年
+    // 添加清除所有盘内容的方法
+    clearAllPlateContent() {
+        console.log('清除所有盘内容...');
+        
+        // 清除四课内容
+        if (this.sikeElements) {
+            for (let key in this.sikeElements) {
+                if (this.sikeElements[key].top) this.sikeElements[key].top.textContent = '';
+                if (this.sikeElements[key].tianjiang) this.sikeElements[key].tianjiang.textContent = '';
+                if (this.sikeElements[key].bottom) this.sikeElements[key].bottom.textContent = '';
+            }
+        }
+        
+        // 清除三传内容
+        if (this.sanchuanElements) {
+            for (let key in this.sanchuanElements) {
+                if (this.sanchuanElements[key].liuqin) this.sanchuanElements[key].liuqin.textContent = '';
+                if (this.sanchuanElements[key].shishen) this.sanchuanElements[key].shishen.textContent = '';
+                if (this.sanchuanElements[key].gan) this.sanchuanElements[key].gan.textContent = '';
+                if (this.sanchuanElements[key].zhi) this.sanchuanElements[key].zhi.textContent = '';
+                if (this.sanchuanElements[key].tianjiang) this.sanchuanElements[key].tianjiang.textContent = '';
+            }
+        }
+        
+        // 清除天盘地盘内容
+        const cells = document.querySelectorAll('.plate-table td');
+        cells.forEach(cell => {
+            const tianpanDiv = cell.querySelector('.tianpan');
+            const tianjiangDiv = cell.querySelector('.tianjiang');
+            const dipanDiv = cell.querySelector('.dipan');
+            const tianpanGanDiv = cell.querySelector('.tianpan-gan');
+            const nayin = cell.querySelector('.nayin');
+            const jianchu = cell.querySelector('.jianchu');
+            const wangshui = cell.querySelector('.wangshui');
+            const changsheng = cell.querySelector('.changsheng');
+            
+            if (tianpanDiv) tianpanDiv.textContent = '';
+            if (tianjiangDiv) tianjiangDiv.textContent = '';
+            if (dipanDiv) dipanDiv.textContent = '';
+            if (tianpanGanDiv) tianpanGanDiv.textContent = '';
+            if (nayin) nayin.textContent = '';
+            if (jianchu) jianchu.textContent = '';
+            if (wangshui) wangshui.textContent = '';
+            if (changsheng) changsheng.textContent = '';
+        });
+        
+        // 清除旬干内容
+        if (this.xunganValue) this.xunganValue.textContent = '';
+        
+        console.log('盘内容清除完成');
+    }
+
     updateBenmingAndXingnian() {
         if (!this.birthYearSelect || !this.benmingGan || !this.benmingZhi) {
             console.log('本命和行年元素未初始化');
@@ -865,6 +944,9 @@ class DaLiuRenCalculator {
     }
     
     generateChart() {
+        // 清除所有盘内容
+        this.clearAllPlateContent();
+        
         // 显示所有图表区域
         this.chartSections.forEach(section => {
             section.style.display = 'block';
@@ -886,13 +968,13 @@ class DaLiuRenCalculator {
                 this.currentDateTime = new Date();
                 console.log(`设置为当前系统时间: ${this.currentDateTime}`);
                 
-                // 清除任何可能存在的自定义时辰
-                customTimeBranch = null;
-                
-                // 从系统时间中提取时辰
+                // 强制设置时辰为当前系统时间对应的时辰
                 const currentHour = this.currentDateTime.getHours();
-                const systemTimeBranch = this.getTimeBranchByHour(currentHour);
-                console.log(`从系统时间(${currentHour}时)提取时辰: ${systemTimeBranch}`);
+                customTimeBranch = this.getTimeBranchByHour(currentHour);
+                console.log(`从系统时间(${currentHour}时)提取时辰: ${customTimeBranch}`);
+                
+                // 强制更新时辰选择框
+                this.timeBranchSelect.value = customTimeBranch;
                 break;
                 
             case 'custom-time':
@@ -958,15 +1040,15 @@ class DaLiuRenCalculator {
         // 更新时间显示
         this.updateCurrentTime();
         
-                    // 计算排盘 - 如果有自定义时辰，则传递
+                    // 获取月将
+        const monthGeneral = this.getCurrentMonthGeneral();
+        console.log(`获取到当前月将: ${monthGeneral}`);
+        
+        // 计算排盘 - 统一处理方式，无论是否有自定义时辰
         if (customTimeBranch) {
             // 设置时辰选择框显示
             this.timeBranchSelect.value = customTimeBranch;
             console.log(`设置时辰选择框显示为: ${customTimeBranch}`);
-            
-            // 获取月将
-            const monthGeneral = this.getCurrentMonthGeneral();
-            console.log(`获取到当前月将: ${monthGeneral}`);
             
             // 更新四柱信息（传递自定义时辰）
             console.log(`更新四柱信息（自定义时辰: ${customTimeBranch}）`);
@@ -976,14 +1058,14 @@ class DaLiuRenCalculator {
             console.log(`传递参数到calculatePlates: monthGeneral=${monthGeneral}, customTimeBranch=${customTimeBranch}`);
             this.calculatePlates(monthGeneral, customTimeBranch);
         } else {
-            // 使用当前时间计算排盘
-            console.log(`使用当前时间计算排盘，无自定义时辰`);
+            // 这种情况理论上不应该发生，因为我们总是设置customTimeBranch
+            console.log(`警告：未获取到时辰，使用当前时间计算排盘`);
             
             // 更新四柱信息
             console.log(`更新四柱信息（当前时间）`);
             this.updateSizhu();
             
-            this.calculatePlates();
+            this.calculatePlates(monthGeneral, null);
         }
         
         // 更新本命和行年
@@ -3823,6 +3905,9 @@ class DaLiuRenCalculator {
     }
 
     calculatePlates(customMonthGeneral, customTimeBranch) {
+        // 清除所有盘内容
+        this.clearAllPlateContent();
+        
         // 使用自定义参数或从选择框获取值
         const monthGeneral = customMonthGeneral || this.monthGeneralSelect.value;
         let timeBranch = customTimeBranch;
