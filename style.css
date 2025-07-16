@@ -645,7 +645,7 @@ button:hover {
     z-index: 4;
 }
 
-.shishen-display, .liuqin-display {
+.shishen-display, .liuqin-display, .huayao-display {
     padding: 1px 3px;
     font-weight: bold;
     text-align: center;
@@ -659,6 +659,11 @@ button:hover {
 }
 
 .liuqin-display {
+    color: #000;
+    margin-top: 1px;
+}
+
+.huayao-display {
     color: #000;
     margin-top: 1px;
 }

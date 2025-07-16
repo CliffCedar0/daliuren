@@ -3457,6 +3457,13 @@ class DaLiuRenCalculator {
                 console.log(`使用当前日期更新三传显示, 日干支: ${dayGZ}`);
             }
             
+            // 初始化化耀元素
+            if (!this.sanchuanElements.chuchuan.huayao) {
+                this.sanchuanElements.chuchuan.huayao = document.getElementById('chuchuan-huayao');
+                this.sanchuanElements.zhongchuan.huayao = document.getElementById('zhongchuan-huayao');
+                this.sanchuanElements.mochuan.huayao = document.getElementById('mochuan-huayao');
+            }
+            
             // 更新初传
             this.updateSanchuanItem(this.sanchuanElements.chuchuan, sanchuan.chuchuan, dayStem, dayBranch);
             
@@ -3492,6 +3499,14 @@ class DaLiuRenCalculator {
             elements.shishen.textContent = shishen;
             elements.shishen.style.color = this.getShishenColor(shishen);
             elements.shishen.style.fontWeight = 'bold';
+        }
+        
+        // 更新化耀
+        if (elements.huayao) {
+            const huayao = this.calculateHuaYao(shishen);
+            elements.huayao.textContent = huayao;
+            elements.huayao.style.color = this.getHuaYaoColor(huayao);
+            elements.huayao.style.fontWeight = 'bold';
         }
         
         // 更新天干
@@ -3576,6 +3591,41 @@ class DaLiuRenCalculator {
     // 获取十神颜色
     getShishenColor(shishen) {
         return '#000';  // 统一显示为黑色
+    }
+    
+    // 根据十神计算化耀
+    calculateHuaYao(shishen) {
+        const tianxingMap = {
+            '比肩': '天禄',
+            '劫财': '天暗',
+            '食神': '天暗',
+            '伤官': '天耗',
+            '偏财': '天荫',
+            '正财': '天贵',
+            '七杀': '天刑',
+            '正官': '天印',
+            '偏印': '天囚',
+            '正印': '天权'
+        };
+        
+        return tianxingMap[shishen] || '-';
+    }
+    
+    // 获取化耀颜色
+    getHuaYaoColor(huayao) {
+        const huayaoColors = {
+            '天禄': '#000', // 绿色
+            '天暗': '#000', // 灰色
+            '天耗': '#000', // 橙红色
+            '天荫': '#000', // 蓝色
+            '天贵': '#000', // 金黄色
+            '天刑': '#000', // 红色
+            '天印': '#000', // 紫色
+            '天囚': '#000', // 棕色
+            '天权': '#000'  // 靛蓝色
+        };
+        
+        return huayaoColors[huayao] || '#000000';
     }
 
     // 计算十二长生
@@ -4056,6 +4106,14 @@ class DaLiuRenCalculator {
     updateCombinedPlate(heavenPlate) {
         const cells = this.plateTable.querySelectorAll('.branch-cell');
         
+        // 获取当前日期的日干支（用于计算十神和化耀）
+        const now = new Date();
+        const solar = Solar.fromDate(now);
+        const lunar = solar.getLunar();
+        const dayGZ = lunar.getDayInGanZhi();
+        const dayStem = dayGZ.charAt(0);
+        const dayBranch = dayGZ.charAt(1);
+        
         cells.forEach(cell => {
             const groundBranch = cell.getAttribute('data-branch');
             if (groundBranch && heavenPlate[groundBranch]) {
@@ -4072,6 +4130,39 @@ class DaLiuRenCalculator {
                 const groundBranchElement = cell.querySelector('.dipan-branch');
                 if (groundBranchElement) {
                     this.applyWuxingColor(groundBranchElement, groundBranch);
+                }
+                
+                // 计算并更新十神和六亲
+                const heavenBranch = heavenPlate[groundBranch];
+                const tianpanGan = this.getTianpanGan(heavenBranch);
+                
+                // 计算十神（基于天盘天干和日干）
+                if (tianpanGan) {
+                    const shishen = this.calculateShishen(tianpanGan, dayStem);
+                    const shishenElement = cell.querySelector('.shishen-display');
+                    if (shishenElement) {
+                        shishenElement.textContent = shishen;
+                        shishenElement.style.color = this.getShishenColor(shishen);
+                        shishenElement.style.fontWeight = 'bold';
+                    }
+                    
+                    // 计算化耀（基于十神）
+                    const huayao = this.calculateHuaYao(shishen);
+                    const huayaoElement = cell.querySelector('.huayao-display');
+                    if (huayaoElement) {
+                        huayaoElement.textContent = huayao;
+                        huayaoElement.style.color = this.getHuaYaoColor(huayao);
+                        huayaoElement.style.fontWeight = 'bold';
+                    }
+                }
+                
+                // 计算六亲（基于日干和天盘地支）
+                const liuqin = this.calculateLiuqinGanZhi(dayStem, heavenBranch);
+                const liuqinElement = cell.querySelector('.liuqin-display');
+                if (liuqinElement) {
+                    liuqinElement.textContent = liuqin;
+                    liuqinElement.style.color = this.getLiuqinColor(liuqin);
+                    liuqinElement.style.fontWeight = 'bold';
                 }
             }
         });
@@ -4247,8 +4338,17 @@ class DaLiuRenCalculator {
                     wangshuiDisplay.textContent = wangshui;
                     wangshuiDisplay.title = '旺衰';
                     
+                    // 添加分隔符
+                    const separator = document.createElement('span');
+                    separator.style.display = 'inline-block';
+                    separator.style.margin = '0 2px';
+                    separator.style.right = '-50%';
+                    separator.style.fontWeight = 'bold';
+                    separator.style.fontSize = '0.7em';
+                    
                     // 组装元素
                     jianchuWangshuiRow.appendChild(jianchuDisplay);
+                    jianchuWangshuiRow.appendChild(separator);
                     jianchuWangshuiRow.appendChild(wangshuiDisplay);
                     container.appendChild(jianchuWangshuiRow);
                     
