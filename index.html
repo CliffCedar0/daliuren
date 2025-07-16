@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>星空大六壬</title>
+    <title>星垣大六壬</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="style.css?v=2.2">
     <style>
@@ -12,7 +12,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>星空大六壬</h1>
+        <h1>星垣大六壬</h1>
                 
         <div class="control-panel">
             <div class="control-group">
@@ -1000,11 +1000,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 天将颜色映射 - 地盘天将颜色（使用更亮的色调）
     const dipanColors = {
-        '螣蛇': '#ff5a4c', '朱雀': '#ff5a4c',  // 火 - 更亮
-        '勾陈': '#c06a29', '太常': '#c06a29', '天空': '#c06a29', '贵人': '#c06a29',  // 土 - 更亮
-        '六合': '#42a832', '青龙': '#42a832',  // 木 - 更亮
-        '天后': '#1c3cff', '玄武': '#1c3cff',  // 水 - 更亮
-        '白虎': '#ffaa4c', '太阴': '#ffaa4c'   // 金 - 更亮
+        '螣蛇': '#ce2d20', '朱雀': '#ce2d20',  // 火 - 更亮
+        '勾陈': '#98511e', '太常': '#98511e', '天空': '#98511e', '贵人': '#98511e',  // 土 - 更亮
+        '六合': '#317023', '青龙': '#317023',  // 木 - 更亮
+        '天后': '#0803a8', '玄武': '#0803a8',  // 水 - 更亮
+        '白虎': '#e08433', '太阴': '#e08433'   // 金 - 更亮
     };
 
     // 获取天将的颜色 - 天盘
@@ -1056,18 +1056,20 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         // 处理四课天将
-        const sikeTianjiang = document.querySelectorAll('.sike-cell');
+        const sikeTianjiang = document.querySelectorAll('#sike-1-tianjiang, #sike-2-tianjiang, #sike-3-tianjiang, #sike-4-tianjiang');
         sikeTianjiang.forEach(function(element) {
-            const text = element.textContent;
-            if (text && text.includes('/')) {
-                const parts = text.split('/');
-                if (parts.length === 2) {
-                    const tianpanColor = getTianpanColor(parts[0]);
-                    const dipanColor = getDipanColor(parts[1]);
-                    element.innerHTML = '<span class="tianjiang-combo">' +
-                        '<span class="tianpan-part" style="color:' + tianpanColor + ';font-weight:bold;">' + parts[0] + '</span>' +
-                        '<span class="dipan-part" style="color:' + dipanColor + ';font-weight:bold;">' + parts[1] + '</span>' +
-                        '</span>';
+            if (element && element.textContent) {
+                const text = element.textContent;
+                if (text && text.includes('/')) {
+                    const parts = text.split('/');
+                    if (parts.length === 2) {
+                        const tianpanColor = getTianpanColor(parts[0]);
+                        const dipanColor = getDipanColor(parts[1]);
+                        element.innerHTML = '<span class="tianjiang-combo">' +
+                            '<span class="tianpan-part" style="color:' + tianpanColor + ';font-weight:bold;">' + parts[0] + '</span>' +
+                            '<span class="dipan-part" style="color:' + dipanColor + ';font-weight:bold;">' + parts[1] + '</span>' +
+                            '</span>';
+                    }
                 }
             }
         });
