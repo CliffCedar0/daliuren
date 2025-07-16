@@ -4650,12 +4650,9 @@ class DaLiuRenCalculator {
         if (this.currentTianpanTianjiang) {
             qianfaContent += `<div class="qianfa-section">
                 <h3 style="color: #1976d2;">天盘钤法</h3>
-                <div class="qianfa-subsection">
-                    <h4>天盘天将加天盘 - ${this.currentTianpanTianjiang}加${this.currentHeavenBranch}</h4>
-                    ${this.generateQianfaItem(this.currentTianpanTianjiang, this.currentHeavenBranch)}
+                <div class="qianfa-subsection">${this.generateQianfaItem(this.currentTianpanTianjiang, this.currentHeavenBranch)}
                 </div>
                 <div class="qianfa-subsection">
-                    <h4>天盘天将加地盘 - ${this.currentTianpanTianjiang}加${this.currentGroundBranch}</h4>
                     ${this.generateQianfaItem(this.currentTianpanTianjiang, this.currentGroundBranch)}
                 </div>
             </div>`;
@@ -4664,14 +4661,11 @@ class DaLiuRenCalculator {
         // 地盘天将的钤法
         if (this.currentDipanTianjiang) {
             qianfaContent += `<div class="qianfa-section">
+            <h2 style="color: #d32f2f;"></h2>
                 <h3 style="color: #d32f2f;">地盘钤法</h3>
-                <div class="qianfa-subsection">
-                    <h4>地盘天将加天盘 - ${this.currentDipanTianjiang}加${this.currentHeavenBranch}</h4>
-                    ${this.generateQianfaItem(this.currentDipanTianjiang, this.currentHeavenBranch)}
+                <div class="qianfa-subsection">${this.generateQianfaItem(this.currentDipanTianjiang, this.currentHeavenBranch)}
                 </div>
-                <div class="qianfa-subsection">
-                    <h4>地盘天将加地盘 - ${this.currentDipanTianjiang}加${this.currentGroundBranch}</h4>
-                    ${this.generateQianfaItem(this.currentDipanTianjiang, this.currentGroundBranch)}
+                <div class="qianfa-subsection">${this.generateQianfaItem(this.currentDipanTianjiang, this.currentGroundBranch)}
                 </div>
             </div>`;
         }
