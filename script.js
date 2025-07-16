@@ -4567,8 +4567,8 @@ class DaLiuRenCalculator {
             
             // 直接设置固定位置，更靠左
             modalContent.style.position = 'fixed';
-            modalContent.style.top = '70%';
-            modalContent.style.left = '19%';
+            modalContent.style.top = '69%';
+            modalContent.style.left = '19.5%';
             modalContent.style.maxHeight = '80vh'; // 防止内容过多时超出屏幕
             
             if (plateTable) {
