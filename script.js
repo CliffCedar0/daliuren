@@ -4272,6 +4272,7 @@ class DaLiuRenCalculator {
                     if (jianchuWangshuiContainer) {
                         const jianchuElement = jianchuWangshuiContainer.querySelector('.jianchu-display');
                         const wangshuiElement = jianchuWangshuiContainer.querySelector('.wangshui-display');
+                        const jianchuWangshuiDisplayElement = jianchuWangshuiContainer.querySelector('.jianchu-wangshui-display');
                         const changshengElement = jianchuWangshuiContainer.querySelector('.changsheng-display');
                         
                         // 获取月支
@@ -4307,6 +4308,12 @@ class DaLiuRenCalculator {
                                 }[wangshui];
                                 if (pinyin) wangshuiElement.classList.add(pinyin);
                             }
+                        }
+                        
+                        // 更新十二建除/旺衰组合显示
+                        if (jianchuWangshuiDisplayElement) {
+                            jianchuWangshuiDisplayElement.innerHTML = `<span class="jianchu-part">${jianchu}</span>/<span class="wangshui-part">${wangshui}</span>`;
+                            jianchuWangshuiDisplayElement.title = `十二建除: ${jianchu}, 旺衰: ${wangshui}`;
                         }
                         
                         // 计算五行长生：日干对应天盘地支
@@ -4475,8 +4482,8 @@ class DaLiuRenCalculator {
             
             // 直接设置固定位置，更靠左
             modalContent.style.position = 'fixed';
-            modalContent.style.top = '55%';
-            modalContent.style.left = '5%';
+            modalContent.style.top = '70%';
+            modalContent.style.left = '19%';
             modalContent.style.maxHeight = '80vh'; // 防止内容过多时超出屏幕
             
             if (plateTable) {
@@ -4557,7 +4564,7 @@ class DaLiuRenCalculator {
         // 天盘天将的钤法
         if (this.currentTianpanTianjiang) {
             qianfaContent += `<div class="qianfa-section">
-                <h3 style="color: #1976d2;">天盘天将钤法</h3>
+                <h3 style="color: #1976d2;">天盘钤法</h3>
                 <div class="qianfa-subsection">
                     <h4>天盘天将加天盘 - ${this.currentTianpanTianjiang}加${this.currentHeavenBranch}</h4>
                     ${this.generateQianfaItem(this.currentTianpanTianjiang, this.currentHeavenBranch)}
@@ -4572,7 +4579,7 @@ class DaLiuRenCalculator {
         // 地盘天将的钤法
         if (this.currentDipanTianjiang) {
             qianfaContent += `<div class="qianfa-section">
-                <h3 style="color: #d32f2f;">地盘天将钤法</h3>
+                <h3 style="color: #d32f2f;">地盘钤法</h3>
                 <div class="qianfa-subsection">
                     <h4>地盘天将加天盘 - ${this.currentDipanTianjiang}加${this.currentHeavenBranch}</h4>
                     ${this.generateQianfaItem(this.currentDipanTianjiang, this.currentHeavenBranch)}
@@ -4611,7 +4618,7 @@ class DaLiuRenCalculator {
                 nayinContent += `
                 <div class="qianfa-subsection">
                     <div class="nayin-item wuxing-${this.getWuxingPinyin(wuxing)}">
-                        <div class="nayin-label">${rendunGan}${this.currentHeavenBranch}：${nayin}</div>
+                        <div class="nayin-label">人遁：${rendunGan}${this.currentHeavenBranch}：${nayin}</div>
                     </div>
                 </div>`;
             }
@@ -4625,7 +4632,7 @@ class DaLiuRenCalculator {
                 nayinContent += `
                 <div class="qianfa-subsection">
                     <div class="nayin-item wuxing-${this.getWuxingPinyin(wuxing)}">
-                        <div class="nayin-label">${tiandunGan}${this.currentHeavenBranch}：${nayin}</div>
+                        <div class="nayin-label">天遁：${tiandunGan}${this.currentHeavenBranch}：${nayin}</div>
                     </div>
                 </div>`;
             }
@@ -4639,7 +4646,7 @@ class DaLiuRenCalculator {
                 nayinContent += `
                 <div class="qianfa-subsection">
                     <div class="nayin-item wuxing-${this.getWuxingPinyin(wuxing)}">
-                        <div class="nayin-label">${xunganGan}${this.currentHeavenBranch}：${nayin}</div>
+                        <div class="nayin-label">旬遁：${xunganGan}${this.currentHeavenBranch}：${nayin}</div>
 
                     </div>
                 </div>`;
@@ -4654,7 +4661,7 @@ class DaLiuRenCalculator {
                 nayinContent += `
                 <div class="qianfa-subsection">
                     <div class="nayin-item wuxing-${this.getWuxingPinyin(wuxing)}">
-                        <div class="nayin-label">${jianganGan}${this.currentHeavenBranch}：${nayin}</div>
+                        <div class="nayin-label">建干：${jianganGan}${this.currentHeavenBranch}：${nayin}</div>
 
                     </div>
                 </div>`;
@@ -4669,7 +4676,7 @@ class DaLiuRenCalculator {
                 nayinContent += `
                 <div class="qianfa-subsection">
                     <div class="nayin-item wuxing-${this.getWuxingPinyin(wuxing)}">
-                        <div class="nayin-label">${fujianGan}${this.currentHeavenBranch}：${nayin}</div>
+                        <div class="nayin-label">复建：${fujianGan}${this.currentHeavenBranch}：${nayin}</div>
 
                     </div>
                 </div>`;
