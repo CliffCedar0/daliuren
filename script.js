@@ -650,6 +650,10 @@ class DaLiuRenCalculator {
             this.updateSizhu();
             // 更新本命和行年
             this.updateBenmingAndXingnian();
+            // 显示所有图表区域
+            this.chartSections.forEach(section => {
+                section.style.display = 'block';
+            });
             console.log('强制更新完成');
         });
         
@@ -3795,6 +3799,12 @@ class DaLiuRenCalculator {
         
         // 更新提示信息
         this.calculationInfo.textContent = '已自动设置为当前时间';
+        
+        // 显示所有图表区域
+        const chartSections = document.querySelectorAll('.chart-section');
+        chartSections.forEach(section => {
+            section.style.display = 'block';
+        });
     }
 
     updateCenterTime() {
@@ -3839,24 +3849,17 @@ class DaLiuRenCalculator {
         this.updateCombinedPlate(heavenPlate);
         
         try {
-            // 使用之前保存的四柱信息或当前日期（用于四课三传计算）
+            // 使用当前日期的日干支（用于四课三传计算）
             let dayStem, dayBranch;
             
-            if (this.currentFourPillars) {
-                // 使用保存的四柱信息
-                dayStem = this.currentFourPillars.dayGZ.charAt(0);
-                dayBranch = this.currentFourPillars.dayGZ.charAt(1);
-                console.log(`使用保存的四柱信息计算四课三传, 日干支: ${this.currentFourPillars.dayGZ}, 占时: ${timeBranch}`);
-            } else {
-                // 如果没有保存的信息，使用当前日期
-                const now = new Date();
-                const solar = Solar.fromDate(now);
-                const lunar = solar.getLunar();
-                let dayGZ = lunar.getDayInGanZhi();
-                dayStem = dayGZ.charAt(0);
-                dayBranch = dayGZ.charAt(1);
-                console.log(`使用当前日期计算四课三传, 日干支: ${dayGZ}, 占时: ${timeBranch}`);
-            }
+            // 获取当前日期的日干支
+            const now = new Date();
+            const solar = Solar.fromDate(now);
+            const lunar = solar.getLunar();
+            let dayGZ = lunar.getDayInGanZhi();
+            dayStem = dayGZ.charAt(0);
+            dayBranch = dayGZ.charAt(1);
+            console.log(`使用当前日期计算四课三传, 日干支: ${dayGZ}, 占时: ${timeBranch}`);
             
             // 计算和更新天将、旬干
             this.updateTianjiangAndXungan(timeBranch);
