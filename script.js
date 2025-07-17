@@ -865,6 +865,11 @@ class DaLiuRenCalculator {
             this.applyWuxingColor(this.benmingGan, benmingGan);
             this.applyWuxingColor(this.benmingZhi, benmingZhi);
             
+            // 触发纳音更新
+            if (window.nayinManager) {
+                setTimeout(() => window.nayinManager.updateNayinDisplay(), 100);
+            }
+            
             // 计算行年
             this.calculateXingnian(benmingZhi, isMale);
             
@@ -2450,7 +2455,7 @@ class DaLiuRenCalculator {
             }
             
             // 检查日支的特殊情况
-            const rizhiSpecial = this.checkRizhiSpecial(dayStem, dayBranch, sike, heavenPlate, tianjiangMap);
+            const rizhiSpecial = this.checkRizhiSpecial(dayStem, dayBranch, sike, heavenPlate, tianpanTianjiangMap, dipanTianjiangMap);
             if (rizhiSpecial) {
                 return rizhiSpecial;
             }
@@ -3173,7 +3178,7 @@ class DaLiuRenCalculator {
     }
 
     // 检查日支的特殊情况
-    checkRizhiSpecial(dayStem, dayBranch, sike, heavenPlate, tianjiangMap) {
+    checkRizhiSpecial(dayStem, dayBranch, sike, heavenPlate, tianpanTianjiangMap, dipanTianjiangMap) {
         // 检查日支与其他地支的特殊关系
         const rizhiRelations = [];
         
@@ -3212,17 +3217,17 @@ class DaLiuRenCalculator {
                 chuchuan: { 
                     gan: this.getSanchuanGan(chuchuan, heavenPlate, dayStem, dayBranch), 
                     zhi: chuchuan, 
-                    tianjiang: this.getSanchuanTianjiang(chuchuan, heavenPlate, tianjiangMap)
+                    tianjiang: this.getSanchuanTianjiang(chuchuan, heavenPlate, tianpanTianjiangMap, dipanTianjiangMap)
                 },
                 zhongchuan: { 
                     gan: this.getSanchuanGan(zhongchuan, heavenPlate, dayStem, dayBranch), 
                     zhi: zhongchuan, 
-                    tianjiang: this.getSanchuanTianjiang(zhongchuan, heavenPlate, tianjiangMap)
+                    tianjiang: this.getSanchuanTianjiang(zhongchuan, heavenPlate, tianpanTianjiangMap, dipanTianjiangMap)
                 },
                 mochuan: { 
                     gan: this.getSanchuanGan(mochuan, heavenPlate, dayStem, dayBranch), 
                     zhi: mochuan, 
-                    tianjiang: this.getSanchuanTianjiang(mochuan, heavenPlate, tianjiangMap)
+                    tianjiang: this.getSanchuanTianjiang(mochuan, heavenPlate, tianpanTianjiangMap, dipanTianjiangMap)
                 },
                 kege: `日支${selectedRelation.relation}`
             };
@@ -3599,24 +3604,35 @@ class DaLiuRenCalculator {
         const isYangDay = this.isYang(dayStem);
         
         // 根据十神和日干阴阳确定化耀
+        // 生我者为印
         if (shishen === '偏印') {
-            return '天囚'; // 生我者（印）- 阴阳干偏印
+            return '天囚'; // 阴阳干偏印皆化囚
         } else if (shishen === '正印') {
-            return isYangDay ? '天权' : '天印'; // 生我者（印）- 阳干正印/阴干正印
-        } else if (shishen === '比肩' || shishen === '劫财') {
-            return isYangDay ? '天暗' : '天权'; // 与我同者（比劫）- 阳干之劫/阴干之比劫
-        } else if (shishen === '食神') {
-            return '天福'; // 我生者（食伤）- 阴阳干食
+            return isYangDay ? '天权' : '天印'; // 阳干正印化权，阴干正印化印
+        } 
+        // 与我同者为比劫
+        else if (shishen === '比肩') {
+            return isYangDay ? '天禄' : '天权'; // 阳干之比化禄，阴干之比化权
+        } else if (shishen === '劫财') {
+            return isYangDay ? '天暗' : '天权'; // 阳干之劫化暗，阴干之劫化权
+        } 
+        // 我生者为食伤
+        else if (shishen === '食神') {
+            return '天福'; // 阴阳干食皆化福
         } else if (shishen === '伤官') {
-            return isYangDay ? '天耗' : '天暗'; // 我生者（食伤）- 阳干伤/阴干伤
-        } else if (shishen === '偏财') {
-            return '天荫'; // 我克者（财）- 偏财皆
+            return isYangDay ? '天耗' : '天暗'; // 阳干伤化耗，阴干伤化暗
+        } 
+        // 我克者为财
+        else if (shishen === '偏财') {
+            return '天荫'; // 偏财皆化荫
         } else if (shishen === '正财') {
-            return isYangDay ? '天贵' : '天耗'; // 我克者（财）- 阳干正财/阴干正财
-        } else if (shishen === '七杀') {
-            return '天刑'; // 克我者（官杀）- 阴阳干之杀
+            return isYangDay ? '天贵' : '天耗'; // 阳干正财化贵，阴干正财化耗
+        } 
+        // 克我者为官杀
+        else if (shishen === '七杀') {
+            return '天刑'; // 阴阳干之杀皆化刑
         } else if (shishen === '正官') {
-            return isYangDay ? '天印' : '天贵'; // 克我者（官杀）- 阳干正官/阴干正官
+            return isYangDay ? '天印' : '天贵'; // 阳干正官化印，阴干正官化贵
         }
         
         return '-';
@@ -4159,7 +4175,7 @@ class DaLiuRenCalculator {
                     }
                     
                     // 计算化耀（基于十神）
-                    const huayao = this.calculateHuaYao(shishen);
+                    const huayao = this.calculateHuaYao(shishen, dayStem);
                     const huayaoElement = cell.querySelector('.huayao-display');
                     if (huayaoElement) {
                         huayaoElement.textContent = huayao;
