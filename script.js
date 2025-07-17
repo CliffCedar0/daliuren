@@ -3503,7 +3503,7 @@ class DaLiuRenCalculator {
         
         // 更新化耀
         if (elements.huayao) {
-            const huayao = this.calculateHuaYao(shishen);
+            const huayao = this.calculateHuaYao(shishen, dayStem);
             elements.huayao.textContent = huayao;
             elements.huayao.style.color = this.getHuaYaoColor(huayao);
             elements.huayao.style.fontWeight = 'bold';
@@ -3592,37 +3592,49 @@ class DaLiuRenCalculator {
     getShishenColor(shishen) {
         return '#000';  // 统一显示为黑色
     }
-    
+
     // 根据十神计算化耀
-    calculateHuaYao(shishen) {
-        const tianxingMap = {
-            '比肩': '天禄',
-            '劫财': '天暗',
-            '食神': '天暗',
-            '伤官': '天耗',
-            '偏财': '天荫',
-            '正财': '天贵',
-            '七杀': '天刑',
-            '正官': '天印',
-            '偏印': '天囚',
-            '正印': '天权'
-        };
+    calculateHuaYao(shishen, dayStem) {
+        // 判断日干阴阳
+        const isYangDay = this.isYang(dayStem);
         
-        return tianxingMap[shishen] || '-';
+        // 根据十神和日干阴阳确定化耀
+        if (shishen === '偏印') {
+            return '天囚'; // 生我者（印）- 阴阳干偏印
+        } else if (shishen === '正印') {
+            return isYangDay ? '天权' : '天印'; // 生我者（印）- 阳干正印/阴干正印
+        } else if (shishen === '比肩' || shishen === '劫财') {
+            return isYangDay ? '天暗' : '天权'; // 与我同者（比劫）- 阳干之劫/阴干之比劫
+        } else if (shishen === '食神') {
+            return '天福'; // 我生者（食伤）- 阴阳干食
+        } else if (shishen === '伤官') {
+            return isYangDay ? '天耗' : '天暗'; // 我生者（食伤）- 阳干伤/阴干伤
+        } else if (shishen === '偏财') {
+            return '天荫'; // 我克者（财）- 偏财皆
+        } else if (shishen === '正财') {
+            return isYangDay ? '天贵' : '天耗'; // 我克者（财）- 阳干正财/阴干正财
+        } else if (shishen === '七杀') {
+            return '天刑'; // 克我者（官杀）- 阴阳干之杀
+        } else if (shishen === '正官') {
+            return isYangDay ? '天印' : '天贵'; // 克我者（官杀）- 阳干正官/阴干正官
+        }
+        
+        return '-';
     }
     
     // 获取化耀颜色
     getHuaYaoColor(huayao) {
         const huayaoColors = {
-            '天禄': '#000', // 绿色
-            '天暗': '#000', // 灰色
-            '天耗': '#000', // 橙红色
-            '天荫': '#000', // 蓝色
-            '天贵': '#000', // 金黄色
-            '天刑': '#000', // 红色
-            '天印': '#000', // 紫色
-            '天囚': '#000', // 棕色
-            '天权': '#000'  // 靛蓝色
+            '天禄': '#4CAF50', // 绿色
+            '天暗': '#607D8B', // 灰色
+            '天耗': '#FF5722', // 橙红色
+            '天荫': '#2196F3', // 蓝色
+            '天贵': '#FFC107', // 金黄色
+            '天刑': '#F44336', // 红色
+            '天印': '#9C27B0', // 紫色
+            '天囚': '#795548', // 棕色
+            '天权': '#3F51B5', // 靛蓝色
+            '天福': '#00BCD4'  // 青色
         };
         
         return huayaoColors[huayao] || '#000000';
