@@ -27,29 +27,60 @@ class NayinManager {
         setTimeout(() => this.updateNayinDisplay(), 1500);
     }
 
-    // 更新所有格子中的纳音显示
-    // updateNayinDisplay() {
-    //     console.log('更新纳音显示...');
-    //     document.querySelectorAll('.branch-cell').forEach(cell => {
-    //         const tianpanBranch = cell.querySelector('.tianpan-branch')?.textContent;
-    //         if (!tianpanBranch) return;
+    // 更新纳音显示
+    updateNayinDisplay() {
+        try {
+            console.log('开始更新纳音显示...');
+            
+            // 获取本命干支
+            const benmingGan = document.getElementById('benming-gan').textContent;
+            const benmingZhi = document.getElementById('benming-zhi').textContent;
+            console.log('本命干支:', benmingGan + benmingZhi);
+            
+            // 如果本命干支有效，更新本命纳音
+            if (benmingGan !== '-' && benmingZhi !== '-') {
+                const benmingNayin = this.getNayin(benmingGan + benmingZhi);
+                console.log('本命纳音:', benmingNayin);
+                
+                const benmingNayinElement = document.getElementById('benming-nayin');
+                if (benmingNayinElement) {
+                    benmingNayinElement.textContent = benmingNayin;
+                    console.log('本命纳音元素已更新');
+                    
+                    // 应用五行颜色
+                    const wuxing = this.getNayinWuxing(benmingNayin);
+                    this.applyWuxingColor(benmingNayinElement, wuxing);
+                } else {
+                    console.error('找不到本命纳音元素 (id="benming-nayin")');
+                }
+            } else {
+                console.log('本命干支无效:', benmingGan, benmingZhi);
+            }
+            
+            // // 更新天盘地支的纳音
+            // document.querySelectorAll('.branch-cell').forEach(cell => {
+            //     const tianpanBranch = cell.querySelector('.tianpan-branch')?.textContent;
+            //     if (!tianpanBranch) return;
 
-    //         // 更新人遁纳音
-    //         this.updateCellNayin(cell, '.rendun-display', '.rendun-nayin', tianpanBranch);
-            
-    //         // 更新天遁纳音
-    //         this.updateCellNayin(cell, '.tiandun-display', '.tiandun-nayin', tianpanBranch);
-            
-    //         // 更新旬遁纳音
-    //         this.updateCellNayin(cell, '.xungan-display', '.xungan-nayin', tianpanBranch);
-            
-    //         // 更新建干纳音
-    //         this.updateCellNayin(cell, '.jiangan', '.jiangan-nayin', tianpanBranch);
-            
-    //         // 更新复建纳音
-    //         this.updateCellNayin(cell, '.fujian', '.fujian-nayin', tianpanBranch);
-    //     });
-    // }
+            //     // 更新人遁纳音
+            //     this.updateCellNayin(cell, '.rendun-display', '.rendun-nayin', tianpanBranch);
+                
+            //     // 更新天遁纳音
+            //     this.updateCellNayin(cell, '.tiandun-display', '.tiandun-nayin', tianpanBranch);
+                
+            //     // 更新旬遁纳音
+            //     this.updateCellNayin(cell, '.xungan-display', '.xungan-nayin', tianpanBranch);
+                
+            //     // 更新建干纳音
+            //     this.updateCellNayin(cell, '.jiangan', '.jiangan-nayin', tianpanBranch);
+                
+            //     // 更新复建纳音
+            //     this.updateCellNayin(cell, '.fujian', '.fujian-nayin', tianpanBranch);
+            // });
+        } catch (error) {
+            console.error('更新纳音显示失败:', error);
+        }
+    }
 
     // 更新单个格子中的特定纳音
     updateCellNayin(cell, ganSelector, nayinSelector, tianpanBranch) {
@@ -96,6 +127,32 @@ class NayinManager {
         const ganZhi = gan + zhi;
         return nayinTable[ganZhi] || '';
     }
+    
+    // 获取干支的纳音
+    getNayin(ganZhi) {
+        if (!ganZhi || ganZhi.length < 2) return '';
+        
+        // 干支纳音表
+        const nayinTable = {
+            '甲子': '海中金', '乙丑': '海中金', '丙寅': '炉中火', '丁卯': '炉中火',
+            '戊辰': '大林木', '己巳': '大林木', '庚午': '路旁土', '辛未': '路旁土',
+            '壬申': '剑锋金', '癸酉': '剑锋金', '甲戌': '山头火', '乙亥': '山头火',
+            '丙子': '涧下水', '丁丑': '涧下水', '戊寅': '城头土', '己卯': '城头土',
+            '庚辰': '白蜡金', '辛巳': '白蜡金', '壬午': '杨柳木', '癸未': '杨柳木',
+            '甲申': '泉中水', '乙酉': '泉中水', '丙戌': '屋上土', '丁亥': '屋上土',
+            '戊子': '霹雳火', '己丑': '霹雳火', '庚寅': '松柏木', '辛卯': '松柏木',
+            '壬辰': '长流水', '癸巳': '长流水', '甲午': '沙中金', '乙未': '沙中金',
+            '丙申': '山下火', '丁酉': '山下火', '戊戌': '平地木', '己亥': '平地木',
+            '庚子': '壁上土', '辛丑': '壁上土', '壬寅': '金箔金', '癸卯': '金箔金',
+            '甲辰': '覆灯火', '乙巳': '覆灯火', '丙午': '天河水', '丁未': '天河水',
+            '戊申': '大驿土', '己酉': '大驿土', '庚戌': '钗钏金', '辛亥': '钗钏金',
+            '壬子': '桑柘木', '癸丑': '桑柘木', '甲寅': '大溪水', '乙卯': '大溪水',
+            '丙辰': '沙中土', '丁巳': '沙中土', '戊午': '天上火', '己未': '天上火',
+            '庚申': '石榴木', '辛酉': '石榴木', '壬戌': '大海水', '癸亥': '大海水'
+        };
+        
+        return nayinTable[ganZhi] || '';
+    }
 
     // 获取纳音五行
     getNayinWuxing(nayin) {
@@ -134,12 +191,21 @@ class NayinManager {
 
 // 当文档加载完成后，初始化纳音管理器
 document.addEventListener('DOMContentLoaded', () => {
+    console.log('DOM加载完成，准备初始化纳音管理器');
     // 等待calculator实例化完成后再初始化NayinManager
     const checkCalculator = setInterval(() => {
         if (window.calculator) {
             clearInterval(checkCalculator);
             window.nayinManager = new NayinManager(window.calculator);
             console.log('纳音管理器初始化完成');
+            
+            // 立即尝试更新一次纳音显示
+            setTimeout(() => {
+                if (window.nayinManager) {
+                    console.log('初始化后立即更新纳音显示');
+                    window.nayinManager.updateNayinDisplay();
+                }
+            }, 500);
         }
     }, 500);
 }); 
