@@ -4417,7 +4417,7 @@ class DaLiuRenCalculator {
     }
     
     // 更新天将和旬干
-    updateTianjiangAndXungan(timeBranch, customHeavenPlate = null) {
+    updateTianjiangAndXungan(timeBranch) {
         try {
             // 从页面上获取四柱显示中的日干支，而不是使用当前日期的
             const dayGanElement = document.getElementById('day-gan');
@@ -4448,10 +4448,6 @@ class DaLiuRenCalculator {
             const lunarMonthBranch = lunar.getMonthInGanZhi().charAt(1);
             
             console.log('更新天将和旬干，日干支:', dayStem + dayBranch, '占时:', timeBranch);
-            
-            // 计算天盘 - 使用传入的天盘或重新计算
-            const monthGeneral = this.monthGeneralSelect.value;
-            const heavenPlate = customHeavenPlate || this.calculateHeavenPlate(monthGeneral, timeBranch);
             
             // 特别处理巳位置的十二建除和旺衰显示
             setTimeout(() => {
@@ -4498,6 +4494,9 @@ class DaLiuRenCalculator {
                     // 计算十二建除和旺衰的值
                     const monthBranch = lunar.getMonthInGanZhi().charAt(1);
                     
+                    // 计算天盘
+                    const monthGeneral = this.monthGeneralSelect.value;
+                    const heavenPlate = this.calculateHeavenPlate(monthGeneral, timeBranch);
                     const heavenBranch = heavenPlate['巳'];
                     
                     // 计算十二建除
@@ -4542,117 +4541,25 @@ class DaLiuRenCalculator {
                     siCell.appendChild(container);
                 }
             }, 500);
-            
-            // 获取天将排布信息
-            const nobles = this.getBothNoblePersons(dayStem, timeBranch);
-            
-            // 找到贵人在地盘的位置
-            let tianpanNobleGroundPosition = null;
-            for (let groundBranch in heavenPlate) {
-                if (heavenPlate[groundBranch] === nobles.tianpanNoble) {
-                    tianpanNobleGroundPosition = groundBranch;
-                    break;
+                    
+                    // 添加长生显示
+                    const changshengDisplay = document.createElement('div');
+                    changshengDisplay.className = 'changsheng-display';
+                    changshengDisplay.title = '五行长生/十干长生';
+                    
+                    // 计算五行长生
+                    const wuxingChangsheng = this.calculateChangsheng(dayStem, heavenBranch);
+                    // 计算十干长生
+                    const shiganChangsheng = this.calculateShiganChangsheng(dayStem, heavenBranch);
+                    
+                    // 显示长生信息
+                    changshengDisplay.innerHTML = `<span class="wuxing-changsheng">${wuxingChangsheng || ''}</span>/<span class="shigan-changsheng">${shiganChangsheng || ''}</span>`;
+                    container.appendChild(changshengDisplay);
+                    
+                    // 添加到单元格
+                    siCell.appendChild(container);
                 }
-            }
-            
-            // 找到地盘贵人在地盘的位置
-            let dipanNobleGroundPosition = null;
-            for (let groundBranch in heavenPlate) {
-                if (heavenPlate[groundBranch] === nobles.dipanNoble) {
-                    dipanNobleGroundPosition = groundBranch;
-                    break;
-                }
-            }
-            
-            // 计算天将排布
-            const tianpanTianjiangMap = this.arrangeTwelveTianjiangs(nobles.tianpanNoble, tianpanNobleGroundPosition);
-            const dipanTianjiangMap = this.arrangeDipanTianjiangs(nobles.dipanNoble, dipanNobleGroundPosition);
-            
-            // 计算旬空
-            const xunkongBranches = this.calculateXunkong(dayStem, dayBranch);
-            console.log('旬空地支:', xunkongBranches);
-            
-            // 更新显示
-            const cells = this.plateTable.querySelectorAll('.branch-cell');
-            console.log('找到的单元格数量:', cells.length);
-            
-            cells.forEach(cell => {
-                const groundBranch = cell.getAttribute('data-branch');
-                if (groundBranch) {
-                    const isXunkong = xunkongBranches.includes(groundBranch);
-                    
-                    // 获取天盘上在该地盘位置的地支
-                    const heavenBranch = heavenPlate[groundBranch];
-                    // 天盘天将：根据天盘地支查找对应的天将
-                    const tianpanTianjiang = tianpanTianjiangMap[heavenBranch] || '';
-                    // 地盘天将：根据天盘地支查找对应的天将
-                    const dipanTianjiang = dipanTianjiangMap[heavenBranch] || '';
-                    
-                    // 更新天盘天将（顶部）
-                    const tianpanTianjiangElement = cell.querySelector('.tianpan-tianjiang');
-                    if (tianpanTianjiangElement) {
-                        tianpanTianjiangElement.textContent = tianpanTianjiang;
-                        tianpanTianjiangElement.style.visibility = 'visible';
-                        // 移除天将的默认样式，只保留文字
-                        tianpanTianjiangElement.style.background = 'transparent';
-                        tianpanTianjiangElement.style.backgroundColor = 'transparent';
-                        tianpanTianjiangElement.style.border = 'none';
-                        // 应用天将五行颜色
-                        if (tianpanTianjiang && TIANJIANG_COLORS[tianpanTianjiang]) {
-                            tianpanTianjiangElement.style.color = TIANJIANG_COLORS[tianpanTianjiang];
-                        }
-                    }
-                    
-                    // 更新天盘地支（第二行）
-                    const tianpanBranchElement = cell.querySelector('.tianpan-branch');
-                    if (tianpanBranchElement) {
-                        tianpanBranchElement.textContent = heavenBranch;
-                        
-                        // 获取天盘地支五行
-                        const heavenZhiWuxing = this.getWuxing(heavenBranch);
-                        
-                        // 应用天盘地支五行颜色类
-                        tianpanBranchElement.className = 'tianpan-branch'; // 保留原始类
-                        tianpanBranchElement.classList.add(`wuxing-${this.getWuxingPinyin(heavenZhiWuxing)}`);
-                        
-                        // 检查是否旬空
-                        if (xunkongBranches.includes(heavenBranch)) {
-                            tianpanBranchElement.classList.add('xunkong-branch');
-                        }
-                    }
-                    
-                    // 更新地盘地支（第三行）
-                    const dipanBranchElement = cell.querySelector('.dipan-branch');
-                    if (dipanBranchElement) {
-                        dipanBranchElement.textContent = groundBranch;
-                        
-                        // 获取地支五行
-                        const zhiWuxing = this.getWuxing(groundBranch);
-                        
-                        // 应用地支五行颜色类
-                        dipanBranchElement.className = 'dipan-branch'; // 保留原始类
-                        dipanBranchElement.classList.add(`wuxing-${this.getWuxingPinyin(zhiWuxing)}`);
-                        
-                        // 检查是否旬空
-                        if (xunkongBranches.includes(groundBranch)) {
-                            dipanBranchElement.classList.add('xunkong-branch');
-                        }
-                    }
-                    
-                    // 更新地盘天将（底部）
-                    const dipanTianjiangElement = cell.querySelector('.dipan-tianjiang-bottom');
-                    if (dipanTianjiangElement) {
-                        dipanTianjiangElement.textContent = dipanTianjiang;
-                        dipanTianjiangElement.style.visibility = 'visible';
-                        // 移除默认样式，只保留文字
-                        dipanTianjiangElement.style.background = 'transparent';
-                        dipanTianjiangElement.style.backgroundColor = 'transparent';
-                        dipanTianjiangElement.style.border = 'none';
-                        // 应用天将五行颜色
-                        if (dipanTianjiang && TIANJIANG_COLORS[dipanTianjiang]) {
-                            dipanTianjiangElement.style.color = TIANJIANG_COLORS[dipanTianjiang];
-                        }
-                    }
+            }, 500);
                     
                     // 更新人遁
                     const rendunDisplayElement = cell.querySelector('.rendun-display');

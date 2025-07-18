@@ -284,8 +284,98 @@ document.addEventListener("DOMContentLoaded", function() {
                     // 清除所有盘内容
                     window.calculator.clearAllPlateContent();
                     
+                    // 创建一个临时函数来保存原始的calculatePlates方法
+                    const originalCalculatePlates = window.calculator.calculatePlates;
+                    
+                    // 临时替换calculatePlates方法
+                    window.calculator.calculatePlates = function(customMonthGeneral, customTimeBranch) {
+                        // 清除所有盘内容
+                        this.clearAllPlateContent();
+                        
+                        // 使用自定义参数或从选择框获取值
+                        const monthGeneral = customMonthGeneral || this.monthGeneralSelect.value;
+                        let timeBranch = customTimeBranch;
+                        
+                        if (!timeBranch) {
+                            // 如果没有提供自定义时辰，从选择框获取
+                            timeBranch = this.timeBranchSelect.value;
+                            console.log(`从选择框获取占时: ${timeBranch}`);
+                        } else {
+                            console.log(`使用自定义时辰: ${timeBranch}`);
+                        }
+                        
+                        console.log(`计算排盘：月将=${monthGeneral}, 占时=${timeBranch}`, customTimeBranch ? '(自定义时辰)' : '');
+                        
+                        if (!monthGeneral || !timeBranch) {
+                            this.calculationInfo.textContent = '请选择月将和占时';
+                            return;
+                        }
+                        
+                        // 计算天盘
+                        const heavenPlate = this.calculateHeavenPlate(monthGeneral, timeBranch);
+                        
+                        // 更新天盘显示
+                        this.updateCombinedPlate(heavenPlate);
+                        
+                        try {
+                            // 使用自定义四柱中的日干支
+                            const dayStem = dayGan;  // 使用自定义日干
+                            const dayBranch = dayZhi; // 使用自定义日支
+                            console.log(`使用自定义四柱计算四课三传, 日干支: ${dayStem}${dayBranch}, 占时: ${timeBranch}`);
+                            
+                            // 计算和更新天将、旬干 - 传递heavenPlate
+                            this.updateTianjiangAndXungan(timeBranch, heavenPlate);
+                            
+                            // 获取天将排布信息 - 使用自定义的日干支
+                            const nobles = this.getBothNoblePersons(dayStem, timeBranch);
+                            
+                            // 找到贵人在地盘的位置
+                            let tianpanNobleGroundPosition = null;
+                            for (let groundBranch in heavenPlate) {
+                                if (heavenPlate[groundBranch] === nobles.tianpanNoble) {
+                                    tianpanNobleGroundPosition = groundBranch;
+                                    break;
+                                }
+                            }
+                            
+                            // 找到地盘贵人在地盘的位置
+                            let dipanNobleGroundPosition = null;
+                            for (let groundBranch in heavenPlate) {
+                                if (heavenPlate[groundBranch] === nobles.dipanNoble) {
+                                    dipanNobleGroundPosition = groundBranch;
+                                    break;
+                                }
+                            }
+                            
+                            // 计算天将排布
+                            const tianpanTianjiangMap = this.arrangeTwelveTianjiangs(nobles.tianpanNoble, tianpanNobleGroundPosition);
+                            const dipanTianjiangMap = this.arrangeDipanTianjiangs(nobles.dipanNoble, dipanNobleGroundPosition);
+                            
+                            // 计算和更新四课
+                            const sike = this.calculateSike(dayStem, dayBranch, heavenPlate, tianpanTianjiangMap, dipanTianjiangMap);
+                            console.log('四课计算结果:', sike);
+                            this.updateSikeDisplay(sike);
+                            
+                            // 计算和更新三传
+                            const sanchuan = this.calculateSanchuan(dayStem, dayBranch, sike, heavenPlate, tianpanTianjiangMap, dipanTianjiangMap);
+                            console.log('三传计算结果:', sanchuan);
+                            this.updateSanchuanDisplay(sanchuan);
+                        } catch (error) {
+                            console.error('计算四课和三传时出错:', error);
+                        }
+                        
+                        // 更新计算信息
+                        this.updateCalculationInfo(monthGeneral, timeBranch);
+                        
+                        // 更新中心时间
+                        this.updateCenterTime();
+                    };
+                    
                     // 使用自定义时辰和月将计算排盘
                     window.calculator.calculatePlates(monthGeneral, hourZhi);
+                    
+                    // 还原原始的calculatePlates方法
+                    window.calculator.calculatePlates = originalCalculatePlates;
                     
                     // 更新本命和行年
                     window.calculator.updateBenmingAndXingnian();

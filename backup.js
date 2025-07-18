@@ -4417,7 +4417,7 @@ class DaLiuRenCalculator {
     }
     
     // 更新天将和旬干
-    updateTianjiangAndXungan(timeBranch, customHeavenPlate = null) {
+    updateTianjiangAndXungan(timeBranch) {
         try {
             // 从页面上获取四柱显示中的日干支，而不是使用当前日期的
             const dayGanElement = document.getElementById('day-gan');
@@ -4448,10 +4448,6 @@ class DaLiuRenCalculator {
             const lunarMonthBranch = lunar.getMonthInGanZhi().charAt(1);
             
             console.log('更新天将和旬干，日干支:', dayStem + dayBranch, '占时:', timeBranch);
-            
-            // 计算天盘 - 使用传入的天盘或重新计算
-            const monthGeneral = this.monthGeneralSelect.value;
-            const heavenPlate = customHeavenPlate || this.calculateHeavenPlate(monthGeneral, timeBranch);
             
             // 特别处理巳位置的十二建除和旺衰显示
             setTimeout(() => {
@@ -4498,6 +4494,9 @@ class DaLiuRenCalculator {
                     // 计算十二建除和旺衰的值
                     const monthBranch = lunar.getMonthInGanZhi().charAt(1);
                     
+                    // 计算天盘
+                    const monthGeneral = this.monthGeneralSelect.value;
+                    const heavenPlate = this.calculateHeavenPlate(monthGeneral, timeBranch);
                     const heavenBranch = heavenPlate['巳'];
                     
                     // 计算十二建除
