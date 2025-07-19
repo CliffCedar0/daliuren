@@ -156,24 +156,23 @@ document.addEventListener('DOMContentLoaded', function() {
                         zeidunElement = document.createElement('div');
                         zeidunElement.className = 'zeidun';
                         zeidunElement.textContent = gan;
+                        zeidunElement.title = '贼遁';
                         
-                        // 找到复建行
-                        const fujianRow = cell.querySelector('.fujian-row');
-                        if (fujianRow) {
-                            // 直接将贼遁元素添加到复建行中
-                            fujianRow.appendChild(zeidunElement);
-                            console.log(`已将贼遁天干${gan}添加到地支${branch}的复建行`);
-                        } else {
-                            console.error(`未找到地支${branch}的复建行`);
+                        // 直接添加到单元格中，使用绝对定位
+                        cell.appendChild(zeidunElement);
+                        console.log(`已将贼遁天干${gan}添加到地支${branch}的单元格中`);
+                        
+                        // 获取复建元素的位置，动态调整贼遁位置
+                        const fujianElement = cell.querySelector('.fujian');
+                        if (fujianElement) {
+                            // 如果找到复建元素，将贼遁放在复建元素旁边
+                            const fujianRect = fujianElement.getBoundingClientRect();
+                            const cellRect = cell.getBoundingClientRect();
                             
-                            // 如果找不到复建行，尝试添加到甲干行
-                            const jiaganRow = cell.querySelector('.jiangan-row');
-                            if (jiaganRow) {
-                                jiaganRow.appendChild(zeidunElement);
-                                console.log(`已将贼遁天干${gan}添加到地支${branch}的甲干行`);
-                            } else {
-                                console.error(`未找到地支${branch}的甲干行`);
-                            }
+                            // 动态计算贼遁的位置
+                            const leftOffset = fujianElement.offsetLeft + fujianElement.offsetWidth -16;
+                            zeidunElement.style.left = leftOffset + 'px';
+                            console.log(`调整贼遁位置: 左偏移${leftOffset}px`);
                         }
                         
                         // 应用五行颜色
