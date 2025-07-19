@@ -5175,69 +5175,218 @@ class DaLiuRenCalculator {
         } else {
             html = `<div class="qianfa-item">
                 <div class="qianfa-value">${tianjiang}临${branch}：无特殊钤法</div>
-            </div>`;
-        }
-        
-        return html;
-    }
-    
-    // 生成纳音内容
-    generateNayinContent() {
-        let html = '';
-        
-        // 获取当前四柱
-        const yearGan = document.getElementById('year-gan')?.textContent || '';
-        const yearZhi = document.getElementById('year-zhi')?.textContent || '';
-        const monthGan = document.getElementById('month-gan')?.textContent || '';
-        const monthZhi = document.getElementById('month-zhi')?.textContent || '';
-        const dayGan = document.getElementById('day-gan')?.textContent || '';
-        const dayZhi = document.getElementById('day-zhi')?.textContent || '';
-        const hourGan = document.getElementById('hour-gan')?.textContent || '';
-        const hourZhi = document.getElementById('hour-zhi')?.textContent || '';
-        
-        // 计算四柱纳音
-        if (yearGan && yearZhi) {
-            const yearNayin = calculateNayin(yearGan, yearZhi);
-            const yearNayinWuxing = getNayinWuxing(yearNayin);
-            const yearNayinColor = getNayinWuxingColor(yearNayin);
-            
-            html += `<div class="nayin-item">
-                <div class="nayin-label">年柱纳音:</div>
-                <div class="nayin-value" style="color: ${yearNayinColor};">${yearGan}${yearZhi} - ${yearNayin}${yearNayinWuxing}</div>
                 </div>`;
             }
             
-        if (monthGan && monthZhi) {
-            const monthNayin = calculateNayin(monthGan, monthZhi);
-            const monthNayinWuxing = getNayinWuxing(monthNayin);
-            const monthNayinColor = getNayinWuxingColor(monthNayin);
-            
-            html += `<div class="nayin-item">
-                <div class="nayin-label">月柱纳音:</div>
-                <div class="nayin-value" style="color: ${monthNayinColor};">${monthGan}${monthZhi} - ${monthNayin}${monthNayinWuxing}</div>
+        return html;
+    }
+    
+        // 生成纳音内容
+        generateNayinContent() {
+        let html = '';
+        
+        // 获取当前地盘地支和天盘地支
+        const groundBranch = this.currentGroundBranch || '';
+        const heavenBranch = this.currentHeavenBranch || '';
+        
+        if (!groundBranch || !heavenBranch) {
+            return '<p>请先选择宫格以查看纳音</p>';
+        }
+        
+        // 获取日干支和时干支
+        const dayStem = document.getElementById('day-gan')?.textContent || '';
+        const dayBranch = document.getElementById('day-zhi')?.textContent || '';
+        const timeStem = document.getElementById('hour-gan')?.textContent || '';
+        const timeBranch = document.getElementById('hour-zhi')?.textContent || '';
+        
+        console.log('纳音计算参数:', {
+            groundBranch,
+            heavenBranch,
+            dayStem,
+            dayBranch,
+            timeStem,
+            timeBranch
+        });
+        
+        // 从当前选择的宫格中获取人遁、天遁、旬遁、建干、复建的值
+        const currentCell = document.querySelector(`.branch-cell[data-branch="${groundBranch}"]`);
+        
+        // 从宫格中获取旬遁值
+        let xungan = '';
+        try {
+            const xunganElement = currentCell.querySelector('.xungan-display');
+            if (xunganElement && xunganElement.textContent) {
+                xungan = xunganElement.textContent;
+                console.log(`从宫格获取旬遁: ${groundBranch} -> ${xungan}`);
+            } else {
+                console.warn(`宫格中未找到旬遁显示元素`);
+            }
+        } catch (e) {
+            console.error('获取旬遁出错:', e);
+        }
+        
+        // 从宫格中获取天遁值
+        let tiandun = '';
+        try {
+            const tiandunElement = currentCell.querySelector('.tiandun-display');
+            if (tiandunElement && tiandunElement.textContent) {
+                tiandun = tiandunElement.textContent;
+                console.log(`从宫格获取天遁: ${groundBranch} -> ${tiandun}`);
+            } else {
+                console.warn(`宫格中未找到天遁显示元素`);
+            }
+        } catch (e) {
+            console.error('获取天遁出错:', e);
+        }
+        
+        // 从宫格中获取人遁值
+        let rendun = '';
+        try {
+            const rendunElement = currentCell.querySelector('.rendun-display');
+            if (rendunElement && rendunElement.textContent) {
+                rendun = rendunElement.textContent;
+                console.log(`从宫格获取人遁: ${groundBranch} -> ${rendun}`);
+            } else {
+                console.warn(`宫格中未找到人遁显示元素`);
+            }
+        } catch (e) {
+            console.error('获取人遁出错:', e);
+        }
+        
+        // 从宫格中获取建干值
+        let jiangan = '';
+        try {
+            const jianganElement = currentCell.querySelector('.jiangan-display');
+            if (jianganElement && jianganElement.textContent) {
+                jiangan = jianganElement.textContent;
+                console.log(`从宫格获取建干: ${groundBranch} -> ${jiangan}`);
+            } else {
+                console.warn(`宫格中未找到建干显示元素`);
+            }
+        } catch (e) {
+            console.error('获取建干出错:', e);
+        }
+        
+        // 从宫格中获取复建值
+        let fujian = '';
+        try {
+            const fujianElement = currentCell.querySelector('.fujian-display');
+            if (fujianElement && fujianElement.textContent) {
+                fujian = fujianElement.textContent;
+                console.log(`从宫格获取复建: ${groundBranch} -> ${fujian}`);
+            } else {
+                console.warn(`宫格中未找到复建显示元素`);
+            }
+        } catch (e) {
+            console.error('获取复建出错:', e);
+        }
+        
+        console.log('纳音计算最终结果:', {
+            xungan,
+            tiandun,
+            rendun,
+            jiangan,
+            fujian
+        });
+        
+        // 计算各种遁干与天盘地支的纳音
+        if (xungan && heavenBranch) {
+            try {
+                const xunganNayin = calculateNayin(xungan, heavenBranch);
+                const xunganNayinWuxing = getNayinWuxing(xunganNayin);
+                const xunganNayinColor = getNayinWuxingColor(xunganNayin);
+                
+                html += `<div class="nayin-item">
+                    <div class="nayin-label">旬遁纳音:</div>
+                    <div class="nayin-value" style="color: ${xunganNayinColor};">${xungan}${heavenBranch} - ${xunganNayin}${xunganNayinWuxing}</div>
                 </div>`;
+            } catch (e) {
+                console.error('计算旬遁纳音出错:', e);
+                html += `<div class="nayin-item">
+                    <div class="nayin-label">旬遁纳音:</div>
+                    <div class="nayin-value">${xungan}${heavenBranch} - 计算出错</div>
+                </div>`;
+            }
         }
         
-        if (dayGan && dayZhi) {
-            const dayNayin = calculateNayin(dayGan, dayZhi);
-            const dayNayinWuxing = getNayinWuxing(dayNayin);
-            const dayNayinColor = getNayinWuxingColor(dayNayin);
-            
-            html += `<div class="nayin-item">
-                <div class="nayin-label">日柱纳音:</div>
-                <div class="nayin-value" style="color: ${dayNayinColor};">${dayGan}${dayZhi} - ${dayNayin}${dayNayinWuxing}</div>
-            </div>`;
+                if (tiandun && heavenBranch) {
+            try {
+                const tiandunNayin = calculateNayin(tiandun, heavenBranch);
+                const tiandunNayinWuxing = getNayinWuxing(tiandunNayin);
+                const tiandunNayinColor = getNayinWuxingColor(tiandunNayin);
+                
+                html += `<div class="nayin-item">
+                    <div class="nayin-label">天遁纳音:</div>
+                    <div class="nayin-value" style="color: ${tiandunNayinColor};">${tiandun}${heavenBranch} - ${tiandunNayin}${tiandunNayinWuxing}</div>
+                </div>`;
+            } catch (e) {
+                console.error('计算天遁纳音出错:', e);
+                html += `<div class="nayin-item">
+                    <div class="nayin-label">天遁纳音:</div>
+                    <div class="nayin-value">${tiandun}${heavenBranch} - 计算出错</div>
+                </div>`;
+            }
         }
         
-        if (hourGan && hourZhi) {
-            const hourNayin = calculateNayin(hourGan, hourZhi);
-            const hourNayinWuxing = getNayinWuxing(hourNayin);
-            const hourNayinColor = getNayinWuxingColor(hourNayin);
-            
-            html += `<div class="nayin-item">
-                <div class="nayin-label">时柱纳音:</div>
-                <div class="nayin-value" style="color: ${hourNayinColor};">${hourGan}${hourZhi} - ${hourNayin}${hourNayinWuxing}</div>
-            </div>`;
+        if (rendun && heavenBranch) {
+            try {
+                const rendunNayin = calculateNayin(rendun, heavenBranch);
+                const rendunNayinWuxing = getNayinWuxing(rendunNayin);
+                const rendunNayinColor = getNayinWuxingColor(rendunNayin);
+                
+                html += `<div class="nayin-item">
+                    <div class="nayin-label">人遁纳音:</div>
+                    <div class="nayin-value" style="color: ${rendunNayinColor};">${rendun}${heavenBranch} - ${rendunNayin}${rendunNayinWuxing}</div>
+                </div>`;
+            } catch (e) {
+                console.error('计算人遁纳音出错:', e);
+                html += `<div class="nayin-item">
+                    <div class="nayin-label">人遁纳音:</div>
+                    <div class="nayin-value">${rendun}${heavenBranch} - 计算出错</div>
+                </div>`;
+            }
+        }
+        
+        if (jiangan && heavenBranch) {
+            try {
+                const jianganNayin = calculateNayin(jiangan, heavenBranch);
+                const jianganNayinWuxing = getNayinWuxing(jianganNayin);
+                const jianganNayinColor = getNayinWuxingColor(jianganNayin);
+                
+                html += `<div class="nayin-item">
+                    <div class="nayin-label">建干纳音:</div>
+                    <div class="nayin-value" style="color: ${jianganNayinColor};">${jiangan}${heavenBranch} - ${jianganNayin}${jianganNayinWuxing}</div>
+                </div>`;
+            } catch (e) {
+                console.error('计算建干纳音出错:', e);
+                html += `<div class="nayin-item">
+                    <div class="nayin-label">建干纳音:</div>
+                    <div class="nayin-value">${jiangan}${heavenBranch} - 计算出错</div>
+                </div>`;
+            }
+        }
+        
+        if (fujian && heavenBranch) {
+            try {
+                const fujianNayin = calculateNayin(fujian, heavenBranch);
+                const fujianNayinWuxing = getNayinWuxing(fujianNayin);
+                const fujianNayinColor = getNayinWuxingColor(fujianNayin);
+                
+                html += `<div class="nayin-item">
+                    <div class="nayin-label">复建纳音:</div>
+                    <div class="nayin-value" style="color: ${fujianNayinColor};">${fujian}${heavenBranch} - ${fujianNayin}${fujianNayinWuxing}</div>
+                </div>`;
+            } catch (e) {
+                console.error('计算复建纳音出错:', e);
+                html += `<div class="nayin-item">
+                    <div class="nayin-label">复建纳音:</div>
+                    <div class="nayin-value">${fujian}${heavenBranch} - 计算出错</div>
+                </div>`;
+            }
+        }
+        
+        if (html === '') {
+            html = '<p>无法从当前宫格获取遁干信息，请确保天地盘已正确生成</p>';
         }
         
         return html;
@@ -5360,7 +5509,7 @@ class DaLiuRenCalculator {
         // 创建当前动态结果表
             html += `
         <div class="jinkou-item mt-4">
-            <div class="text-center mb-2" style="font-weight: bold;">动态</div>
+            <div class="text-center mb-2" style="font-weight: bold;"></div>
             <div class="current-dong-result text-center">`;
         
         if (wudongResult.length > 0 || sandongResult.length > 0) {
