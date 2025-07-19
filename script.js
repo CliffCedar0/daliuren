@@ -3011,56 +3011,133 @@ class DaLiuRenCalculator {
         if (fanyinCount >= 6) {
             console.log('检测到反吟课，反吟位置：', fanyinPositions);
             
-            // 反吟三传的特殊取法
-            // 阳日：干上 -> 支上 -> 干上的正冲
-            // 阴日：支上 -> 干上 -> 支上的正冲
-            const isYangRi = this.isYang(dayStem);
+            // 新的反吟三传取法
+            // 1. 检查四课中是否有上克下或下克上
+            const analysis = this.analyzeSikeKe(sike);
+            const hasZeiKe = analysis.shangKe.length > 0 || analysis.xiaZei.length > 0;
             
-            if (isYangRi) {
-                const chuchuan = sike.ke1.top;  // 干上
-                const zhongchuan = sike.ke3.top; // 支上
-                const mochuan = DIZHI_CHONG[chuchuan] || chuchuan; // 干上的正冲
+            if (hasZeiKe) {
+                console.log('反吟课中检测到贼克，使用贼克法取三传');
+                
+                // 使用贼克法的逻辑获取初传
+                let chuchuan, zhongchuan, mochuan;
+                let keType = '';
+                
+                // 优先使用上克下
+                if (analysis.shangKe.length > 0) {
+                    const shangKeItem = analysis.shangKe[0];
+                    chuchuan = shangKeItem.top;
+                    keType = '上克下';
+                } 
+                // 其次使用下克上
+                else if (analysis.xiaZei.length > 0) {
+                    const xiaZeiItem = analysis.xiaZei[0];
+                    chuchuan = xiaZeiItem.bottom;
+                    keType = '下克上';
+                }
+                
+                // 中传和末传与贼克法相同
+                // 中传为初传所克的地支
+                const chuchuanWuxing = this.getWuxing(chuchuan);
+                let zhongchuanFound = false;
+                
+                // 遍历天盘地支，找出被初传所克的
+                for (let groundBranch in heavenPlate) {
+                    const heavenBranch = heavenPlate[groundBranch];
+                    const heavenBranchWuxing = this.getWuxing(heavenBranch);
+                    if (this.wuxingKe(chuchuanWuxing, heavenBranchWuxing)) {
+                        zhongchuan = heavenBranch;
+                        zhongchuanFound = true;
+                        break;
+                    }
+                }
+                
+                // 如果找不到被克的地支，则使用初传地支的六合
+                if (!zhongchuanFound) {
+                    zhongchuan = DIZHI_HE[chuchuan] || chuchuan;
+                }
+                
+                // 末传为中传所克的地支
+                const zhongchuanWuxing = this.getWuxing(zhongchuan);
+                let mochuanFound = false;
+                
+                // 遍历天盘地支，找出被中传所克的
+                for (let groundBranch in heavenPlate) {
+                    const heavenBranch = heavenPlate[groundBranch];
+                    const heavenBranchWuxing = this.getWuxing(heavenBranch);
+                    if (this.wuxingKe(zhongchuanWuxing, heavenBranchWuxing)) {
+                        mochuan = heavenBranch;
+                        mochuanFound = true;
+                        break;
+                    }
+                }
+                
+                // 如果找不到被克的地支，则使用中传地支的六合
+                if (!mochuanFound) {
+                    mochuan = DIZHI_HE[zhongchuan] || zhongchuan;
+                }
                 
                 return {
                     chuchuan: { 
                         gan: this.getSanchuanGan(chuchuan, heavenPlate, dayStem, dayBranch), 
                         zhi: chuchuan, 
-                        tianjiang: this.getSanchuanTianjiang(chuchuan, heavenPlate, tianjiangMap)
+                        tianjiang: this.getSanchuanTianjiang(chuchuan, heavenPlate, tianjiangMap, dipanTianjiangMap)
                     },
                     zhongchuan: { 
                         gan: this.getSanchuanGan(zhongchuan, heavenPlate, dayStem, dayBranch), 
                         zhi: zhongchuan, 
-                        tianjiang: this.getSanchuanTianjiang(zhongchuan, heavenPlate, tianjiangMap)
+                        tianjiang: this.getSanchuanTianjiang(zhongchuan, heavenPlate, tianjiangMap, dipanTianjiangMap)
                     },
                     mochuan: { 
                         gan: this.getSanchuanGan(mochuan, heavenPlate, dayStem, dayBranch), 
                         zhi: mochuan, 
-                        tianjiang: this.getSanchuanTianjiang(mochuan, heavenPlate, tianjiangMap)
+                        tianjiang: this.getSanchuanTianjiang(mochuan, heavenPlate, tianjiangMap, dipanTianjiangMap)
                     },
-                    kege: '阳日反吟'
+                    kege: '反吟' + keType
                 };
             } else {
-                const chuchuan = sike.ke3.top;  // 支上
-                const zhongchuan = sike.ke1.top; // 干上
-                const mochuan = DIZHI_CHONG[chuchuan] || chuchuan; // 支上的正冲
+                console.log('反吟课中无贼克，使用驿马法取三传');
+                
+                // 无贼克时，使用日支的驿马为初传
+                let yima;
+                
+                // 根据日支确定驿马位置
+                if (['申', '子', '辰'].includes(dayBranch)) {
+                    yima = '寅';
+                } else if (['寅', '午', '戌'].includes(dayBranch)) {
+                    yima = '申';
+                } else if (['巳', '酉', '丑'].includes(dayBranch)) {
+                    yima = '亥';
+                } else if (['亥', '卯', '未'].includes(dayBranch)) {
+                    yima = '巳';
+                }
+                
+                // 初传为日支的驿马
+                const chuchuan = yima;
+                
+                // 中传为日支上神（即天盘中日支所在位置的地支）
+                const zhongchuan = sike.ke3.top;
+                
+                // 末传为日干上神（即天盘中日干所在位置的地支）
+                const mochuan = sike.ke1.top;
                 
                 return {
                     chuchuan: { 
                         gan: this.getSanchuanGan(chuchuan, heavenPlate, dayStem, dayBranch), 
                         zhi: chuchuan, 
-                        tianjiang: this.getSanchuanTianjiang(chuchuan, heavenPlate, tianjiangMap)
+                        tianjiang: this.getSanchuanTianjiang(chuchuan, heavenPlate, tianjiangMap, dipanTianjiangMap)
                     },
                     zhongchuan: { 
                         gan: this.getSanchuanGan(zhongchuan, heavenPlate, dayStem, dayBranch), 
                         zhi: zhongchuan, 
-                        tianjiang: this.getSanchuanTianjiang(zhongchuan, heavenPlate, tianjiangMap)
+                        tianjiang: this.getSanchuanTianjiang(zhongchuan, heavenPlate, tianjiangMap, dipanTianjiangMap)
                     },
                     mochuan: { 
                         gan: this.getSanchuanGan(mochuan, heavenPlate, dayStem, dayBranch), 
                         zhi: mochuan, 
-                        tianjiang: this.getSanchuanTianjiang(mochuan, heavenPlate, tianjiangMap)
+                        tianjiang: this.getSanchuanTianjiang(mochuan, heavenPlate, tianjiangMap, dipanTianjiangMap)
                     },
-                    kege: '阴日反吟'
+                    kege: '反吟驿马'
                 };
             }
         }
