@@ -44,6 +44,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     top: 0;
                     font-weight: bold;
                     font-size: 14px;
+                    display: none; /* 隐藏上面的贼遁 */
                 }
                 
                 /* 天干五行颜色 */

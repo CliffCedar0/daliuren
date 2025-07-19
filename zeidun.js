@@ -157,23 +157,32 @@ document.addEventListener('DOMContentLoaded', function() {
                         zeidunElement.className = 'zeidun';
                         zeidunElement.textContent = gan;
                         zeidunElement.title = '贼遁';
+                        zeidunElement.style.display = 'block';
+                        zeidunElement.style.visibility = 'visible';
+                        zeidunElement.style.position = 'absolute';
+                        zeidunElement.style.bottom = '2px'; // 位置调低，在地遁下面
+                        zeidunElement.style.left = '25px'; // 默认在复建的右边
+                        zeidunElement.style.zIndex = '100';
+                        zeidunElement.style.color = 'red';
+                        zeidunElement.style.fontWeight = 'bold';
+                        
+                        // 获取复建元素，根据其位置调整贼遁位置
+                        const fujianElement = cell.querySelector('.fujian');
+                        const didunElement = cell.querySelector('.didun');
+                        
+                        if (fujianElement) {
+                            // 如果找到复建元素，将贼遁放在复建元素右边
+                            const fujianRect = fujianElement.getBoundingClientRect();
+                            if (fujianRect) {
+                                // 调整贼遁位置到复建右侧
+                                zeidunElement.style.left = (fujianElement.offsetLeft + fujianElement.offsetWidth + 5) + 'px';
+                                console.log(`调整贼遁位置到复建右侧: ${zeidunElement.style.left}`);
+                            }
+                        }
                         
                         // 直接添加到单元格中，使用绝对定位
                         cell.appendChild(zeidunElement);
                         console.log(`已将贼遁天干${gan}添加到地支${branch}的单元格中`);
-                        
-                        // 获取复建元素的位置，动态调整贼遁位置
-                        const fujianElement = cell.querySelector('.fujian');
-                        if (fujianElement) {
-                            // 如果找到复建元素，将贼遁放在复建元素旁边
-                            const fujianRect = fujianElement.getBoundingClientRect();
-                            const cellRect = cell.getBoundingClientRect();
-                            
-                            // 动态计算贼遁的位置
-                            const leftOffset = fujianElement.offsetLeft + fujianElement.offsetWidth -16;
-                            zeidunElement.style.left = leftOffset + 'px';
-                            console.log(`调整贼遁位置: 左偏移${leftOffset}px`);
-                        }
                         
                         // 应用五行颜色
                         this.applyWuxingColor(zeidunElement, gan);
@@ -213,12 +222,23 @@ document.addEventListener('DOMContentLoaded', function() {
                 font-weight: bold;
                 font-size: 14px;
                 position: absolute;
-                bottom: 22px;
-                left: 25px; /* 固定位置，不受其他元素影响 */
+                bottom: 10px; /* 位置调低，在地遁下面 */
+                left: 25px; /* 在复建的右边 */
                 z-index: 10; /* 确保显示在其他元素上方 */
+                color: red; /* 使贼遁更加明显 */
             }
         `;
         document.head.appendChild(style);
+        
+        // 再添加一个内联样式，确保贼遁显示
+        const inlineStyle = document.createElement('style');
+        inlineStyle.textContent = `
+            .branch-cell .zeidun {
+                display: block !important;
+                visibility: visible !important;
+            }
+        `;
+        document.head.appendChild(inlineStyle);
         
         console.log("贼遁功能设置完成");
     }
@@ -231,6 +251,12 @@ document.addEventListener('DOMContentLoaded', function() {
     if (calculateBtn) {
         calculateBtn.addEventListener('click', function() {
             console.log("排盘按钮被点击，将在天地盘排列完成后计算贼遁");
+            // 直接触发贼遁计算
+            setTimeout(() => {
+                if (window.triggerZeidunCalculation) {
+                    window.triggerZeidunCalculation();
+                }
+            }, 1500);
         });
     }
     
@@ -239,8 +265,22 @@ document.addEventListener('DOMContentLoaded', function() {
     if (generateChartBtn) {
         generateChartBtn.addEventListener('click', function() {
             console.log("生成图表按钮被点击，将在天地盘排列完成后计算贼遁");
+            // 直接触发贼遁计算
+            setTimeout(() => {
+                if (window.triggerZeidunCalculation) {
+                    window.triggerZeidunCalculation();
+                }
+            }, 1500);
         });
     }
+    
+    // 页面加载完成后自动触发贼遁计算
+    setTimeout(() => {
+        if (window.triggerZeidunCalculation) {
+            console.log("页面加载完成，自动触发贼遁计算");
+            window.triggerZeidunCalculation();
+        }
+    }, 2000);
     
     // 监听图表区域显示变化
     const chartSections = document.querySelectorAll('.chart-section');
