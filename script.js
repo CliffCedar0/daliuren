@@ -59,7 +59,7 @@ const QIANFA_DATA = {
         '巳': { name: '贵人居巳曰受贡', desc: '求人办事、送礼、尊敬有加' },
         '午': { name: '贵人居午曰受贡', desc: '求人办事、送礼、尊敬有加' },
         '未': { name: '贵人居未曰列席', desc: '请贵人吃饭，含入座、录取等意' },
-        '申': { name: '贵人居申曰移角', desc: '在路上，动中吉' },
+        '申': { name: '贵人居申曰移途', desc: '在路上，动中吉' },
         '酉': { name: '贵人居酉入私门', desc: '走后门、包养、受贿等' },
         '戌': { name: '贵人居戌曰地狱', desc: '贵人自身难保，不能发挥作用' },
         '亥': { name: '贵人加亥登天门', desc: '指政府公务人员或关系强大的达官贵人' }
@@ -4068,12 +4068,12 @@ class DaLiuRenCalculator {
                 console.log('使用页面显示的日干支计算天将:', dayStem + dayBranch);
             } else {
                 // 获取日干支（基于当前时间）
-                const now = new Date();
-                const solar = Solar.fromDate(now);
-                const lunar = solar.getLunar();
+            const now = new Date();
+            const solar = Solar.fromDate(now);
+            const lunar = solar.getLunar();
                 const dayGZ = lunar.getDayInGanZhi();
-                dayStem = dayGZ.charAt(0);
-                dayBranch = dayGZ.charAt(1);
+            dayStem = dayGZ.charAt(0);
+            dayBranch = dayGZ.charAt(1);
                 console.log('使用当前日期的日干支计算天将:', dayGZ);
             }
             
@@ -4361,10 +4361,10 @@ class DaLiuRenCalculator {
                     dayStem = dayGanElement.textContent;
                     console.log('使用页面显示的日干计算长生:', dayStem);
                 } else {
-                    // 获取日干支（基于当前时间）
-                    const now = new Date();
-                    const solar = Solar.fromDate(now);
-                    const lunar = solar.getLunar();
+                // 获取日干支（基于当前时间）
+                const now = new Date();
+                const solar = Solar.fromDate(now);
+                const lunar = solar.getLunar();
                     dayStem = lunar.getDayInGanZhi().charAt(0);
                 }
                 
@@ -4431,11 +4431,11 @@ class DaLiuRenCalculator {
                 dayBranch = dayZhiElement.textContent;
                 console.log('使用页面显示的日干支计算天将:', dayStem + dayBranch);
             } else {
-                // 获取日干支（基于当前时间）
-                const now = new Date();
-                const solar = Solar.fromDate(now);
-                const lunar = solar.getLunar();
-                const dayGZ = lunar.getDayInGanZhi();
+            // 获取日干支（基于当前时间）
+            const now = new Date();
+            const solar = Solar.fromDate(now);
+            const lunar = solar.getLunar();
+            const dayGZ = lunar.getDayInGanZhi();
                 dayStem = dayGZ.charAt(0);
                 dayBranch = dayGZ.charAt(1);
                 console.log('使用当前日期的日干支计算天将:', dayGZ);
@@ -4957,6 +4957,7 @@ class DaLiuRenCalculator {
         this.currentDipanTianjiang = dipanTianjiang;
         this.currentGroundBranch = groundBranch;
         this.currentHeavenBranch = heavenBranch;
+        this.activeTab = activeTab; // 保存当前活动的选项卡
         
         // 显示钤法内容
         this.updateQianfaContent();
@@ -5094,25 +5095,130 @@ class DaLiuRenCalculator {
         
         // 添加钤法内容并关闭钤法选项卡
         tabContent += qianfaContent + `</div>`;
-            
-        // 如果有八动，添加到HTML中
-        if (baDongList.length > 0) {
-            html += `
-            <div class="jinkou-item">
-                <div class="jinkou-label">八动:</div>
-                <div class="jinkou-value">`;
-            
-            // 添加每个八动
-            baDongList.forEach((baDong, index) => {
-                html += `<div style="color: ${baDong.color}; font-weight: bold; margin-bottom: 5px;">
-                    ${baDong.text} 
+        
+        // 纳音选项卡内容
+        tabContent += `<div class="tab-pane fade" id="nayin-content-tab" role="tabpanel" aria-labelledby="nayin-tab">
+            <div class="qianfa-section">
+                <h3 style="color: #673ab7;">纳音</h3>
+                <div class="qianfa-subsection">
+                    ${this.generateNayinContent()}
+                    </div>
+                    </div>
                 </div>`;
+        
+        // 关闭选项卡内容
+        tabContent += `</div>`;
+        
+        // 设置模态框内容
+        this.qianfaContent.innerHTML = headerHTML + tabNav + tabContent;
+        
+        // 初始化Bootstrap选项卡
+        if (typeof bootstrap !== 'undefined' && bootstrap.Tab) {
+            const triggerTabList = [].slice.call(document.querySelectorAll('#qianfaTab button'));
+            triggerTabList.forEach(function (triggerEl) {
+                const tabTrigger = new bootstrap.Tab(triggerEl);
+                
+                triggerEl.addEventListener('click', function (event) {
+                    event.preventDefault();
+                    tabTrigger.show();
+                });
             });
             
-            html += `</div></div>`;
+            // 根据传入的activeTab参数激活对应的选项卡
+            if (this.activeTab && this.activeTab !== 'jinkou') {
+                const activeTabEl = document.getElementById(`${this.activeTab}-tab`);
+                if (activeTabEl) {
+                    const activeTabTrigger = new bootstrap.Tab(activeTabEl);
+                    activeTabTrigger.show();
+                }
+            }
+        }
+    }
+    
+    // 生成钤法内容
+    generateQianfaItem(tianjiang, branch) {
+        if (!tianjiang || !branch) return '';
+        
+        let html = '';
+        
+        // 使用QIANFA_DATA中的数据
+        const tianjiangData = QIANFA_DATA[tianjiang];
+        if (tianjiangData && tianjiangData[branch]) {
+            const qianfaData = tianjiangData[branch];
+            const qianfaName = qianfaData.name;
+            const qianfaDesc = qianfaData.desc;
+            
+            html = `<div class="qianfa-item">
+                <div class="qianfa-title" style="font-weight: bold; color: #1976d2; margin-bottom: 5px;">${qianfaName}</div>
+                <div class="qianfa-value">${qianfaDesc}</div>
+            </div>`;
+        } else {
+            html = `<div class="qianfa-item">
+                <div class="qianfa-value">${tianjiang}临${branch}：无特殊钤法</div>
+            </div>`;
         }
         
-        html += `</div>`;
+        return html;
+    }
+    
+    // 生成纳音内容
+    generateNayinContent() {
+        let html = '';
+        
+        // 获取当前四柱
+        const yearGan = document.getElementById('year-gan')?.textContent || '';
+        const yearZhi = document.getElementById('year-zhi')?.textContent || '';
+        const monthGan = document.getElementById('month-gan')?.textContent || '';
+        const monthZhi = document.getElementById('month-zhi')?.textContent || '';
+        const dayGan = document.getElementById('day-gan')?.textContent || '';
+        const dayZhi = document.getElementById('day-zhi')?.textContent || '';
+        const hourGan = document.getElementById('hour-gan')?.textContent || '';
+        const hourZhi = document.getElementById('hour-zhi')?.textContent || '';
+        
+        // 计算四柱纳音
+        if (yearGan && yearZhi) {
+            const yearNayin = calculateNayin(yearGan, yearZhi);
+            const yearNayinWuxing = getNayinWuxing(yearNayin);
+            const yearNayinColor = getNayinWuxingColor(yearNayin);
+            
+            html += `<div class="nayin-item">
+                <div class="nayin-label">年柱纳音:</div>
+                <div class="nayin-value" style="color: ${yearNayinColor};">${yearGan}${yearZhi} - ${yearNayin}${yearNayinWuxing}</div>
+                </div>`;
+            }
+            
+        if (monthGan && monthZhi) {
+            const monthNayin = calculateNayin(monthGan, monthZhi);
+            const monthNayinWuxing = getNayinWuxing(monthNayin);
+            const monthNayinColor = getNayinWuxingColor(monthNayin);
+            
+            html += `<div class="nayin-item">
+                <div class="nayin-label">月柱纳音:</div>
+                <div class="nayin-value" style="color: ${monthNayinColor};">${monthGan}${monthZhi} - ${monthNayin}${monthNayinWuxing}</div>
+                </div>`;
+        }
+        
+        if (dayGan && dayZhi) {
+            const dayNayin = calculateNayin(dayGan, dayZhi);
+            const dayNayinWuxing = getNayinWuxing(dayNayin);
+            const dayNayinColor = getNayinWuxingColor(dayNayin);
+            
+            html += `<div class="nayin-item">
+                <div class="nayin-label">日柱纳音:</div>
+                <div class="nayin-value" style="color: ${dayNayinColor};">${dayGan}${dayZhi} - ${dayNayin}${dayNayinWuxing}</div>
+            </div>`;
+        }
+        
+        if (hourGan && hourZhi) {
+            const hourNayin = calculateNayin(hourGan, hourZhi);
+            const hourNayinWuxing = getNayinWuxing(hourNayin);
+            const hourNayinColor = getNayinWuxingColor(hourNayin);
+            
+            html += `<div class="nayin-item">
+                <div class="nayin-label">时柱纳音:</div>
+                <div class="nayin-value" style="color: ${hourNayinColor};">${hourGan}${hourZhi} - ${hourNayin}${hourNayinWuxing}</div>
+            </div>`;
+        }
         
         return html;
     }
@@ -5128,6 +5234,224 @@ class DaLiuRenCalculator {
         if (this.sizhuUpdateTimer) {
             clearInterval(this.sizhuUpdateTimer);
         }
+    }
+    
+    // 生成金口诀内容
+    generateJinkouItem() {
+        let html = '';
+        
+        // 获取当前地盘地支和天盘地支
+        const groundBranch = this.currentGroundBranch || '';
+        const heavenBranch = this.currentHeavenBranch || '';
+        
+        if (!groundBranch || !heavenBranch) {
+            return '<p>请先选择宫格以查看金口诀</p>';
+        }
+        
+        // 获取旬干（人元）
+        const dayStem = document.getElementById('day-gan')?.textContent || '';
+        const dayBranch = document.getElementById('day-zhi')?.textContent || '';
+        const xungan = this.calculateXunganForPosition(groundBranch, dayStem, dayBranch) || '';
+        
+        // 获取贵神对应地支
+        const guishenZhi = this.getGuishenZhi(this.currentTianpanTianjiang);
+        
+        // 获取颜色
+        const xunganColor = this.getColorForGan(xungan);
+        const guishenZhiColor = this.getColorForZhi(guishenZhi);
+        const heavenBranchColor = this.getColorForZhi(heavenBranch);
+        const groundBranchColor = this.getColorForZhi(groundBranch);
+        
+        // 创建金口诀表格
+        html += `
+        <div class="jinkou-table">
+            <table class="table table-bordered">
+                <tr>
+                    <td style="font-weight: bold">人元</td>
+                    <td><span style="font-weight: bold; color: ${xunganColor};">${xungan || '无'}</span></td>
+                </tr>
+                <tr>
+                    <td style="font-weight: bold">贵神</td>
+                    <td><span style="font-weight: bold; color: ${guishenZhiColor};">${guishenZhi || '无'}</span></td>
+                </tr>
+                <tr>
+                    <td style="font-weight: bold">将神</td>
+                    <td><span style="font-weight: bold; color: ${heavenBranchColor};">${heavenBranch}</span></td>
+                </tr>
+                <tr>
+                    <td style="font-weight: bold">地分</td>
+                    <td><span style="font-weight: bold; color: ${groundBranchColor};">${groundBranch}</span></td>
+                </tr>
+            </table>
+        </div>`;
+        
+        // 计算五行关系
+        const ganWuxing = this.getWuxing(xungan);
+        const guishenWuxing = this.getWuxing(guishenZhi);
+        const jiangWuxing = this.getWuxing(heavenBranch);
+        const fangWuxing = this.getWuxing(groundBranch);
+        
+        // 判断五动关系
+        const wudongResult = [];
+        
+        // 财动：将克神
+        if (this.wuxingKe(jiangWuxing, guishenWuxing)) {
+            wudongResult.push({name: '财动', color: '#ff9800', desc: '将神克贵神'});
+        }
+        
+        // 贼动：神克将
+        if (this.wuxingKe(guishenWuxing, jiangWuxing)) {
+            wudongResult.push({name: '贼动', color: '#f44336', desc: '贵神克将神'});
+        }
+        
+        // 官动：神克干
+        if (this.wuxingKe(guishenWuxing, ganWuxing)) {
+            wudongResult.push({name: '官动', color: '#0288d1', desc: '贵神克人元'});
+        }
+        
+        // 妻动：干克方
+        if (this.wuxingKe(ganWuxing, fangWuxing)) {
+            wudongResult.push({name: '妻动', color: '#9c27b0', desc: '人元克地分'});
+        }
+        
+        // 鬼动：方克干
+        if (this.wuxingKe(fangWuxing, ganWuxing)) {
+            wudongResult.push({name: '鬼动', color: '#d32f2f', desc: '地分克人元'});
+        }
+        
+        // 判断三动关系
+        const sandongResult = [];
+        
+        // 父母动：方生干
+        if (this.wuxingSheng(fangWuxing, ganWuxing)) {
+            sandongResult.push({name: '父母动', color: '#4caf50', desc: '地分生人元'});
+        }
+        
+        // 子孙动：干生方
+        if (this.wuxingSheng(ganWuxing, fangWuxing)) {
+            sandongResult.push({name: '子孙动', color: '#ff9800', desc: '人元生地分'});
+        }
+        
+        // 兄弟动：干方同
+        if (ganWuxing === fangWuxing) {
+            sandongResult.push({name: '兄弟动', color: '#0288d1', desc: '人元与地分五行相同'});
+        }
+        
+        // 创建当前动态结果表
+            html += `
+        <div class="jinkou-item mt-4">
+            <div class="text-center mb-2" style="font-weight: bold;">动态</div>
+            <div class="current-dong-result text-center">`;
+        
+        if (wudongResult.length > 0 || sandongResult.length > 0) {
+            // 合并五动和三动结果
+            const allResults = [...wudongResult, ...sandongResult];
+            
+            // 创建居中显示的动态结果
+            let resultHtml = '';
+            allResults.forEach((dong, index) => {
+                resultHtml += `<span style="font-weight: bold; color: ${dong.color}; margin: 0 8px;">${dong.name}</span>`;
+                // 每3个结果换行
+                if ((index + 1) % 3 === 0 && index < allResults.length - 1) {
+                    resultHtml += '<br>';
+                }
+            });
+            
+            html += resultHtml;
+        } else {
+            html += '<span style="color: #666;">无</span>';
+        }
+        
+        html += `</div>
+        </div>`;
+
+        
+        
+        
+        return html;
+    }
+
+    // 获取天干的颜色
+    getColorForGan(gan) {
+        const ganColors = {
+            '甲': '#4caf50', // 木 - 绿色
+            '乙': '#4caf50', // 木 - 绿色
+            '丙': '#f44336', // 火 - 红色
+            '丁': '#f44336', // 火 - 红色
+            '戊': '#795548', // 土 - 棕色
+            '己': '#795548', // 土 - 棕色
+            '庚': '#ff9800', // 金 - 橙色
+            '辛': '#ff9800', // 金 - 橙色
+            '壬': '#0288d1', // 水 - 蓝色
+            '癸': '#0288d1'  // 水 - 蓝色
+        };
+        
+        return ganColors[gan] || '#000000';
+    }
+    
+    // 获取地支的颜色
+    getColorForZhi(zhi) {
+        const zhiColors = {
+            '子': '#0288d1', // 水 - 蓝色
+            '丑': '#795548', // 土 - 棕色
+            '寅': '#4caf50', // 木 - 绿色
+            '卯': '#4caf50', // 木 - 绿色
+            '辰': '#795548', // 土 - 棕色
+            '巳': '#f44336', // 火 - 红色
+            '午': '#f44336', // 火 - 红色
+            '未': '#795548', // 土 - 棕色
+            '申': '#ff9800', // 金 - 橙色
+            '酉': '#ff9800', // 金 - 橙色
+            '戌': '#795548', // 土 - 棕色
+            '亥': '#0288d1'  // 水 - 蓝色
+        };
+        
+        return zhiColors[zhi] || '#000000';
+    }
+    
+    // 获取贵神对应的地支
+    getGuishenZhi(tianjiang) {
+        if (!tianjiang) return '';
+        
+        const guishenMap = {
+            '贵人': '午',
+            '青龙': '卯',
+            '六合': '酉',
+            '太常': '巳',
+            '天后': '申',
+            '太阴': '亥',
+            '白虎': '寅',
+            '玄武': '子',
+            '螣蛇': '辰',
+            '朱雀': '巳',
+            '勾陈': '戌',
+            '天空': '未'
+        };
+        
+        return guishenMap[tianjiang] || '';
+    }
+    
+    // 计算八动
+    calculateBaDong(dayGan, dayZhi) {
+        const baDongList = [];
+        
+        // 日干五行
+        const dayGanWuxing = this.getWuxing(dayGan);
+        
+        // 根据日干五行计算八动
+        if (dayGanWuxing === '金') {
+            baDongList.push({ text: '金日: 见申酉为喜神，见亥子为福神，见寅卯为祸神，见巳午为鬼神', color: '#e08433' });
+        } else if (dayGanWuxing === '木') {
+            baDongList.push({ text: '木日: 见寅卯为喜神，见巳午为福神，见申酉为祸神，见亥子为鬼神', color: '#317023' });
+        } else if (dayGanWuxing === '水') {
+            baDongList.push({ text: '水日: 见亥子为喜神，见寅卯为福神，见巳午为祸神，见申酉为鬼神', color: '#0803a8' });
+        } else if (dayGanWuxing === '火') {
+            baDongList.push({ text: '火日: 见巳午为喜神，见申酉为福神，见亥子为祸神，见寅卯为鬼神', color: '#ce2d20' });
+        } else if (dayGanWuxing === '土') {
+            baDongList.push({ text: '土日: 见辰戌丑未为喜神，见申酉为福神，见亥子为祸神，见寅卯为鬼神', color: '#98511e' });
+        }
+        
+        return baDongList;
     }
 
     // 新增：获取三传地支的双天将
