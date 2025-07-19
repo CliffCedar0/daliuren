@@ -4259,6 +4259,12 @@ class DaLiuRenCalculator {
         const dayStem = dayGZ.charAt(0);
         const dayBranch = dayGZ.charAt(1);
         
+        // 获取时辰干支
+        const hourGanElement = document.getElementById('hour-gan')?.textContent || '';
+        const hourZhiElement = document.getElementById('hour-zhi')?.textContent || '';
+        const timeStem = hourGanElement;
+        const timeBranch = hourZhiElement;
+        
         cells.forEach(cell => {
             const groundBranch = cell.getAttribute('data-branch');
             if (groundBranch && heavenPlate[groundBranch]) {
@@ -4308,6 +4314,20 @@ class DaLiuRenCalculator {
                     liuqinElement.textContent = liuqin;
                     liuqinElement.style.color = this.getLiuqinColor(liuqin);
                     liuqinElement.style.fontWeight = 'bold';
+                }
+                
+                // 计算天遁
+                if (timeStem && timeBranch) {
+                    const tiandunResult = this.calculateTianDunWithXunkong(groundBranch, timeStem, timeBranch, heavenPlate);
+                    const tiandunElement = cell.querySelector('.tiandun-display');
+                    if (tiandunElement && tiandunResult) {
+                        tiandunElement.textContent = tiandunResult.gan || '';
+                        if (tiandunResult.isTimeXunkong) {
+                            tiandunElement.classList.add('xunkong');
+                        } else {
+                            tiandunElement.classList.remove('xunkong');
+                        }
+                    }
                 }
             }
         });
