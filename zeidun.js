@@ -213,7 +213,10 @@ document.addEventListener('DOMContentLoaded', function() {
             .zeidun {
                 font-weight: bold;
                 font-size: 14px;
-                margin-left: 2px;
+                position: absolute;
+                bottom: 22px;
+                left: 25px; /* 固定位置，不受其他元素影响 */
+                z-index: 10; /* 确保显示在其他元素上方 */
             }
         `;
         document.head.appendChild(style);
