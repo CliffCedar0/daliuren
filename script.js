@@ -1828,11 +1828,12 @@ class DaLiuRenCalculator {
     calculateSike(dayStem, dayBranch, heavenPlate, tianpanTianjiangMap, dipanTianjiangMap) {
         const sike = {};
         
-        // 从四柱显示中获取日干日支，确保与四柱显示一致
-        const displayDayStem = document.getElementById('day-gan').textContent;
-        const displayDayBranch = document.getElementById('day-zhi').textContent;
+        // 使用传入的参数作为日干支，而不是从DOM元素中读取
+        // 这些参数是从当前时间计算出的日干支
+        const displayDayStem = dayStem;
+        const displayDayBranch = dayBranch;
         
-        console.log(`使用四柱显示的日干支计算四课: 日干=${displayDayStem}, 日支=${displayDayBranch}`);
+        console.log(`使用传入的日干支计算四课: 日干=${displayDayStem}, 日支=${displayDayBranch}`);
         
         // 第一课：日干寄宫上的天盘字 / 日干
         const stemLodge = STEM_LODGE_MAP[displayDayStem];
