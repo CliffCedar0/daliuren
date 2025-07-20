@@ -3900,9 +3900,20 @@ class DaLiuRenCalculator {
         try {
             // 获取日干支（基于当前时间）
             const now = new Date();
-            const solar = Solar.fromDate(now);
-            const lunar = solar.getLunar();
-            const dayGZ = lunar.getDayInGanZhi();
+            
+            // 判断是否是23:00之后，如果是，则使用第二天的日期计算日柱
+            const hour = now.getHours();
+            let dayDate = new Date(now);
+            
+            if (hour >= 23) {
+                // 23:00之后使用第二天的日期
+                dayDate.setDate(dayDate.getDate() + 1);
+                console.log('当前时间是23:00之后，使用第二天的日期计算日柱:', dayDate.toLocaleDateString());
+            }
+            
+            const solarForDay = Solar.fromDate(dayDate);
+            const lunarForDay = solarForDay.getLunar();
+            const dayGZ = lunarForDay.getDayInGanZhi();
             const dayStem = dayGZ.charAt(0);
             const dayBranch = dayGZ.charAt(1);
             
@@ -3965,13 +3976,28 @@ class DaLiuRenCalculator {
             // 使用当前时间或自定义时间计算四柱
             const now = this.currentDateTime || new Date();
             console.log(`使用时间: ${now.toLocaleString()}, 是否使用自定义时间: ${this.currentDateTime ? '是' : '否'}`);
+            
+            // 判断是否是23:00之后，如果是，则使用第二天的日期计算日柱
+            const hour = now.getHours();
+            let dayDate = new Date(now);
+            
+            if (hour >= 23) {
+                // 23:00之后使用第二天的日期
+                dayDate.setDate(dayDate.getDate() + 1);
+                console.log('当前时间是23:00之后，使用第二天的日期计算日柱:', dayDate.toLocaleDateString());
+            }
+            
             const solar = Solar.fromDate(now);
             const lunar = solar.getLunar();
+            
+            // 计算日柱时使用可能调整后的日期
+            const solarForDay = Solar.fromDate(dayDate);
+            const lunarForDay = solarForDay.getLunar();
             
             // 获取基本四柱信息
             let yearGZ = lunar.getYearInGanZhi();
             let monthGZ = lunar.getMonthInGanZhi();
-            let dayGZ = lunar.getDayInGanZhi();
+            let dayGZ = lunarForDay.getDayInGanZhi(); // 使用可能调整后的日期计算日柱
             
             // 如果提供了自定义时辰，则需要自定义时柱
             let timeGZ;
