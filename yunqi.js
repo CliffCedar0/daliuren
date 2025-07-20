@@ -110,7 +110,7 @@ function generateFateChartHTML(fateChart, currentPhase = null) {
 
     let html = `
     <div class="card">
-        <div class="card-header">六壬运限命${natalBranch}命）</div>
+        <div class="card-header">六壬运限（命${natalBranch}命）</div>
         ${currentRunInfo}
         <div class="card-body p-0">
             <table class="table table-bordered mb-0 text-center">
