@@ -861,6 +861,12 @@ class DaLiuRenCalculator {
             const xingnianNayin = document.getElementById('xingnian-nayin');
             if (benmingNayin) benmingNayin.textContent = '-';
             if (xingnianNayin) xingnianNayin.textContent = '-';
+            
+            // 隐藏运限表
+            const fateChartContainer = document.getElementById('fate-chart-container');
+            if (fateChartContainer) {
+                fateChartContainer.style.display = 'none';
+            }
             return;
         }
         
@@ -902,6 +908,14 @@ class DaLiuRenCalculator {
             
             // 计算行年
             this.calculateXingnian(benmingZhi, isMale);
+            
+            // 生成运限表 - 使用本命地支和出生年份
+            if (typeof window.initFateChart === 'function') {
+                const birthYear = this.birthYearSelect.value;
+                window.initFateChart(benmingZhi, birthYear);
+            } else {
+                console.error('运限表函数未加载');
+            }
             
         } catch (error) {
             console.error('计算本命和行年时出错:', error);
@@ -4148,6 +4162,25 @@ class DaLiuRenCalculator {
         chartSections.forEach(section => {
             section.style.display = 'block';
         });
+        
+        // 如果有本命地支，则显示运限表
+        const benmingZhi = document.getElementById('benming-zhi');
+        if (benmingZhi && benmingZhi.textContent && benmingZhi.textContent !== '-') {
+            const natalBranch = benmingZhi.textContent;
+            console.log('从本命地支生成运限表:', natalBranch);
+            if (typeof window.initFateChart === 'function') {
+                // 获取出生年份
+                const birthYearDisplay = document.getElementById('birth-year-display');
+                const birthYear = birthYearDisplay && birthYearDisplay.textContent !== '-' 
+                    ? birthYearDisplay.textContent : null;
+                    
+                window.initFateChart(natalBranch, birthYear);
+            } else {
+                console.warn('运限表函数未加载，但这是正常的，因为它将在updateBenmingAndXingnian中调用');
+            }
+        } else {
+            console.log('未找到有效的本命地支，不生成运限表');
+        }
     }
 
     updateCenterTime() {
