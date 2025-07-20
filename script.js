@@ -837,12 +837,30 @@ class DaLiuRenCalculator {
         const birthYear = this.birthYearSelect.value;
         const isMale = this.genderMaleRadio.checked;
         
+        // 更新出生年份和性别显示
+        const birthYearDisplay = document.getElementById('birth-year-display');
+        const genderDisplay = document.getElementById('gender-display');
+        
+        if (birthYearDisplay) {
+            birthYearDisplay.textContent = birthYear || '-';
+        }
+        
+        if (genderDisplay) {
+            genderDisplay.textContent = isMale ? '男' : '女';
+        }
+        
         if (!birthYear) {
             // 如果未选择出生年，清空显示
             this.benmingGan.textContent = '-';
             this.benmingZhi.textContent = '-';
             this.xingnianGan.textContent = '-';
             this.xingnianZhi.textContent = '-';
+            
+            // 清空纳音显示
+            const benmingNayin = document.getElementById('benming-nayin');
+            const xingnianNayin = document.getElementById('xingnian-nayin');
+            if (benmingNayin) benmingNayin.textContent = '-';
+            if (xingnianNayin) xingnianNayin.textContent = '-';
             return;
         }
         
@@ -864,6 +882,18 @@ class DaLiuRenCalculator {
             // 应用五行颜色
             this.applyWuxingColor(this.benmingGan, benmingGan);
             this.applyWuxingColor(this.benmingZhi, benmingZhi);
+            
+            // 更新本命纳音
+            const benmingNayin = document.getElementById('benming-nayin');
+            if (benmingNayin) {
+                const nayin = calculateNayin(benmingGan, benmingZhi);
+                benmingNayin.textContent = nayin;
+                const nayinWuxing = getNayinWuxing(nayin);
+                const nayinColor = getNayinWuxingColor(nayin);
+                if (nayinColor) {
+                    benmingNayin.style.color = nayinColor;
+                }
+            }
             
             // 触发纳音更新
             if (window.nayinManager) {

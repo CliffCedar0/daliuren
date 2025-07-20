@@ -316,29 +316,36 @@
             
             <!-- 本命和行年显示 -->
             <div class="row mt-3">
-                <div class="col-md-6">
+                <div class="col-12">
                     <div class="card">
-                        <div class="card-header bg-primary text-white">本命</div>
-                        <div class="card-body">
-                            <div class="d-flex flex-column justify-content-center align-items-center">
-                                <div class="d-flex justify-content-center align-items-center">
-                                    <span class="gan me-1" id="benming-gan">-</span>
-                                    <span class="zhi" id="benming-zhi">-</span>
-                                    <span>&nbsp&nbsp&nbsp </span>
-                                    <span class="nayin" id="benming-nayin">-</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="card">
-                        <div class="card-header bg-success text-white">行年</div>
-                        <div class="card-body">
-                            <div class="d-flex justify-content-center align-items-center">
-                                <span class="gan me-1" id="xingnian-gan">-</span>
-                                <span class="zhi" id="xingnian-zhi">-</span>
-                            </div>
+                        <div class="card-header bg-primary text-white">本命行年</div>
+                        <div class="card-body p-0">
+                            <table class="table table-bordered mb-0">
+                                <tr>
+                                    <td width="30%" class="text-center fw-bold">出生年份</td>
+                                    <td width="70%" class="text-center" id="birth-year-display">-</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-center fw-bold">性别</td>
+                                    <td class="text-center" id="gender-display">-</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-center fw-bold">本命</td>
+                                    <td class="text-center">
+                                        <span class="gan me-1" id="benming-gan">-</span>
+                                        <span class="zhi" id="benming-zhi">-</span>
+                                        <span class="mx-2">|</span>
+                                        <span class="nayin" id="benming-nayin">-</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="text-center fw-bold">行年</td>
+                                    <td class="text-center">
+                                        <span class="gan me-1" id="xingnian-gan">-</span>
+                                        <span class="zhi" id="xingnian-zhi">-</span>  
+                                    </td>
+                                </tr>
+                            </table>
                         </div>
                     </div>
                 </div>
