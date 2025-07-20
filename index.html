@@ -281,68 +281,74 @@
             </div>
         </div>
         
-        <!-- 四柱显示 -->
+        <!-- 四柱和本命行年显示（左右布局） -->
         <div class="sizhu-panel chart-section" style="display: none;">
-            <table class="sizhu-table">
-                <thead>
-                    <tr>
-                        <th>年柱</th>
-                        <th>月柱</th>
-                        <th>日柱</th>
-                        <th>时柱</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>
-                            <span class="gan" id="year-gan">甲</span>
-                            <span class="zhi" id="year-zhi">子</span>
-                        </td>
-                        <td>
-                            <span class="gan" id="month-gan">乙</span>
-                            <span class="zhi" id="month-zhi">丑</span>
-                        </td>
-                        <td>
-                            <span class="gan" id="day-gan">丙</span>
-                            <span class="zhi" id="day-zhi">寅</span>
-                        </td>
-                        <td>
-                            <span class="gan" id="hour-gan">丁</span>
-                            <span class="zhi" id="hour-zhi">卯</span>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-            
-            <!-- 本命和行年显示 -->
-            <div class="row mt-3">
-                <div class="col-12">
+            <div class="row">
+                <!-- 左侧四柱 -->
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header bg-primary text-white">四柱</div>
+                        <div class="card-body p-0">
+                            <table class="table table-bordered mb-0 text-center">
+                                <thead>
+                                    <tr>
+                                        <th>年柱</th>
+                                        <th>月柱</th>
+                                        <th>日柱</th>
+                                        <th>时柱</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <span class="gan" id="year-gan">甲</span>
+                                            <span class="zhi" id="year-zhi">子</span>
+                                        </td>
+                                        <td>
+                                            <span class="gan" id="month-gan">乙</span>
+                                            <span class="zhi" id="month-zhi">丑</span>
+                                        </td>
+                                        <td>
+                                            <span class="gan" id="day-gan">丙</span>
+                                            <span class="zhi" id="day-zhi">寅</span>
+                                        </td>
+                                        <td>
+                                            <span class="gan" id="hour-gan">丁</span>
+                                            <span class="zhi" id="hour-zhi">卯</span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 右侧本命行年（横向布局） -->
+                <div class="col-md-6">
                     <div class="card">
                         <div class="card-header bg-primary text-white">本命行年</div>
                         <div class="card-body p-0">
                             <table class="table table-bordered mb-0">
                                 <tr>
-                                    <td width="30%" class="text-center fw-bold">出生年份</td>
-                                    <td width="70%" class="text-center" id="birth-year-display">-</td>
+                                    <td width="20%" class="text-center fw-bold">出生年</td>
+                                    <td width="15%" class="text-center fw-bold">性别</td>
+                                    <td width="32%" class="text-center fw-bold">本命</td>
+                                    <td width="33%" class="text-center fw-bold">行年</td>
                                 </tr>
                                 <tr>
-                                    <td class="text-center fw-bold">性别</td>
+                                    <td class="text-center" id="birth-year-display">-</td>
                                     <td class="text-center" id="gender-display">-</td>
-                                </tr>
-                                <tr>
-                                    <td class="text-center fw-bold">本命</td>
                                     <td class="text-center">
                                         <span class="gan me-1" id="benming-gan">-</span>
                                         <span class="zhi" id="benming-zhi">-</span>
-                                        <span class="mx-2">|</span>
+                                        &nbsp;
                                         <span class="nayin" id="benming-nayin">-</span>
                                     </td>
-                                </tr>
-                                <tr>
-                                    <td class="text-center fw-bold">行年</td>
                                     <td class="text-center">
                                         <span class="gan me-1" id="xingnian-gan">-</span>
-                                        <span class="zhi" id="xingnian-zhi">-</span>  
+                                        <span class="zhi" id="xingnian-zhi">-</span>
+                                        &nbsp;
+                                        <span class="nayin" id="xingnian-nayin">-</span>
                                     </td>
                                 </tr>
                             </table>

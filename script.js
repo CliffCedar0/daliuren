@@ -961,6 +961,18 @@ class DaLiuRenCalculator {
             if (this.xingnianGan) this.applyWuxingColor(this.xingnianGan, xingnianGan);
             if (this.xingnianZhi) this.applyWuxingColor(this.xingnianZhi, xingnianZhi);
             
+            // 更新行年纳音
+            const xingnianNayin = document.getElementById('xingnian-nayin');
+            if (xingnianNayin) {
+                const nayin = calculateNayin(xingnianGan, xingnianZhi);
+                xingnianNayin.textContent = nayin;
+                const nayinWuxing = getNayinWuxing(nayin);
+                const nayinColor = getNayinWuxingColor(nayin);
+                if (nayinColor) {
+                    xingnianNayin.style.color = nayinColor;
+                }
+            }
+            
             // 获取本命干支用于日志输出
             const birthGanzhi = YEAR_GANZHI[birthYearValue];
             const benmingGan = birthGanzhi ? birthGanzhi.charAt(0) : '未知';
