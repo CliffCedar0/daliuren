@@ -5502,6 +5502,7 @@ class DaLiuRenCalculator {
                     
                     if (jianganElement && jianganElement.textContent) {
                         jiangan = jianganElement.textContent;
+                        jiangan = jianganElement.textContent.trim().slice(0, 1);
                         console.log(`从宫格获取建干: ${groundBranch} -> ${jiangan} (元素类名: ${jianganElement.className})`);
                     } else {
                         console.warn(`宫格中未找到建干显示元素`);
@@ -5712,6 +5713,7 @@ class DaLiuRenCalculator {
         if (jiangan && heavenBranch) {
             try {
                 const jianganNayin = calculateNayin(jiangan, heavenBranch);
+                console.log('jianganNayin', jianganNayin);
                 const jianganNayinWuxing = getNayinWuxing(jianganNayin);
                 const jianganNayinColor = getNayinWuxingColor(jianganNayin);
                 
@@ -5720,26 +5722,6 @@ class DaLiuRenCalculator {
                     <div class="nayin-label">建干纳音:</div>
                     <div class="nayin-value" style="color: ${jianganNayinColor};">${jiangan}${heavenBranch} - ${jianganNayin}</div>
             </div>`;
-            
-                // 如果有地遁，则添加地遁纳音（放在建干后面，模仿复建和贼遁的布局）
-                if (didun) {
-                    try {
-                        const didunNayin = calculateNayin(didun, heavenBranch);
-                        const didunNayinWuxing = getNayinWuxing(didunNayin);
-                        const didunNayinColor = getNayinWuxingColor(didunNayin);
-                        
-                        html += `<div class="nayin-item">
-                            <div class="nayin-label">地遁纳音:</div>
-                            <div class="nayin-value" style="color: ${didunNayinColor};">${didun}${heavenBranch} - ${didunNayin}</div>
-                </div>`;
-                    } catch (e) {
-                        console.error('计算地遁纳音出错:', e);
-                        html += `<div class="nayin-item">
-                            <div class="nayin-label">地遁纳音:</div>
-                            <div class="nayin-value">${didun}${heavenBranch} - 计算出错</div>
-                        </div>`;
-                    }
-                }
             } catch (e) {
                 console.error('计算建干纳音出错:', e);
                 html += `<div class="nayin-item">
