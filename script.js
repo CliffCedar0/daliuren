@@ -5301,7 +5301,7 @@ class DaLiuRenCalculator {
             
             // 直接设置固定位置，更靠左
             modalContent.style.position = 'fixed';
-            modalContent.style.top = '60%';
+            modalContent.style.top = '40%';
             modalContent.style.left = '19.5%';
             modalContent.style.maxHeight = '80vh'; // 防止内容过多时超出屏幕
             
