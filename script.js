@@ -909,10 +909,11 @@ class DaLiuRenCalculator {
             // 计算行年
             this.calculateXingnian(benmingZhi, isMale);
             
-            // 生成运限表 - 使用本命地支和出生年份
+            // 生成运限表 - 使用本命地支、出生年份和性别
             if (typeof window.initFateChart === 'function') {
                 const birthYear = this.birthYearSelect.value;
-                window.initFateChart(benmingZhi, birthYear);
+                const isMale = this.genderMaleRadio.checked;
+                window.initFateChart(benmingZhi, birthYear, isMale);
             } else {
                 console.error('运限表函数未加载');
             }
@@ -4173,8 +4174,15 @@ class DaLiuRenCalculator {
                 const birthYearDisplay = document.getElementById('birth-year-display');
                 const birthYear = birthYearDisplay && birthYearDisplay.textContent !== '-' 
                     ? birthYearDisplay.textContent : null;
-                    
-                window.initFateChart(natalBranch, birthYear);
+                
+                // 获取性别
+                const isMale = document.getElementById('gender-male')?.checked !== false; // 默认为男性
+                
+                if (birthYear) {
+                    window.initFateChart(natalBranch, birthYear, isMale);
+                } else {
+                    console.warn('无法获取出生年份，无法准确计算运限表');
+                }
             } else {
                 console.warn('运限表函数未加载，但这是正常的，因为它将在updateBenmingAndXingnian中调用');
             }
@@ -5301,7 +5309,7 @@ class DaLiuRenCalculator {
             
             // 直接设置固定位置，更靠左
             modalContent.style.position = 'fixed';
-            modalContent.style.top = '40%';
+            modalContent.style.top = '60%';
             modalContent.style.left = '19.5%';
             modalContent.style.maxHeight = '80vh'; // 防止内容过多时超出屏幕
             
