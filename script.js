@@ -952,7 +952,7 @@ class DaLiuRenCalculator {
         // 清除所有盘内容
         this.clearAllPlateContent();
         
-        // 显示所有图表区域
+        // 隐藏所有图表区域，只有点击排盘时才显示
         this.chartSections.forEach(section => {
             section.style.display = 'block';
         });
@@ -3856,8 +3856,8 @@ class DaLiuRenCalculator {
             // 计算双天将排布
             const tianpanTianjiangMap = this.arrangeTwelveTianjiangs(nobles.tianpanNoble, tianpanNobleGroundPosition);
             const dipanTianjiangMap = this.arrangeDipanTianjiangs(nobles.dipanNoble, dipanNobleGroundPosition);
-
-    // 计算四课（包含双天将）
+            
+            // 计算四课（包含双天将）
             const sike = this.calculateSike(dayStem, dayBranch, heavenPlate, tianpanTianjiangMap, dipanTianjiangMap);
             console.log('四课计算结果:', sike);
             
@@ -4146,12 +4146,12 @@ class DaLiuRenCalculator {
                 console.log('使用四柱表格中的日干支计算:', dayStem + dayBranch);
             } else {
                 // 获取日干支（基于当前时间）
-                const now = new Date();
-                const solar = Solar.fromDate(now);
-                const lunar = solar.getLunar();
+            const now = new Date();
+            const solar = Solar.fromDate(now);
+            const lunar = solar.getLunar();
                 const dayGZ = lunar.getDayInGanZhi();
-                dayStem = dayGZ.charAt(0);
-                dayBranch = dayGZ.charAt(1);
+            dayStem = dayGZ.charAt(0);
+            dayBranch = dayGZ.charAt(1);
                 console.log('无法从四柱表格获取日干支，使用当前日期的日干支:', dayGZ);
             }
             
@@ -5167,9 +5167,9 @@ class DaLiuRenCalculator {
             // 添加与天地盘对齐的CSS类
             modalContent.classList.add('plate-aligned');
             
-            // 弹窗位置，直接设置固定位置，更靠左
+            // 直接设置固定位置，更靠左
             modalContent.style.position = 'fixed';
-            modalContent.style.top = '50%';
+            modalContent.style.top = '60%';
             modalContent.style.left = '19.5%';
             modalContent.style.maxHeight = '80vh'; // 防止内容过多时超出屏幕
             
