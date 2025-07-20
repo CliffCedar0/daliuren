@@ -281,14 +281,13 @@
             </div>
         </div>
         
-        <!-- 四柱和本命行年显示（左右布局） -->
+        <!-- 四柱和本命行年显示（两行表格布局） -->
         <div class="sizhu-panel chart-section" style="display: none;">
-            <div class="row">
-                <!-- 左侧四柱 -->
-                <div class="col-md-6">
+            <div class="row mb-4">
+                <div class="col-12">
                     <div class="card">
-                        <div class="card-header bg-primary text-white">四柱</div>
                         <div class="card-body p-0">
+                            <!-- 四柱和本命行年表格 -->
                             <table class="table table-bordered mb-0 text-center">
                                 <thead>
                                     <tr>
@@ -319,38 +318,35 @@
                                     </tr>
                                 </tbody>
                             </table>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- 右侧本命行年（横向布局） -->
-                <div class="col-md-6">
-                    <div class="card">
-                        <div class="card-header bg-primary text-white">本命行年</div>
-                        <div class="card-body p-0">
-                            <table class="table table-bordered mb-0">
-                                <tr>
-                                    <td width="20%" class="text-center fw-bold">出生年</td>
-                                    <td width="15%" class="text-center fw-bold">性别</td>
-                                    <td width="32%" class="text-center fw-bold">本命</td>
-                                    <td width="33%" class="text-center fw-bold">行年</td>
-                                </tr>
-                                <tr>
-                                    <td class="text-center" id="birth-year-display">-</td>
-                                    <td class="text-center" id="gender-display">-</td>
-                                    <td class="text-center">
-                                        <span class="gan me-1" id="benming-gan">-</span>
-                                        <span class="zhi" id="benming-zhi">-</span>
-                                        &nbsp;
-                                        <span class="nayin" id="benming-nayin">-</span>
-                                    </td>
-                                    <td class="text-center">
-                                        <span class="gan me-1" id="xingnian-gan">-</span>
-                                        <span class="zhi" id="xingnian-zhi">-</span>
-                                        &nbsp;
-                                        <span class="nayin" id="xingnian-nayin">-</span>
-                                    </td>
-                                </tr>
+                            
+                            <!-- 本命行年表格 -->
+                            <table class="table table-bordered mb-0 text-center" style="table-layout: fixed;">
+                                <thead >
+                                    <tr>
+                                        <th>出生年</th>
+                                        <th>性别</th>
+                                        <th>本命</th>
+                                        <th>行年</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td id="birth-year-display">-</td>
+                                        <td id="gender-display">-</td>
+                                        <td>
+                                            <span class="gan me-1" id="benming-gan">-</span>
+                                            <span class="zhi" id="benming-zhi">-</span>
+                                            <small class="mx-1">|</small>
+                                            <span class="nayin" id="benming-nayin">-</span>
+                                        </td>
+                                        <td>
+                                            <span class="gan me-1" id="xingnian-gan">-</span>
+                                            <span class="zhi" id="xingnian-zhi">-</span>
+                                            <small class="mx-1">|</small>
+                                            <span class="nayin" id="xingnian-nayin">-</span>
+                                        </td>
+                                    </tr>
+                                </tbody>
                             </table>
                         </div>
                     </div>
