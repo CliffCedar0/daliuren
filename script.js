@@ -2170,19 +2170,7 @@ class DaLiuRenCalculator {
             return biezeFayong;
         }
         
-        // 八、昴星法
-        const maoxingFayong = this.tryMaoxingFayong(dayStem, dayBranch, sike, heavenPlate, tianpanTianjiangMap, dipanTianjiangMap);
-        if (maoxingFayong) {
-            console.log('使用昴星法:', maoxingFayong);
-            return maoxingFayong;
-        }
-        
-        // 九、九丑法
-        const jiuchouFayong = this.tryJiuchouFayong(dayStem, dayBranch, sike, heavenPlate, tianpanTianjiangMap, dipanTianjiangMap);
-        if (jiuchouFayong) {
-            console.log('使用九丑法:', jiuchouFayong);
-            return jiuchouFayong;
-        }
+        // 注意：昴星法已经在遥克法中调用，这里不再单独调用
         
         // 默认返回空的三传
         return this.createEmptySanchuan();
@@ -2478,12 +2466,15 @@ class DaLiuRenCalculator {
 
     // 遥克法
     tryYaokeFayong(dayStem, dayBranch, sike, heavenPlate, tianpanTianjiangMap, dipanTianjiangMap) {
+        console.log('=== 尝试遥克法 ===');
+        
         // 四课中既无上克下，也无下贼上
         const analysis = this.analyzeSikeKe(sike);
         if (analysis.shangke.length === 0 && analysis.xiazei.length === 0) {
             // 检查二三四课来克日干（蒿矢）
             const keRigan = this.checkKeRigan(dayStem, sike);
             if (keRigan.length > 0) {
+                console.log('遥克法：存在课克日干（蒿矢）');
                 if (keRigan.length === 1) {
                     return this.createSanchuan(keRigan[0].tianpan, heavenPlate, tianpanTianjiangMap, dipanTianjiangMap, '蒿矢', dayStem, dayBranch);
                 } else {
@@ -2495,6 +2486,7 @@ class DaLiuRenCalculator {
             // 检查日干克二三四课（弹射）
             const riganKe = this.checkRiganKe(dayStem, sike);
             if (riganKe.length > 0) {
+                console.log('遥克法：存在日干克课（弹射）');
                 if (riganKe.length === 1) {
                     return this.createSanchuan(riganKe[0].tianpan, heavenPlate, tianpanTianjiangMap, dipanTianjiangMap, '弹射', dayStem, dayBranch);
                 } else {
@@ -2506,8 +2498,19 @@ class DaLiuRenCalculator {
             // 检查日支的特殊情况
             const rizhiSpecial = this.checkRizhiSpecial(dayStem, dayBranch, sike, heavenPlate, tianpanTianjiangMap, dipanTianjiangMap);
             if (rizhiSpecial) {
+                console.log('遥克法：存在日支特殊情况');
                 return rizhiSpecial;
             }
+            
+            // 如果遥克法条件不满足，直接尝试昴星法
+            console.log('遥克法条件不满足，直接尝试昴星法');
+            const maoxingFayong = this.tryMaoxingFayong(dayStem, dayBranch, sike, heavenPlate, tianpanTianjiangMap, dipanTianjiangMap);
+            if (maoxingFayong) {
+                console.log('在遥克法中成功调用昴星法');
+                return maoxingFayong;
+            }
+            
+           
         }
         
         return null;
@@ -2515,8 +2518,8 @@ class DaLiuRenCalculator {
 
     // 昴星法
     tryMaoxingFayong(dayStem, dayBranch, sike, heavenPlate, tianpanTianjiangMap, dipanTianjiangMap) {
-        // 为向后兼容，创建单天将映射（使用天盘天将）
-        const tianjiangMap = tianpanTianjiangMap;
+        console.log('=== 尝试昴星法 ===');
+        
         const analysis = this.analyzeSikeKe(sike);
         
         // 四课俱全，既无上下贼克，也无遥克
@@ -2525,67 +2528,95 @@ class DaLiuRenCalculator {
             const riganKe = this.checkRiganKe(dayStem, sike);
             
             if (keRigan.length === 0 && riganKe.length === 0) {
-                // 检查四课是否俱全且无重复
+                console.log('昴星法条件满足：四课俱全，无上下贼克，无遥克');
+                
+                // 检查四课是否俱全
                 const sikeCount = Object.keys(sike).length;
                 if (sikeCount === 4) {
-                    // 检查是否有重复的上神
-                    const uniqueTopGods = new Set([sike.ke1.top, sike.ke2.top, sike.ke3.top, sike.ke4.top]);
+                    console.log('四课俱全，符合昴星法条件');
                     
-                    if (uniqueTopGods.size === 4) { // 四课上神都不相同
                         if (this.isYang(dayStem)) {
-                            // 阳日虎视：取酉上神为初传
-                            const youShangShen = heavenPlate['酉'] || '';
-                            if (youShangShen) {
+                        // 阳日：取地盘地支为酉所对应的天盘地支为初传
+                        const youHeavenBranch = heavenPlate['酉'] || '';
+                        if (youHeavenBranch) {
+                            console.log('阳日昴星法：取地盘酉对应的天盘地支为初传', youHeavenBranch);
                                 const zhongchuan = sike.ke3.top; // 支上神
                                 const mochuan = sike.ke1.top;    // 干上神
+                            
+                            console.log(`阳日昴星法：中传取支上神=${zhongchuan}，末传取干上神=${mochuan}`);
+                            
                                 return {
                                     chuchuan: { 
-                                        gan: this.getSanchuanGan(youShangShen, heavenPlate, dayStem, dayBranch), 
-                                        zhi: youShangShen, 
-                                        tianjiang: this.getSanchuanTianjiang(youShangShen, heavenPlate, tianjiangMap)
+                                    gan: this.getSanchuanGan(youHeavenBranch, heavenPlate, dayStem, dayBranch), 
+                                    zhi: youHeavenBranch, 
+                                    tianjiang: this.getSanchuanTianjiang(youHeavenBranch, heavenPlate, tianpanTianjiangMap, dipanTianjiangMap)
                                     },
                                     zhongchuan: { 
                                         gan: this.getSanchuanGan(zhongchuan, heavenPlate, dayStem, dayBranch), 
                                         zhi: zhongchuan, 
-                                        tianjiang: this.getSanchuanTianjiang(zhongchuan, heavenPlate, tianjiangMap)
+                                    tianjiang: this.getSanchuanTianjiang(zhongchuan, heavenPlate, tianpanTianjiangMap, dipanTianjiangMap)
                                     },
                                     mochuan: { 
                                         gan: this.getSanchuanGan(mochuan, heavenPlate, dayStem, dayBranch), 
                                         zhi: mochuan, 
-                                        tianjiang: this.getSanchuanTianjiang(mochuan, heavenPlate, tianjiangMap)
+                                    tianjiang: this.getSanchuanTianjiang(mochuan, heavenPlate, tianpanTianjiangMap, dipanTianjiangMap)
                                     },
                                     kege: '虎视'
                                 };
+                        } else {
+                            console.log('未找到酉对应的天盘地支，无法使用昴星法');
                             }
                         } else {
-                            // 阴日冬蛇掩目：取卯上神为初传
-                            const maoShangShen = heavenPlate['卯'] || '';
-                            if (maoShangShen) {
+                        // 阴日：取天盘地支为卯的地盘地支所对应的天盘地支为初传
+                        // 首先找到天盘卯在哪个地盘位置
+                        let maoGroundPosition = null;
+                        for (let position in heavenPlate) {
+                            if (heavenPlate[position] === '卯') {
+                                maoGroundPosition = position;
+                                break;
+                            }
+                        }
+                        
+                        if (maoGroundPosition) {
+                            // 找到了天盘卯的地盘位置，然后取这个地盘位置对应的天盘地支
+                            const chuchuanBranch = heavenPlate[maoGroundPosition] || '';
+                            console.log(`阴日昴星法：找到天盘卯在地盘${maoGroundPosition}，取为初传=${chuchuanBranch}`);
+                            
                                 const zhongchuan = sike.ke1.top; // 干上神
                                 const mochuan = sike.ke3.top;    // 支上神
+                            
+                            console.log(`阴日昴星法：中传取干上神=${zhongchuan}，末传取支上神=${mochuan}`);
+                            
                                 return {
                                     chuchuan: { 
-                                        gan: this.getSanchuanGan(maoShangShen, heavenPlate, dayStem, dayBranch), 
-                                        zhi: maoShangShen, 
-                                        tianjiang: this.getSanchuanTianjiang(maoShangShen, heavenPlate, tianjiangMap)
+                                    gan: this.getSanchuanGan(chuchuanBranch, heavenPlate, dayStem, dayBranch), 
+                                    zhi: chuchuanBranch, 
+                                    tianjiang: this.getSanchuanTianjiang(chuchuanBranch, heavenPlate, tianpanTianjiangMap, dipanTianjiangMap)
                                     },
                                     zhongchuan: { 
                                         gan: this.getSanchuanGan(zhongchuan, heavenPlate, dayStem, dayBranch), 
                                         zhi: zhongchuan, 
-                                        tianjiang: this.getSanchuanTianjiang(zhongchuan, heavenPlate, tianjiangMap)
+                                    tianjiang: this.getSanchuanTianjiang(zhongchuan, heavenPlate, tianpanTianjiangMap, dipanTianjiangMap)
                                     },
                                     mochuan: { 
                                         gan: this.getSanchuanGan(mochuan, heavenPlate, dayStem, dayBranch), 
                                         zhi: mochuan, 
-                                        tianjiang: this.getSanchuanTianjiang(mochuan, heavenPlate, tianjiangMap)
+                                    tianjiang: this.getSanchuanTianjiang(mochuan, heavenPlate, tianpanTianjiangMap, dipanTianjiangMap)
                                     },
                                     kege: '冬蛇掩目'
                                 };
+                        } else {
+                            console.log('天盘中没有卯，无法使用昴星法');
                             }
                         }
+                } else {
+                    console.log('四课不全，不符合昴星法条件');
                     }
+            } else {
+                console.log('存在日干克或被克关系，不符合昴星法条件');
                 }
-            }
+        } else {
+            console.log('存在上下贼克关系，不符合昴星法条件');
         }
         
         return null;
@@ -5770,7 +5801,7 @@ class DaLiuRenCalculator {
             clearInterval(this.sizhuUpdateTimer);
         }
     }
-    
+
     // 生成金口诀内容
     generateJinkouItem() {
         let html = '';
@@ -5989,9 +6020,20 @@ class DaLiuRenCalculator {
         return baDongList;
     }
 
-    // 新增：获取三传地支的双天将
+    // 获取三传地支的双天将
     getSanchuanTianjiang(sanchuanZhi, heavenPlate, tianpanTianjiangMap, dipanTianjiangMap) {
         if (!sanchuanZhi) return { tianpan: '', dipan: '', combined: '' };
+        
+        // 安全检查：确保tianpanTianjiangMap和dipanTianjiangMap是对象
+        if (!tianpanTianjiangMap || typeof tianpanTianjiangMap !== 'object') {
+            console.error('tianpanTianjiangMap不是有效对象:', tianpanTianjiangMap);
+            return { tianpan: '', dipan: '', combined: '' };
+        }
+        
+        if (!dipanTianjiangMap || typeof dipanTianjiangMap !== 'object') {
+            console.error('dipanTianjiangMap不是有效对象:', dipanTianjiangMap);
+            return { tianpan: '', dipan: '', combined: '' };
+        }
         
         // 获取天盘天将和地盘天将
         const tianpanTianjiang = tianpanTianjiangMap[sanchuanZhi] || '';

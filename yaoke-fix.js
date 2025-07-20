@@ -135,7 +135,102 @@ function tryYaokeFayong(dayStem, dayBranch, sike, heavenPlate, tianpanTianjiangM
             }
         }
     } else {
-        console.log('没有遥克关系，不符合遥克条件');
+        console.log('没有遥克关系，应用昴星法');
+        
+        // 应用昴星法
+        // 检查四课是否俱全
+        const sikeCount = Object.keys(sike).length;
+        if (sikeCount === 4) {
+            console.log('四课俱全，符合昴星法条件');
+            
+            const isYangDay = this.isYang(dayStem);
+            console.log(`日干${dayStem}是${isYangDay ? '阳' : '阴'}日`);
+            
+            if (isYangDay) {
+                // 阳日：取地盘酉上神为初传（即地盘酉对应的天盘地支）
+                const youHeavenBranch = heavenPlate['酉'] || '';
+                if (youHeavenBranch) {
+                    console.log('阳日昴星法：取地盘酉上神为初传', youHeavenBranch);
+                    const zhongchuan = sike.ke3.top; // 支上神
+                    const mochuan = sike.ke1.top;    // 干上神
+                    
+                    console.log(`阳日昴星法：初传=${youHeavenBranch}，中传取支上神=${zhongchuan}，末传取干上神=${mochuan}`);
+                    
+                    // 直接创建三传结构，不使用getSanchuanTianjiang
+                    return {
+                        chuchuan: { 
+                            gan: this.calculateXunganForPosition(youHeavenBranch, dayStem, dayBranch) || '', 
+                            zhi: youHeavenBranch, 
+                            tianjiang: (tianpanTianjiangMap && tianpanTianjiangMap[youHeavenBranch]) ? 
+                                tianpanTianjiangMap[youHeavenBranch] + '/' + (dipanTianjiangMap[youHeavenBranch] || '') : ''
+                        },
+                        zhongchuan: { 
+                            gan: this.calculateXunganForPosition(zhongchuan, dayStem, dayBranch) || '', 
+                            zhi: zhongchuan, 
+                            tianjiang: (tianpanTianjiangMap && tianpanTianjiangMap[zhongchuan]) ? 
+                                tianpanTianjiangMap[zhongchuan] + '/' + (dipanTianjiangMap[zhongchuan] || '') : ''
+                        },
+                        mochuan: { 
+                            gan: this.calculateXunganForPosition(mochuan, dayStem, dayBranch) || '', 
+                            zhi: mochuan, 
+                            tianjiang: (tianpanTianjiangMap && tianpanTianjiangMap[mochuan]) ? 
+                                tianpanTianjiangMap[mochuan] + '/' + (dipanTianjiangMap[mochuan] || '') : ''
+                        },
+                        kege: '虎视'
+                    };
+                } else {
+                    console.log('未找到酉对应的天盘地支，无法使用昴星法');
+                }
+            } else {
+                // 阴日：取天盘酉下神为初传（即找到天盘酉在哪个地盘位置）
+                let youPosition = null;
+                for (let position in heavenPlate) {
+                    if (heavenPlate[position] === '酉') {
+                        youPosition = position;
+                        break;
+                    }
+                }
+                
+                if (youPosition) {
+                    // 初传为天盘酉所在的地盘位置（即天盘酉的下神）
+                    const chuchuanBranch = youPosition;
+                    console.log(`阴日昴星法：找到天盘酉在地盘${youPosition}，取酉下神为初传=${chuchuanBranch}`);
+                    
+                    const zhongchuan = sike.ke1.top; // 干上神
+                    const mochuan = sike.ke3.top;    // 支上神
+                    
+                    console.log(`阴日昴星法：初传=${chuchuanBranch}，中传取干上神=${zhongchuan}，末传取支上神=${mochuan}`);
+                    
+                    // 直接创建三传结构，不使用getSanchuanTianjiang
+                    return {
+                        chuchuan: { 
+                            gan: this.calculateXunganForPosition(chuchuanBranch, dayStem, dayBranch) || '', 
+                            zhi: chuchuanBranch, 
+                            tianjiang: (tianpanTianjiangMap && tianpanTianjiangMap[chuchuanBranch]) ? 
+                                tianpanTianjiangMap[chuchuanBranch] + '/' + (dipanTianjiangMap[chuchuanBranch] || '') : ''
+                        },
+                        zhongchuan: { 
+                            gan: this.calculateXunganForPosition(zhongchuan, dayStem, dayBranch) || '', 
+                            zhi: zhongchuan, 
+                            tianjiang: (tianpanTianjiangMap && tianpanTianjiangMap[zhongchuan]) ? 
+                                tianpanTianjiangMap[zhongchuan] + '/' + (dipanTianjiangMap[zhongchuan] || '') : ''
+                        },
+                        mochuan: { 
+                            gan: this.calculateXunganForPosition(mochuan, dayStem, dayBranch) || '', 
+                            zhi: mochuan, 
+                            tianjiang: (tianpanTianjiangMap && tianpanTianjiangMap[mochuan]) ? 
+                                tianpanTianjiangMap[mochuan] + '/' + (dipanTianjiangMap[mochuan] || '') : ''
+                        },
+                        kege: '冬蛇掩目'
+                    };
+                } else {
+                    console.log('天盘中没有酉，无法使用昴星法');
+                }
+            }
+        } else {
+            console.log('四课不全，不符合昴星法条件');
+        }
+        
         return null;
     }
     
@@ -149,7 +244,28 @@ function tryYaokeFayong(dayStem, dayBranch, sike, heavenPlate, tianpanTianjiangM
         
         console.log(`遥克三传：初传=${chuchuan}，中传=${zhongchuan}，末传=${mochuan}`);
         
-        return this.createSanchuan(chuchuan, heavenPlate, tianpanTianjiangMap, dipanTianjiangMap, '遥克', dayStem, dayBranch);
+        // 直接创建三传结构，不使用createSanchuan方法
+        return {
+            chuchuan: { 
+                gan: this.calculateXunganForPosition(chuchuan, dayStem, dayBranch) || '', 
+                zhi: chuchuan, 
+                tianjiang: (tianpanTianjiangMap && tianpanTianjiangMap[chuchuan]) ? 
+                    tianpanTianjiangMap[chuchuan] + '/' + (dipanTianjiangMap[chuchuan] || '') : ''
+            },
+            zhongchuan: { 
+                gan: this.calculateXunganForPosition(zhongchuan, dayStem, dayBranch) || '', 
+                zhi: zhongchuan, 
+                tianjiang: (tianpanTianjiangMap && tianpanTianjiangMap[zhongchuan]) ? 
+                    tianpanTianjiangMap[zhongchuan] + '/' + (dipanTianjiangMap[zhongchuan] || '') : ''
+            },
+            mochuan: { 
+                gan: this.calculateXunganForPosition(mochuan, dayStem, dayBranch) || '', 
+                zhi: mochuan, 
+                tianjiang: (tianpanTianjiangMap && tianpanTianjiangMap[mochuan]) ? 
+                    tianpanTianjiangMap[mochuan] + '/' + (dipanTianjiangMap[mochuan] || '') : ''
+            },
+            kege: '遥克'
+        };
     }
     
     return null;
