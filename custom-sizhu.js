@@ -323,6 +323,12 @@ document.addEventListener("DOMContentLoaded", function() {
                             const dayBranch = dayZhi; // 使用自定义日支
                             console.log(`使用自定义四柱计算四课三传, 日干支: ${dayStem}${dayBranch}, 占时: ${timeBranch}`);
                             
+                            // 确保四柱表格中显示的日干支与自定义的一致
+                            const dayGanElement = document.getElementById("day-gan");
+                            const dayZhiElement = document.getElementById("day-zhi");
+                            if (dayGanElement) dayGanElement.textContent = dayStem;
+                            if (dayZhiElement) dayZhiElement.textContent = dayBranch;
+                            
                             // 计算和更新天将、旬干 - 传递heavenPlate
                             this.updateTianjiangAndXungan(timeBranch, heavenPlate);
                             

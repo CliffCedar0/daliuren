@@ -1584,7 +1584,7 @@ class DaLiuRenCalculator {
         const startGan = this.getWuziYuanDunZiStem(dayStem);
         const startGanIndex = STEM_INDEX[startGan];
 
-        // 2. 找到天盘中地支为"子"的地盘位置
+        // 2. 找到天盘中"子"地支所在的地盘位置
         let ziPosition = null;
         for (let pos in heavenPlate) {
             if (heavenPlate[pos] === '子') {
@@ -3856,8 +3856,8 @@ class DaLiuRenCalculator {
             // 计算双天将排布
             const tianpanTianjiangMap = this.arrangeTwelveTianjiangs(nobles.tianpanNoble, tianpanNobleGroundPosition);
             const dipanTianjiangMap = this.arrangeDipanTianjiangs(nobles.dipanNoble, dipanNobleGroundPosition);
-            
-            // 计算四课（包含双天将）
+
+    // 计算四课（包含双天将）
             const sike = this.calculateSike(dayStem, dayBranch, heavenPlate, tianpanTianjiangMap, dipanTianjiangMap);
             console.log('四课计算结果:', sike);
             
@@ -4133,7 +4133,7 @@ class DaLiuRenCalculator {
         this.updateCombinedPlate(heavenPlate);
         
         try {
-            // 从页面上获取四柱显示中的日干支，而不是使用当前日期的
+            // 始终从四柱表格中获取日干日支，确保与四柱显示一致
             const dayGanElement = document.getElementById('day-gan');
             const dayZhiElement = document.getElementById('day-zhi');
             
@@ -4141,18 +4141,18 @@ class DaLiuRenCalculator {
             let dayStem, dayBranch;
             
             if (dayGanElement && dayZhiElement && dayGanElement.textContent && dayZhiElement.textContent) {
-                dayStem = dayGanElement.textContent;
-                dayBranch = dayZhiElement.textContent;
-                console.log('使用页面显示的日干支计算天将:', dayStem + dayBranch);
+                dayStem = dayGanElement.textContent.trim();
+                dayBranch = dayZhiElement.textContent.trim();
+                console.log('使用四柱表格中的日干支计算:', dayStem + dayBranch);
             } else {
                 // 获取日干支（基于当前时间）
-            const now = new Date();
-            const solar = Solar.fromDate(now);
-            const lunar = solar.getLunar();
+                const now = new Date();
+                const solar = Solar.fromDate(now);
+                const lunar = solar.getLunar();
                 const dayGZ = lunar.getDayInGanZhi();
-            dayStem = dayGZ.charAt(0);
-            dayBranch = dayGZ.charAt(1);
-                console.log('使用当前日期的日干支计算天将:', dayGZ);
+                dayStem = dayGZ.charAt(0);
+                dayBranch = dayGZ.charAt(1);
+                console.log('无法从四柱表格获取日干支，使用当前日期的日干支:', dayGZ);
             }
             
             // 当前月支
@@ -5167,9 +5167,9 @@ class DaLiuRenCalculator {
             // 添加与天地盘对齐的CSS类
             modalContent.classList.add('plate-aligned');
             
-            // 直接设置固定位置，更靠左
+            // 弹窗位置，直接设置固定位置，更靠左
             modalContent.style.position = 'fixed';
-            modalContent.style.top = '69%';
+            modalContent.style.top = '50%';
             modalContent.style.left = '19.5%';
             modalContent.style.maxHeight = '80vh'; // 防止内容过多时超出屏幕
             
